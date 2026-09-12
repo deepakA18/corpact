@@ -1,0 +1,510 @@
+{
+  "rpcUrl": "https://api.mainnet-beta.solana.com",
+  "inspectedAt": "2026-09-12T15:55:01.884Z",
+  "rows": [
+    {
+      "issuer": "xStocks (Backed Finance)",
+      "symbol": "NVDAx",
+      "mint": "Xsc9qvGR1efVDFGLrVsmkzv3qi45LTBjeUKSPmx9qEh",
+      "underlying": "NVDA",
+      "tokenProgram": "Token-2022",
+      "tokenProgramId": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+      "decimals": 8,
+      "supply": "32127991808627",
+      "uiSupply": 321279.91808627,
+      "mintAuthority": "7pt9tkctJPK7PPNQJ77GKg8ZffSF6QxoMiCFYHxrtaCj",
+      "freezeAuthority": "JDq14BWvqCRFNu1krb12bcRpbGtJZ1FLEakMw6FdxJNs",
+      "isInitialized": true,
+      "accountSize": 679,
+      "extensions": [
+        "MetadataPointer",
+        "PermanentDelegate",
+        "DefaultAccountState",
+        "ScaledUiAmountConfig",
+        "PausableConfig",
+        "ConfidentialTransferMint",
+        "TransferHook",
+        "TokenMetadata"
+      ],
+      "custodyCritical": [
+        "PermanentDelegate",
+        "DefaultAccountState",
+        "PausableConfig",
+        "ConfidentialTransferMint",
+        "TransferHook"
+      ],
+      "details": {
+        "transferHook": {
+          "programId": "11111111111111111111111111111111",
+          "programIdIsNull": true,
+          "authority": "5aMNNLQJwAEeoemTEMkv5NVjqKwvvefRYCQ5Z67HFvEq",
+          "canBeSetLater": true
+        },
+        "permanentDelegate": {
+          "delegate": "5aMNNLQJwAEeoemTEMkv5NVjqKwvvefRYCQ5Z67HFvEq"
+        },
+        "defaultAccountState": {
+          "state": "Initialized",
+          "blocksFreshAtas": false
+        },
+        "metadataPointer": {
+          "authority": "5aMNNLQJwAEeoemTEMkv5NVjqKwvvefRYCQ5Z67HFvEq",
+          "metadataAddress": "Xsc9qvGR1efVDFGLrVsmkzv3qi45LTBjeUKSPmx9qEh"
+        },
+        "metadata": {
+          "name": "NVIDIA xStock",
+          "symbol": "NVDAx",
+          "uri": "https://xstocks-metadata.backed.fi/tokens/Solana/NVDAx/metadata.json",
+          "updateAuthority": "5aMNNLQJwAEeoemTEMkv5NVjqKwvvefRYCQ5Z67HFvEq",
+          "additional": {}
+        },
+        "raw_MetadataPointer": "43f9f1ee2e37b807ea45cb74e6009722bec009296026e4e4558b435e24a5e9c607e8a50e140fda5791f4566a957fd3ae3f873e6a3466ffc13d79119dfa9ab50a",
+        "raw_PermanentDelegate": "43f9f1ee2e37b807ea45cb74e6009722bec009296026e4e4558b435e24a5e9c6",
+        "raw_DefaultAccountState": "01",
+        "raw_ScaledUiAmountConfig": "066f592251cc47747825a59ad1422ea43573f528da5dee2af7812b314f9945e33ff41bacc203f03f08faa16a00000000a9fe89d5f706f03f",
+        "raw_PausableConfig": "ffdfec1bcd2cd38393c84daa08c91cc0d38d677ff8d0ab7b5d033f00f732cc3000",
+        "raw_ConfidentialTransferMint": "43f9f1ee2e37b807ea45cb74e6009722bec009296026e4e4558b435e24a5e9c6000000000000000000000000000000000000000000000000000000000000000000",
+        "raw_TransferHook": "43f9f1ee2e37b807ea45cb74e6009722bec009296026e4e4558b435e24a5e9c60000000000000000000000000000000000000000000000000000000000000000",
+        "raw_TokenMetadata": "43f9f1ee2e37b807ea45cb74e6009722bec009296026e4e4558b435e24a5e9c607e8a50e140fda5791f4566a957fd3ae3f873e6a3466ffc13d79119dfa9ab50a0d0000004e5649444941207853746f636b050000004e564441784400000068747470733a2f2f7873746f636b732d6d657461646174612e6261636b65642e66692f746f6b656e732f536f6c616e612f4e564441782f6d657461646174612e6a736f6e00000000"
+      }
+    },
+    {
+      "issuer": "Ondo Global Markets",
+      "symbol": "NVDAon",
+      "mint": "gEGtLTPNQ7jcg25zTetkbmF7teoDLcrfTnQfmn2ondo",
+      "underlying": "NVDA",
+      "tokenProgram": "Token-2022",
+      "tokenProgramId": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+      "decimals": 9,
+      "supply": "16722102970757",
+      "uiSupply": 16722.102970757,
+      "mintAuthority": "9foMHsSDq7nMg4WPusSz9eY7tyxyukqborA8GyU5cUxD",
+      "freezeAuthority": "51QVCuHfL1FeNjd8BDeffCKhCcAYoULnVB3yjNhShiuK",
+      "isInitialized": true,
+      "accountSize": 649,
+      "extensions": [
+        "ScaledUiAmountConfig",
+        "MetadataPointer",
+        "PausableConfig",
+        "DefaultAccountState",
+        "ConfidentialTransferMint",
+        "TransferHook",
+        "TokenMetadata"
+      ],
+      "custodyCritical": [
+        "PausableConfig",
+        "DefaultAccountState",
+        "ConfidentialTransferMint",
+        "TransferHook"
+      ],
+      "details": {
+        "transferHook": {
+          "programId": "11111111111111111111111111111111",
+          "programIdIsNull": true,
+          "authority": "9foMHsSDq7nMg4WPusSz9eY7tyxyukqborA8GyU5cUxD",
+          "canBeSetLater": true
+        },
+        "defaultAccountState": {
+          "state": "Initialized",
+          "blocksFreshAtas": false
+        },
+        "metadataPointer": {
+          "authority": "9foMHsSDq7nMg4WPusSz9eY7tyxyukqborA8GyU5cUxD",
+          "metadataAddress": "gEGtLTPNQ7jcg25zTetkbmF7teoDLcrfTnQfmn2ondo"
+        },
+        "metadata": {
+          "name": "NVIDIA (Ondo Tokenized)",
+          "symbol": "NVDAon",
+          "uri": "https://app.ondo.finance/api/v2/assets/NVDAon/sol_metadata.json",
+          "updateAuthority": "9foMHsSDq7nMg4WPusSz9eY7tyxyukqborA8GyU5cUxD",
+          "additional": {}
+        },
+        "raw_ScaledUiAmountConfig": "80cdf95ded4d2370944357aeac958204e3cb9b6e92622c9e8051ba081f5e7f6683bb97910607f03ff5f3a16a0000000083bb97910607f03f",
+        "raw_MetadataPointer": "80cdf95ded4d2370944357aeac958204e3cb9b6e92622c9e8051ba081f5e7f660a0ca90e981055b767097b57b9f1020614d07410b0a1f32f4bc9e7898e84780a",
+        "raw_PausableConfig": "80cdf95ded4d2370944357aeac958204e3cb9b6e92622c9e8051ba081f5e7f6600",
+        "raw_DefaultAccountState": "01",
+        "raw_ConfidentialTransferMint": "80cdf95ded4d2370944357aeac958204e3cb9b6e92622c9e8051ba081f5e7f66000000000000000000000000000000000000000000000000000000000000000000",
+        "raw_TransferHook": "80cdf95ded4d2370944357aeac958204e3cb9b6e92622c9e8051ba081f5e7f660000000000000000000000000000000000000000000000000000000000000000",
+        "raw_TokenMetadata": "80cdf95ded4d2370944357aeac958204e3cb9b6e92622c9e8051ba081f5e7f660a0ca90e981055b767097b57b9f1020614d07410b0a1f32f4bc9e7898e84780a170000004e564944494120284f6e646f20546f6b656e697a656429060000004e5644416f6e3f00000068747470733a2f2f6170702e6f6e646f2e66696e616e63652f6170692f76322f6173736574732f4e5644416f6e2f736f6c5f6d657461646174612e6a736f6e00000000"
+      }
+    },
+    {
+      "issuer": "xStocks (Backed Finance)",
+      "symbol": "AAPLx",
+      "mint": "XsbEhLAtcf6HdfpFZ5xEMdqW8nfAvcsP5bdudRLJzJp",
+      "underlying": "AAPL",
+      "tokenProgram": "Token-2022",
+      "tokenProgramId": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+      "decimals": 8,
+      "supply": "15376368392113",
+      "uiSupply": 153763.68392113,
+      "mintAuthority": "7pt9tkctJPK7PPNQJ77GKg8ZffSF6QxoMiCFYHxrtaCj",
+      "freezeAuthority": "JDq14BWvqCRFNu1krb12bcRpbGtJZ1FLEakMw6FdxJNs",
+      "isInitialized": true,
+      "accountSize": 678,
+      "extensions": [
+        "MetadataPointer",
+        "PermanentDelegate",
+        "DefaultAccountState",
+        "ScaledUiAmountConfig",
+        "PausableConfig",
+        "ConfidentialTransferMint",
+        "TransferHook",
+        "TokenMetadata"
+      ],
+      "custodyCritical": [
+        "PermanentDelegate",
+        "DefaultAccountState",
+        "PausableConfig",
+        "ConfidentialTransferMint",
+        "TransferHook"
+      ],
+      "details": {
+        "transferHook": {
+          "programId": "11111111111111111111111111111111",
+          "programIdIsNull": true,
+          "authority": "5aMNNLQJwAEeoemTEMkv5NVjqKwvvefRYCQ5Z67HFvEq",
+          "canBeSetLater": true
+        },
+        "permanentDelegate": {
+          "delegate": "5aMNNLQJwAEeoemTEMkv5NVjqKwvvefRYCQ5Z67HFvEq"
+        },
+        "defaultAccountState": {
+          "state": "Initialized",
+          "blocksFreshAtas": false
+        },
+        "metadataPointer": {
+          "authority": "5aMNNLQJwAEeoemTEMkv5NVjqKwvvefRYCQ5Z67HFvEq",
+          "metadataAddress": "XsbEhLAtcf6HdfpFZ5xEMdqW8nfAvcsP5bdudRLJzJp"
+        },
+        "metadata": {
+          "name": "Apple xStock",
+          "symbol": "AAPLx",
+          "uri": "https://xstocks-metadata.backed.fi/tokens/Solana/AAPLx/metadata.json",
+          "updateAuthority": "5aMNNLQJwAEeoemTEMkv5NVjqKwvvefRYCQ5Z67HFvEq",
+          "additional": {}
+        },
+        "raw_MetadataPointer": "43f9f1ee2e37b807ea45cb74e6009722bec009296026e4e4558b435e24a5e9c607e8a07b56ce9266b992aa5fd6445c3c7798b2ebb7333c1e7ede062c6b8607e5",
+        "raw_PermanentDelegate": "43f9f1ee2e37b807ea45cb74e6009722bec009296026e4e4558b435e24a5e9c6",
+        "raw_DefaultAccountState": "01",
+        "raw_ScaledUiAmountConfig": "066f592251cc47747825a59ad1422ea43573f528da5dee2af7812b314f9945e35075c79fe90af03f8878766a00000000052edfce630df03f",
+        "raw_PausableConfig": "ffdfec1bcd2cd38393c84daa08c91cc0d38d677ff8d0ab7b5d033f00f732cc3000",
+        "raw_ConfidentialTransferMint": "43f9f1ee2e37b807ea45cb74e6009722bec009296026e4e4558b435e24a5e9c6000000000000000000000000000000000000000000000000000000000000000000",
+        "raw_TransferHook": "43f9f1ee2e37b807ea45cb74e6009722bec009296026e4e4558b435e24a5e9c60000000000000000000000000000000000000000000000000000000000000000",
+        "raw_TokenMetadata": "43f9f1ee2e37b807ea45cb74e6009722bec009296026e4e4558b435e24a5e9c607e8a07b56ce9266b992aa5fd6445c3c7798b2ebb7333c1e7ede062c6b8607e50c0000004170706c65207853746f636b050000004141504c784400000068747470733a2f2f7873746f636b732d6d657461646174612e6261636b65642e66692f746f6b656e732f536f6c616e612f4141504c782f6d657461646174612e6a736f6e00000000"
+      }
+    },
+    {
+      "issuer": "Ondo Global Markets",
+      "symbol": "AAPLon",
+      "mint": "123mYEnRLM2LLYsJW3K6oyYh8uP1fngj732iG638ondo",
+      "underlying": "AAPL",
+      "tokenProgram": "Token-2022",
+      "tokenProgramId": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+      "decimals": 9,
+      "supply": "365000927552",
+      "uiSupply": 365.000927552,
+      "mintAuthority": "9foMHsSDq7nMg4WPusSz9eY7tyxyukqborA8GyU5cUxD",
+      "freezeAuthority": "51QVCuHfL1FeNjd8BDeffCKhCcAYoULnVB3yjNhShiuK",
+      "isInitialized": true,
+      "accountSize": 648,
+      "extensions": [
+        "ScaledUiAmountConfig",
+        "MetadataPointer",
+        "PausableConfig",
+        "DefaultAccountState",
+        "ConfidentialTransferMint",
+        "TransferHook",
+        "TokenMetadata"
+      ],
+      "custodyCritical": [
+        "PausableConfig",
+        "DefaultAccountState",
+        "ConfidentialTransferMint",
+        "TransferHook"
+      ],
+      "details": {
+        "transferHook": {
+          "programId": "11111111111111111111111111111111",
+          "programIdIsNull": true,
+          "authority": "9foMHsSDq7nMg4WPusSz9eY7tyxyukqborA8GyU5cUxD",
+          "canBeSetLater": true
+        },
+        "defaultAccountState": {
+          "state": "Initialized",
+          "blocksFreshAtas": false
+        },
+        "metadataPointer": {
+          "authority": "9foMHsSDq7nMg4WPusSz9eY7tyxyukqborA8GyU5cUxD",
+          "metadataAddress": "123mYEnRLM2LLYsJW3K6oyYh8uP1fngj732iG638ondo"
+        },
+        "metadata": {
+          "name": "Apple (Ondo Tokenized)",
+          "symbol": "AAPLon",
+          "uri": "https://app.ondo.finance/api/v2/assets/AAPLon/sol_metadata.json",
+          "updateAuthority": "9foMHsSDq7nMg4WPusSz9eY7tyxyukqborA8GyU5cUxD",
+          "additional": {}
+        },
+        "raw_ScaledUiAmountConfig": "80cdf95ded4d2370944357aeac958204e3cb9b6e92622c9e8051ba081f5e7f66a3d9e411d40df03fecf6976a00000000a3d9e411d40df03f",
+        "raw_MetadataPointer": "80cdf95ded4d2370944357aeac958204e3cb9b6e92622c9e8051ba081f5e7f660044b5e2bcd06652719dbc2a90c3b21f59a6074c618fbff585e764bf8711e94a",
+        "raw_PausableConfig": "80cdf95ded4d2370944357aeac958204e3cb9b6e92622c9e8051ba081f5e7f6600",
+        "raw_DefaultAccountState": "01",
+        "raw_ConfidentialTransferMint": "80cdf95ded4d2370944357aeac958204e3cb9b6e92622c9e8051ba081f5e7f66000000000000000000000000000000000000000000000000000000000000000000",
+        "raw_TransferHook": "80cdf95ded4d2370944357aeac958204e3cb9b6e92622c9e8051ba081f5e7f660000000000000000000000000000000000000000000000000000000000000000",
+        "raw_TokenMetadata": "80cdf95ded4d2370944357aeac958204e3cb9b6e92622c9e8051ba081f5e7f660044b5e2bcd06652719dbc2a90c3b21f59a6074c618fbff585e764bf8711e94a160000004170706c6520284f6e646f20546f6b656e697a656429060000004141504c6f6e3f00000068747470733a2f2f6170702e6f6e646f2e66696e616e63652f6170692f76322f6173736574732f4141504c6f6e2f736f6c5f6d657461646174612e6a736f6e00000000"
+      }
+    },
+    {
+      "issuer": "Ondo Global Markets",
+      "symbol": "TSLAon",
+      "mint": "KeGv7bsfR4MheC1CkmnAVceoApjrkvBhHYjWb67ondo",
+      "underlying": "TSLA",
+      "tokenProgram": "Token-2022",
+      "tokenProgramId": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+      "decimals": 9,
+      "supply": "398948275744",
+      "uiSupply": 398.948275744,
+      "mintAuthority": "9foMHsSDq7nMg4WPusSz9eY7tyxyukqborA8GyU5cUxD",
+      "freezeAuthority": "51QVCuHfL1FeNjd8BDeffCKhCcAYoULnVB3yjNhShiuK",
+      "isInitialized": true,
+      "accountSize": 648,
+      "extensions": [
+        "ScaledUiAmountConfig",
+        "MetadataPointer",
+        "PausableConfig",
+        "DefaultAccountState",
+        "ConfidentialTransferMint",
+        "TransferHook",
+        "TokenMetadata"
+      ],
+      "custodyCritical": [
+        "PausableConfig",
+        "DefaultAccountState",
+        "ConfidentialTransferMint",
+        "TransferHook"
+      ],
+      "details": {
+        "transferHook": {
+          "programId": "11111111111111111111111111111111",
+          "programIdIsNull": true,
+          "authority": "9foMHsSDq7nMg4WPusSz9eY7tyxyukqborA8GyU5cUxD",
+          "canBeSetLater": true
+        },
+        "defaultAccountState": {
+          "state": "Initialized",
+          "blocksFreshAtas": false
+        },
+        "metadataPointer": {
+          "authority": "9foMHsSDq7nMg4WPusSz9eY7tyxyukqborA8GyU5cUxD",
+          "metadataAddress": "KeGv7bsfR4MheC1CkmnAVceoApjrkvBhHYjWb67ondo"
+        },
+        "metadata": {
+          "name": "Tesla (Ondo Tokenized)",
+          "symbol": "TSLAon",
+          "uri": "https://app.ondo.finance/api/v2/assets/TSLAon/sol_metadata.json",
+          "updateAuthority": "9foMHsSDq7nMg4WPusSz9eY7tyxyukqborA8GyU5cUxD",
+          "additional": {}
+        },
+        "raw_ScaledUiAmountConfig": "80cdf95ded4d2370944357aeac958204e3cb9b6e92622c9e8051ba081f5e7f66000000000000f03fecf6976a00000000000000000000f03f",
+        "raw_MetadataPointer": "80cdf95ded4d2370944357aeac958204e3cb9b6e92622c9e8051ba081f5e7f6604c699d2c9ca807dd9ab85647584e21949de86fa225f2a62b70c08ebd9997a5a",
+        "raw_PausableConfig": "80cdf95ded4d2370944357aeac958204e3cb9b6e92622c9e8051ba081f5e7f6600",
+        "raw_DefaultAccountState": "01",
+        "raw_ConfidentialTransferMint": "80cdf95ded4d2370944357aeac958204e3cb9b6e92622c9e8051ba081f5e7f66000000000000000000000000000000000000000000000000000000000000000000",
+        "raw_TransferHook": "80cdf95ded4d2370944357aeac958204e3cb9b6e92622c9e8051ba081f5e7f660000000000000000000000000000000000000000000000000000000000000000",
+        "raw_TokenMetadata": "80cdf95ded4d2370944357aeac958204e3cb9b6e92622c9e8051ba081f5e7f6604c699d2c9ca807dd9ab85647584e21949de86fa225f2a62b70c08ebd9997a5a160000005465736c6120284f6e646f20546f6b656e697a6564290600000054534c416f6e3f00000068747470733a2f2f6170702e6f6e646f2e66696e616e63652f6170692f76322f6173736574732f54534c416f6e2f736f6c5f6d657461646174612e6a736f6e00000000"
+      }
+    },
+    {
+      "issuer": "Backpack Securities",
+      "symbol": "SPCX",
+      "mint": "SPCXxcqXj6e5dJDVNovHN8744zkbhM2bYudU45BimGb",
+      "underlying": "SPCX",
+      "tokenProgram": "Token-2022",
+      "tokenProgramId": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+      "decimals": 6,
+      "supply": "43338710925",
+      "uiSupply": 43338.710925,
+      "mintAuthority": "HK6jF79duLLLfCMRQFBSgo6CgQ5mF4tFMFU7CmKcXctZ",
+      "freezeAuthority": "2cVYpagTt7ZGc3mmTXBa7fAznUtx5DUu6aCq8uVDaf4a",
+      "isInitialized": true,
+      "accountSize": 687,
+      "extensions": [
+        "MetadataPointer",
+        "PermanentDelegate",
+        "DefaultAccountState",
+        "PausableConfig",
+        "ConfidentialTransferMint",
+        "TransferHook",
+        "ScaledUiAmountConfig",
+        "TokenMetadata"
+      ],
+      "custodyCritical": [
+        "PermanentDelegate",
+        "DefaultAccountState",
+        "PausableConfig",
+        "ConfidentialTransferMint",
+        "TransferHook"
+      ],
+      "details": {
+        "transferHook": {
+          "programId": "11111111111111111111111111111111",
+          "programIdIsNull": true,
+          "authority": "2cVYpagTt7ZGc3mmTXBa7fAznUtx5DUu6aCq8uVDaf4a",
+          "canBeSetLater": true
+        },
+        "permanentDelegate": {
+          "delegate": "2cVYpagTt7ZGc3mmTXBa7fAznUtx5DUu6aCq8uVDaf4a"
+        },
+        "defaultAccountState": {
+          "state": "Initialized",
+          "blocksFreshAtas": false
+        },
+        "metadataPointer": {
+          "authority": "2cVYpagTt7ZGc3mmTXBa7fAznUtx5DUu6aCq8uVDaf4a",
+          "metadataAddress": "SPCXxcqXj6e5dJDVNovHN8744zkbhM2bYudU45BimGb"
+        },
+        "metadata": {
+          "name": "SpaceX - Backpack Securities",
+          "symbol": "SPCX",
+          "uri": "https://trek-labs.github.io/heart-metadata/stocks/spcx.us.json",
+          "updateAuthority": "2cVYpagTt7ZGc3mmTXBa7fAznUtx5DUu6aCq8uVDaf4a",
+          "additional": {}
+        },
+        "raw_MetadataPointer": "17f34b976beaede1328778fe0fd0a5ce7d8cddfd565d13362ea2f53b7853160f06809edcbf7425ab33585dc91cbeece17a16fe14b0aa3db5e2e1795421ef8580",
+        "raw_PermanentDelegate": "17f34b976beaede1328778fe0fd0a5ce7d8cddfd565d13362ea2f53b7853160f",
+        "raw_DefaultAccountState": "01",
+        "raw_PausableConfig": "17f34b976beaede1328778fe0fd0a5ce7d8cddfd565d13362ea2f53b7853160f00",
+        "raw_ConfidentialTransferMint": "17f34b976beaede1328778fe0fd0a5ce7d8cddfd565d13362ea2f53b7853160f000000000000000000000000000000000000000000000000000000000000000000",
+        "raw_TransferHook": "17f34b976beaede1328778fe0fd0a5ce7d8cddfd565d13362ea2f53b7853160f0000000000000000000000000000000000000000000000000000000000000000",
+        "raw_ScaledUiAmountConfig": "f25dec2459f502dfe24978ebf5a35854321d1ec1b2f45acf0e5116cb186cb93a000000000000f03f0000000000000000000000000000f03f",
+        "raw_TokenMetadata": "17f34b976beaede1328778fe0fd0a5ce7d8cddfd565d13362ea2f53b7853160f06809edcbf7425ab33585dc91cbeece17a16fe14b0aa3db5e2e1795421ef85801c000000537061636558202d204261636b7061636b205365637572697469657304000000535043583e00000068747470733a2f2f7472656b2d6c6162732e6769746875622e696f2f68656172742d6d657461646174612f73746f636b732f737063782e75732e6a736f6e00000000"
+      }
+    },
+    {
+      "issuer": "xStocks (Backed Finance)",
+      "symbol": "SPCXx",
+      "mint": "Xs3oZwbHvqis4NYcf4YKWmEia2eC84wSiVrcYcTqpH8",
+      "underlying": "SPCX",
+      "tokenProgram": "Token-2022",
+      "tokenProgramId": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+      "decimals": 8,
+      "supply": "55999373679611",
+      "uiSupply": 559993.73679611,
+      "mintAuthority": "7pt9tkctJPK7PPNQJ77GKg8ZffSF6QxoMiCFYHxrtaCj",
+      "freezeAuthority": "JDq14BWvqCRFNu1krb12bcRpbGtJZ1FLEakMw6FdxJNs",
+      "isInitialized": true,
+      "accountSize": 679,
+      "extensions": [
+        "MetadataPointer",
+        "PermanentDelegate",
+        "DefaultAccountState",
+        "ScaledUiAmountConfig",
+        "PausableConfig",
+        "ConfidentialTransferMint",
+        "TransferHook",
+        "TokenMetadata"
+      ],
+      "custodyCritical": [
+        "PermanentDelegate",
+        "DefaultAccountState",
+        "PausableConfig",
+        "ConfidentialTransferMint",
+        "TransferHook"
+      ],
+      "details": {
+        "transferHook": {
+          "programId": "11111111111111111111111111111111",
+          "programIdIsNull": true,
+          "authority": "5aMNNLQJwAEeoemTEMkv5NVjqKwvvefRYCQ5Z67HFvEq",
+          "canBeSetLater": true
+        },
+        "permanentDelegate": {
+          "delegate": "5aMNNLQJwAEeoemTEMkv5NVjqKwvvefRYCQ5Z67HFvEq"
+        },
+        "defaultAccountState": {
+          "state": "Initialized",
+          "blocksFreshAtas": false
+        },
+        "metadataPointer": {
+          "authority": "5aMNNLQJwAEeoemTEMkv5NVjqKwvvefRYCQ5Z67HFvEq",
+          "metadataAddress": "Xs3oZwbHvqis4NYcf4YKWmEia2eC84wSiVrcYcTqpH8"
+        },
+        "metadata": {
+          "name": "SpaceX xStock",
+          "symbol": "SPCXx",
+          "uri": "https://xstocks-metadata.backed.fi/tokens/Solana/SPCXx/metadata.json",
+          "updateAuthority": "5aMNNLQJwAEeoemTEMkv5NVjqKwvvefRYCQ5Z67HFvEq",
+          "additional": {}
+        },
+        "raw_MetadataPointer": "43f9f1ee2e37b807ea45cb74e6009722bec009296026e4e4558b435e24a5e9c607e8039bb4ad4cf79c383e43c0c51dd1853740512b79d0f94212923451d00383",
+        "raw_PermanentDelegate": "43f9f1ee2e37b807ea45cb74e6009722bec009296026e4e4558b435e24a5e9c6",
+        "raw_DefaultAccountState": "01",
+        "raw_ScaledUiAmountConfig": "066f592251cc47747825a59ad1422ea43573f528da5dee2af7812b314f9945e3000000000000f03f0000000000000000000000000000f03f",
+        "raw_PausableConfig": "ffdfec1bcd2cd38393c84daa08c91cc0d38d677ff8d0ab7b5d033f00f732cc3000",
+        "raw_ConfidentialTransferMint": "43f9f1ee2e37b807ea45cb74e6009722bec009296026e4e4558b435e24a5e9c6000000000000000000000000000000000000000000000000000000000000000000",
+        "raw_TransferHook": "43f9f1ee2e37b807ea45cb74e6009722bec009296026e4e4558b435e24a5e9c60000000000000000000000000000000000000000000000000000000000000000",
+        "raw_TokenMetadata": "43f9f1ee2e37b807ea45cb74e6009722bec009296026e4e4558b435e24a5e9c607e8039bb4ad4cf79c383e43c0c51dd1853740512b79d0f94212923451d003830d000000537061636558207853746f636b0500000053504358784400000068747470733a2f2f7873746f636b732d6d657461646174612e6261636b65642e66692f746f6b656e732f536f6c616e612f53504358782f6d657461646174612e6a736f6e00000000"
+      }
+    },
+    {
+      "issuer": "Ondo Global Markets",
+      "symbol": "SPCXon",
+      "mint": "wzAyQTorWyoVXuJKj2x8EqKEGJpS13z6EWE9z5Aondo",
+      "underlying": "SPCX",
+      "tokenProgram": "Token-2022",
+      "tokenProgramId": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+      "decimals": 9,
+      "supply": "1309339248892",
+      "uiSupply": 1309.339248892,
+      "mintAuthority": "9foMHsSDq7nMg4WPusSz9eY7tyxyukqborA8GyU5cUxD",
+      "freezeAuthority": "51QVCuHfL1FeNjd8BDeffCKhCcAYoULnVB3yjNhShiuK",
+      "isInitialized": true,
+      "accountSize": 649,
+      "extensions": [
+        "ScaledUiAmountConfig",
+        "MetadataPointer",
+        "PausableConfig",
+        "DefaultAccountState",
+        "ConfidentialTransferMint",
+        "TransferHook",
+        "TokenMetadata"
+      ],
+      "custodyCritical": [
+        "PausableConfig",
+        "DefaultAccountState",
+        "ConfidentialTransferMint",
+        "TransferHook"
+      ],
+      "details": {
+        "transferHook": {
+          "programId": "11111111111111111111111111111111",
+          "programIdIsNull": true,
+          "authority": "9foMHsSDq7nMg4WPusSz9eY7tyxyukqborA8GyU5cUxD",
+          "canBeSetLater": true
+        },
+        "defaultAccountState": {
+          "state": "Initialized",
+          "blocksFreshAtas": false
+        },
+        "metadataPointer": {
+          "authority": "9foMHsSDq7nMg4WPusSz9eY7tyxyukqborA8GyU5cUxD",
+          "metadataAddress": "wzAyQTorWyoVXuJKj2x8EqKEGJpS13z6EWE9z5Aondo"
+        },
+        "metadata": {
+          "name": "SpaceX (Ondo Tokenized)",
+          "symbol": "SPCXon",
+          "uri": "https://app.ondo.finance/api/v2/assets/SPCXon/sol_metadata.json",
+          "updateAuthority": "9foMHsSDq7nMg4WPusSz9eY7tyxyukqborA8GyU5cUxD",
+          "additional": {}
+        },
+        "raw_ScaledUiAmountConfig": "80cdf95ded4d2370944357aeac958204e3cb9b6e92622c9e8051ba081f5e7f66000000000000f03fecf6976a00000000000000000000f03f",
+        "raw_MetadataPointer": "80cdf95ded4d2370944357aeac958204e3cb9b6e92622c9e8051ba081f5e7f660e160219ede4ee696012bfcce93aee385c039e7f3c78b877ec78380470067a2a",
+        "raw_PausableConfig": "80cdf95ded4d2370944357aeac958204e3cb9b6e92622c9e8051ba081f5e7f6600",
+        "raw_DefaultAccountState": "01",
+        "raw_ConfidentialTransferMint": "80cdf95ded4d2370944357aeac958204e3cb9b6e92622c9e8051ba081f5e7f66000000000000000000000000000000000000000000000000000000000000000000",
+        "raw_TransferHook": "80cdf95ded4d2370944357aeac958204e3cb9b6e92622c9e8051ba081f5e7f660000000000000000000000000000000000000000000000000000000000000000",
+        "raw_TokenMetadata": "80cdf95ded4d2370944357aeac958204e3cb9b6e92622c9e8051ba081f5e7f660e160219ede4ee696012bfcce93aee385c039e7f3c78b877ec78380470067a2a1700000053706163655820284f6e646f20546f6b656e697a65642906000000535043586f6e3f00000068747470733a2f2f6170702e6f6e646f2e66696e616e63652f6170692f76322f6173736574732f535043586f6e2f736f6c5f6d657461646174612e6a736f6e00000000"
+      }
+    }
+  ]
+}

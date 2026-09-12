@@ -1,0 +1,7 @@
+Routable depth into USDC pairs - 2026-09-12T16:19:22.060Z
+US equity market is CLOSED at this timestamp; these are off-hours books.
+
+================================================================================
+SPCX
+  wrapper     depth@100bps depth@300bpsdepth@1000bps
+  SPCX          THROTTLED        $518k    THROTTLED

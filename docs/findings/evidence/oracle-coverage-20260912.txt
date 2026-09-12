@@ -1,0 +1,76 @@
+Pyth equity coverage probe - 2026-09-12T16:11:27.776Z
+
+Hermes price route, BTC control feed: HTTP 401 - CREDENTIALS REQUIRED; this is an auth gate, not market hours
+
+========================================================================================
+NVDA   2 matching equity feed(s)
+  Equity.US.NVDA/USD
+    id            b1073854ed24cbc755dc527418f52b7d271f6cc967bbf8d8129112b18860a593
+    description   NVIDIA CORP / US DOLLAR
+    schedule      America/New_York;0930-1600,0930-1600,0930-1600,0930-1600,0930-1600,C,C;0907/C,1126/C,1127/0930-1300,1224/0930-1300,1225/C,0101/C,0118/C,0215/C,0326/C,0531/C,0618/C,0705/C
+    market open   false   next_open 2026-09-14 13:30:00Z   next_close 2026-09-14 20:00:00Z
+    on-chain      2w1Tg1XTZbUib7srfRoStJ4v5JXVsK7roQEGMsMaGZFC (shard 0)
+    price         211.0150  conf ±0.1105 (5.2 bps)
+    publish_time  2026-08-26 15:54:46Z  (prev 2026-08-26 15:54:46Z)
+    age           408.28h  17.0 days
+    => ABANDONED: nobody is pushing this feed on-chain
+  Equity.Index.NVDA/USD
+    id            a470c4ac46f44b547b2cba52338f311fb642b79375ce5f0cfd5cb5b99227b852
+    description   PYTH PRICE IN USD FOR NVDA 24/7
+    schedule      America/New_York;0930-1600,0930-1600,0930-1600,0930-1600,0930-1600,C,C;0101/C,0119/C,0216/C,0403/C,0525/C,0619/C,0703/C,0907/C,1126/C,1127/0930-1300,1224/0930-1300,1225/C
+    market open   false   next_open 2026-09-14 13:30:00Z   next_close 2026-09-14 20:00:00Z
+    on-chain      NO sponsored price account (shards 0-3)
+    => unusable on-chain without running our own price pusher
+========================================================================================
+AAPL   2 matching equity feed(s)
+  Equity.US.AAPL/USD
+    id            49f6b65cb1de6b10eaf75e7c03ca029c306d0357e91b5311b175084a5ad55688
+    description   APPLE INC / US DOLLAR
+    schedule      America/New_York;0930-1600,0930-1600,0930-1600,0930-1600,0930-1600,C,C;0907/C,1126/C,1127/0930-1300,1224/0930-1300,1225/C,0101/C,0118/C,0215/C,0326/C,0531/C,0618/C,0705/C
+    market open   false   next_open 2026-09-14 13:30:00Z   next_close 2026-09-14 20:00:00Z
+    on-chain      DJ2FyTgUAkEtXW3U5P9PF19meFTRtW4ZWKKFgACfVbUy (shard 0)
+    price         305.9200  conf ±0.0200 (0.7 bps)
+    publish_time  2026-08-14 20:00:19Z  (prev 2026-08-14 20:00:19Z)
+    age           692.19h  28.8 days
+    => ABANDONED: nobody is pushing this feed on-chain
+  Equity.Index.AAPL/USD
+    id            aaba35e6f33fb973bb2201d48a79ae24795affa6ba8bd50a93dcaf7da0030f36
+    description   PYTH PRICE IN USD FOR AAPL 24/7
+    schedule      America/New_York;0930-1600,0930-1600,0930-1600,0930-1600,0930-1600,C,C;0101/C,0119/C,0216/C,0403/C,0525/C,0619/C,0703/C,0907/C,1126/C,1127/0930-1300,1224/0930-1300,1225/C
+    market open   false   next_open 2026-09-14 13:30:00Z   next_close 2026-09-14 20:00:00Z
+    on-chain      NO sponsored price account (shards 0-3)
+    => unusable on-chain without running our own price pusher
+========================================================================================
+TSLA   2 matching equity feed(s)
+  Equity.US.TSLA/USD
+    id            16dad506d7db8da01c87581c87ca897a012a153557d4d578c3b9c9e1bc0632f1
+    description   TESLA INC / US DOLLAR
+    schedule      America/New_York;0930-1600,0930-1600,0930-1600,0930-1600,0930-1600,C,C;0907/C,1126/C,1127/0930-1300,1224/0930-1300,1225/C,0101/C,0118/C,0215/C,0326/C,0531/C,0618/C,0705/C
+    market open   false   next_open 2026-09-14 13:30:00Z   next_close 2026-09-14 20:00:00Z
+    on-chain      E8WFH8brgP58arcuW2wwsPHiomYrSvrgWTsRLZLAEZUQ (shard 0)
+    price         364.1100  conf ±0.0700 (1.9 bps)
+    publish_time  2026-09-11 06:04:41Z  (prev 2026-09-11 06:04:40Z)
+    age           34.11h  1.4 days
+    => ABANDONED: nobody is pushing this feed on-chain
+  Equity.Index.TSLA/USD
+    id            e6da44bff5b8b06897a3739dd331b440d6662595bb862e37046892c568ae3fc0
+    description   PYTH PRICE IN USD FOR TSLA 24/7
+    schedule      America/New_York;0930-1600,0930-1600,0930-1600,0930-1600,0930-1600,C,C;0101/C,0119/C,0216/C,0403/C,0525/C,0619/C,0703/C,0907/C,1126/C,1127/0930-1300,1224/0930-1300,1225/C
+    market open   false   next_open 2026-09-14 13:30:00Z   next_close 2026-09-14 20:00:00Z
+    on-chain      NO sponsored price account (shards 0-3)
+    => unusable on-chain without running our own price pusher
+========================================================================================
+SPCX   2 matching equity feed(s)
+  Equity.US.SPCX/USD
+    id            8a593d6edde7a3095213c88116d8840d01e93c2ddeb800bc891772eb8b93bb94
+    description   SPACE EXPLORATION TECHNOLOGY CORP / US DOLLAR
+    schedule      America/New_York;0930-1600,0930-1600,0930-1600,0930-1600,0930-1600,C,C;0907/C,1126/C,1127/0930-1300,1224/0930-1300,1225/C,0101/C,0118/C,0215/C,0326/C,0531/C,0618/C,0705/C
+    market open   false   next_open 2026-09-14 13:30:00Z   next_close 2026-09-14 20:00:00Z
+    on-chain      NO sponsored price account (shards 0-3)
+    => unusable on-chain without running our own price pusher
+  Equity.Index.SPCX/USD
+    id            2dbfb1791e75725227a90dbd23c6bdd83b80cc9d13011973c948b6aeacdf17b9
+    description   PYTH PRICE IN USD FOR SPCX 24/7
+    schedule      America/New_York;0930-1600,0930-1600,0930-1600,0930-1600,0930-1600,C,C;0101/C,0119/C,0216/C,0403/C,0525/C,0619/C,0703/C,0907/C,1126/C,1127/0930-1300,1224/0930-1300,1225/C
+    market open   false   next_open 2026-09-14 13:30:00Z   next_close 2026-09-14 20:00:00Z
+    on-chain      NO sponsored price account (shards 0-3)

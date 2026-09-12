@@ -1,0 +1,24 @@
+{
+  "_comment": "Phase 0 candidate wrapper set. Mints resolved 2026-09-12 via Jupiter token API + issuer docs, then verified on-chain by inspect-mints.js. Impostor mints with colliding symbols exist (see docs/findings/token-extensions.md §6) - only these addresses are authoritative.",
+  "underlyings": {
+    "NVDA": [
+      { "issuer": "xStocks (Backed Finance)", "symbol": "NVDAx",  "mint": "Xsc9qvGR1efVDFGLrVsmkzv3qi45LTBjeUKSPmx9qEh" },
+      { "issuer": "Ondo Global Markets",      "symbol": "NVDAon", "mint": "gEGtLTPNQ7jcg25zTetkbmF7teoDLcrfTnQfmn2ondo" }
+    ],
+    "AAPL": [
+      { "issuer": "xStocks (Backed Finance)", "symbol": "AAPLx",  "mint": "XsbEhLAtcf6HdfpFZ5xEMdqW8nfAvcsP5bdudRLJzJp" },
+      { "issuer": "Ondo Global Markets",      "symbol": "AAPLon", "mint": "123mYEnRLM2LLYsJW3K6oyYh8uP1fngj732iG638ondo" }
+    ],
+    "TSLA": [
+      { "issuer": "Ondo Global Markets",      "symbol": "TSLAon", "mint": "KeGv7bsfR4MheC1CkmnAVceoApjrkvBhHYjWb67ondo" }
+    ],
+    "SPCX": [
+      { "issuer": "Backpack Securities",      "symbol": "SPCX",   "mint": "SPCXxcqXj6e5dJDVNovHN8744zkbhM2bYudU45BimGb" },
+      { "issuer": "xStocks (Backed Finance)", "symbol": "SPCXx",  "mint": "Xs3oZwbHvqis4NYcf4YKWmEia2eC84wSiVrcYcTqpH8" },
+      { "issuer": "Ondo Global Markets",      "symbol": "SPCXon", "mint": "wzAyQTorWyoVXuJKj2x8EqKEGJpS13z6EWE9z5Aondo" }
+    ]
+  },
+  "reference": {
+    "USDC": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+  }
+}
