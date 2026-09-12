@@ -100,19 +100,39 @@ Measured 2026-09-12, **US equity market closed** (so these are off-hours books, 
 | NVDAx | $278k | $547k | $913k |
 | AAPLx | $95k | $178k | $229k |
 | SPCX (Backpack) | throttled | **$518k** | throttled |
+| SPCXx (xStocks) | $32k | **$248k** | $443k |
+| SPCXon (Ondo) | throttled | throttled | throttled |
 | NVDAon, AAPLon, TSLAon | no route | no route | no route |
 
-The SPCX row is partial: Jupiter's free tier exhausted its quota mid-run and the
-remaining probes returned `THROTTLED`, which the tool reports as such rather than
-as zero depth. The one probe that completed is informative on its own — **$518k
-at 300bps off-hours puts Backpack's SPCX book in the same class as xStocks'
-deepest names**, consistent with the 60/39 liquidity split in §5 and with SPCX
-being a genuine two-sided market.
+Jupiter's free tier exhausted its quota mid-run, so several cells report
+`THROTTLED` — which the tool surfaces as such rather than as zero depth. An
+earlier run reported SPCX as "no route" for exactly this reason; that was wrong
+and is fixed. A complete series needs a paid quote tier.
 
-An earlier run of this tool reported SPCX as "no route" because a rate-limited
-quote and an absent route were collapsed into the same null. That was wrong and
-is fixed; the distinction is now explicit. A complete SPCX depth series needs a
-paid quote API tier.
+**The 300bps row is complete for both real SPCX books, and it is the single most
+useful measurement in Phase 0:**
+
+| | Backpack SPCX | xStocks SPCXx |
+|---|---|---|
+| Headline pool liquidity | $661k (39.4%) | $1.0M (60.6%) |
+| Routable depth @300bps | **$518k** | **$248k** |
+
+Two things follow.
+
+**Headline TVL misranks the books.** Backpack holds ~two-thirds of xStocks'
+headline liquidity but offers **2.1× the routable depth** at 300bps. Concentrated
+liquidity placement dominates notional TVL. Every liquidity comparison in this
+document that rests on the census (§2–§5) is therefore a *share* measure, not a
+depth measure, and §12's metric #1 must be measured by routed depth — as here —
+not by TVL.
+
+**On the one underlying where fragmentation is real, consolidation is worth
+roughly half again as much depth.** A user trading SPCX today reaches at most
+**$518k** at 300bps in the best single book. Consolidated, the two books sum to
+**$766k** — a **+48%** improvement for a user who currently has to pick a side.
+
+That is the thesis working, measured, on real books. It applies to exactly one
+underlying in the set, and that underlying is pre-IPO SpaceX.
 
 Two observations:
 
