@@ -1,7 +1,0 @@
-# Pinned per spec §4.2. Do not float this: Anchor and the Solana BPF toolchain
-# are sensitive to compiler version, and a differential test suite that agrees
-# with the Python reference on one rustc can disagree on another.
-[toolchain]
-channel = "1.91.0"
-components = ["rustfmt", "clippy"]
-profile = "minimal"
