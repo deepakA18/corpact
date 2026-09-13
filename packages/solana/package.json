@@ -1,0 +1,17 @@
+{
+  "name": "@corpact/solana",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p ."
+  },
+  "dependencies": {
+    "@corpact/domain": "workspace:*",
+    "@solana/kit": "8.3.0",
+    "zod": "4.6.4"
+  }
+}
