@@ -1,0 +1,1606 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Corpact API",
+    "version": "0.1.0",
+    "description": "Corporate-action accounting for tokenized equities on Solana. Quantities, raw amounts, slots and USD values are decimal strings; null means unknown, never zero."
+  },
+  "components": {
+    "securitySchemes": {
+      "apiKey": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Corpact API key (cpk_…)"
+      }
+    },
+    "schemas": {}
+  },
+  "paths": {
+    "/v1/health": {
+      "get": {
+        "summary": "Service and database health",
+        "tags": [
+          "service"
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "ok"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "enum": [
+                        true
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/assets": {
+      "get": {
+        "summary": "Supported mints and their verification status",
+        "tags": [
+          "assets"
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "assets"
+                  ],
+                  "properties": {
+                    "assets": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "mint",
+                          "symbol",
+                          "name",
+                          "decimals",
+                          "registrySource",
+                          "verified",
+                          "verificationError",
+                          "verifiedSlot",
+                          "capabilities"
+                        ],
+                        "properties": {
+                          "mint": {
+                            "type": "string"
+                          },
+                          "symbol": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "decimals": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ]
+                          },
+                          "registrySource": {
+                            "type": "string",
+                            "enum": [
+                              "fixtures",
+                              "live"
+                            ]
+                          },
+                          "verified": {
+                            "type": "boolean"
+                          },
+                          "verificationError": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "verifiedSlot": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "pattern": "^-?\\d+(\\.\\d+)?$"
+                          },
+                          "capabilities": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "tracking",
+                              "manualConversion",
+                              "automation"
+                            ],
+                            "properties": {
+                              "tracking": {
+                                "type": "boolean"
+                              },
+                              "manualConversion": {
+                                "type": "boolean"
+                              },
+                              "automation": {
+                                "type": "boolean"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/wallets/sync": {
+      "post": {
+        "summary": "Request an idempotent historical sync for a wallet",
+        "tags": [
+          "wallets"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "owner"
+                ],
+                "properties": {
+                  "owner": {
+                    "type": "string",
+                    "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$",
+                    "description": "Solana wallet address (base58)"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "owner",
+                    "status",
+                    "job"
+                  ],
+                  "properties": {
+                    "owner": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "queued",
+                        "running"
+                      ]
+                    },
+                    "job": {
+                      "type": "string",
+                      "enum": [
+                        "enqueued",
+                        "already_pending"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/wallets/{owner}/status": {
+      "get": {
+        "summary": "Progress and result of the latest sync",
+        "tags": [
+          "wallets"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+            },
+            "in": "path",
+            "name": "owner",
+            "required": true,
+            "description": "Solana wallet address (base58)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "sync"
+                  ],
+                  "properties": {
+                    "sync": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "owner",
+                            "status",
+                            "requestedAt",
+                            "startedAt",
+                            "finishedAt",
+                            "asOfSlot",
+                            "asOfTime",
+                            "transactionsFetched",
+                            "gaps",
+                            "error",
+                            "progress"
+                          ],
+                          "properties": {
+                            "owner": {
+                              "type": "string"
+                            },
+                            "status": {
+                              "type": "string",
+                              "enum": [
+                                "queued",
+                                "running",
+                                "complete",
+                                "partial",
+                                "failed"
+                              ]
+                            },
+                            "requestedAt": {
+                              "type": "string"
+                            },
+                            "startedAt": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "finishedAt": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "asOfSlot": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "pattern": "^-?\\d+(\\.\\d+)?$"
+                            },
+                            "asOfTime": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "transactionsFetched": {
+                              "type": "integer"
+                            },
+                            "gaps": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            },
+                            "error": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "progress": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "properties": {
+                                "phase": {
+                                  "type": "string"
+                                },
+                                "done": {
+                                  "type": "integer"
+                                },
+                                "total": {
+                                  "type": "integer"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/portfolio": {
+      "get": {
+        "summary": "Positions, dividend income, convertible exposure and coverage for a wallet",
+        "tags": [
+          "ledger"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+            },
+            "in": "query",
+            "name": "owner",
+            "required": true,
+            "description": "Solana wallet address (base58)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "owner",
+                    "asOfSlot",
+                    "asOfTime",
+                    "dataStatus",
+                    "valuationStatus",
+                    "coverage",
+                    "totals",
+                    "positions"
+                  ],
+                  "properties": {
+                    "owner": {
+                      "type": "string"
+                    },
+                    "asOfSlot": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "pattern": "^-?\\d+(\\.\\d+)?$"
+                    },
+                    "asOfTime": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "dataStatus": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "owner",
+                            "status",
+                            "requestedAt",
+                            "startedAt",
+                            "finishedAt",
+                            "asOfSlot",
+                            "asOfTime",
+                            "transactionsFetched",
+                            "gaps",
+                            "error",
+                            "progress"
+                          ],
+                          "properties": {
+                            "owner": {
+                              "type": "string"
+                            },
+                            "status": {
+                              "type": "string",
+                              "enum": [
+                                "queued",
+                                "running",
+                                "complete",
+                                "partial",
+                                "failed"
+                              ]
+                            },
+                            "requestedAt": {
+                              "type": "string"
+                            },
+                            "startedAt": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "finishedAt": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "asOfSlot": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "pattern": "^-?\\d+(\\.\\d+)?$"
+                            },
+                            "asOfTime": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "transactionsFetched": {
+                              "type": "integer"
+                            },
+                            "gaps": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            },
+                            "error": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "progress": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "properties": {
+                                "phase": {
+                                  "type": "string"
+                                },
+                                "done": {
+                                  "type": "integer"
+                                },
+                                "total": {
+                                  "type": "integer"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "valuationStatus": {
+                      "type": "string"
+                    },
+                    "coverage": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "trackingStart",
+                        "complete",
+                        "partialPositions",
+                        "unsupportedPositions"
+                      ],
+                      "properties": {
+                        "trackingStart": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "complete": {
+                          "type": "boolean"
+                        },
+                        "partialPositions": {
+                          "type": "integer"
+                        },
+                        "unsupportedPositions": {
+                          "type": "integer"
+                        }
+                      }
+                    },
+                    "totals": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "dividendIncomeUsd",
+                        "unvaluedDividendEvents",
+                        "unclassifiedAdjustments",
+                        "availableToConvert",
+                        "usdcReceived"
+                      ],
+                      "properties": {
+                        "dividendIncomeUsd": {
+                          "type": "string",
+                          "pattern": "^-?\\d+(\\.\\d+)?$"
+                        },
+                        "unvaluedDividendEvents": {
+                          "type": "integer"
+                        },
+                        "unclassifiedAdjustments": {
+                          "type": "integer"
+                        },
+                        "availableToConvert": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "usd",
+                            "reason",
+                            "positionsWithAvailable"
+                          ],
+                          "properties": {
+                            "usd": {
+                              "type": "null"
+                            },
+                            "reason": {
+                              "type": "string"
+                            },
+                            "positionsWithAvailable": {
+                              "type": "integer"
+                            }
+                          }
+                        },
+                        "usdcReceived": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "usd",
+                            "reason"
+                          ],
+                          "properties": {
+                            "usd": {
+                              "type": "string",
+                              "pattern": "^-?\\d+(\\.\\d+)?$"
+                            },
+                            "reason": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "positions": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "mint",
+                          "symbol",
+                          "name",
+                          "status",
+                          "decimals",
+                          "rawBalance",
+                          "quantity",
+                          "protectedQuantity",
+                          "availableQuantity",
+                          "maximumConvertibleRaw",
+                          "dividendIncomeUsd",
+                          "dividendEvents",
+                          "unvaluedDividendEvents",
+                          "unclassifiedAdjustments",
+                          "reconciled",
+                          "replayComplete",
+                          "conversionDisabledReasons",
+                          "coverage",
+                          "computedAt"
+                        ],
+                        "properties": {
+                          "mint": {
+                            "type": "string"
+                          },
+                          "symbol": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "status": {
+                            "type": "string",
+                            "enum": [
+                              "complete",
+                              "partial",
+                              "unsupported"
+                            ]
+                          },
+                          "decimals": {
+                            "type": "integer"
+                          },
+                          "rawBalance": {
+                            "type": "string",
+                            "pattern": "^-?\\d+(\\.\\d+)?$"
+                          },
+                          "quantity": {
+                            "type": "string",
+                            "pattern": "^-?\\d+(\\.\\d+)?$"
+                          },
+                          "protectedQuantity": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "pattern": "^-?\\d+(\\.\\d+)?$",
+                            "description": "Protected stock-quantity floor; null when replay did not complete"
+                          },
+                          "availableQuantity": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "pattern": "^-?\\d+(\\.\\d+)?$",
+                            "description": "Dividend-attributed exposure convertible now; null when replay did not complete"
+                          },
+                          "maximumConvertibleRaw": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "pattern": "^-?\\d+(\\.\\d+)?$"
+                          },
+                          "dividendIncomeUsd": {
+                            "type": "string",
+                            "pattern": "^-?\\d+(\\.\\d+)?$",
+                            "description": "Sum of valued dividend events only; unvalued events are counted separately"
+                          },
+                          "dividendEvents": {
+                            "type": "integer"
+                          },
+                          "unvaluedDividendEvents": {
+                            "type": "integer"
+                          },
+                          "unclassifiedAdjustments": {
+                            "type": "integer"
+                          },
+                          "reconciled": {
+                            "type": "boolean"
+                          },
+                          "replayComplete": {
+                            "type": "boolean"
+                          },
+                          "conversionDisabledReasons": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "coverage": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "start",
+                              "end",
+                              "startSlot",
+                              "endSlot",
+                              "gaps"
+                            ],
+                            "properties": {
+                              "start": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "end": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "startSlot": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "pattern": "^-?\\d+(\\.\\d+)?$"
+                              },
+                              "endSlot": {
+                                "type": "string",
+                                "pattern": "^-?\\d+(\\.\\d+)?$"
+                              },
+                              "gaps": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          },
+                          "computedAt": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/income": {
+      "get": {
+        "summary": "Dividend, split and unclassified entries, newest first",
+        "tags": [
+          "ledger"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+            },
+            "in": "query",
+            "name": "owner",
+            "required": true,
+            "description": "Solana wallet address (base58)"
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200,
+              "default": 50
+            },
+            "in": "query",
+            "name": "limit",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            },
+            "in": "query",
+            "name": "offset",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "owner",
+                    "entries",
+                    "nextOffset"
+                  ],
+                  "properties": {
+                    "owner": {
+                      "type": "string"
+                    },
+                    "entries": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "id",
+                          "mint",
+                          "symbol",
+                          "kind",
+                          "effectiveAt",
+                          "quantity",
+                          "quantityDisplay",
+                          "splitFactor",
+                          "usd",
+                          "valuation",
+                          "warnings",
+                          "reasons",
+                          "headline"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "mint": {
+                            "type": "string"
+                          },
+                          "symbol": {
+                            "type": "string"
+                          },
+                          "kind": {
+                            "type": "string",
+                            "enum": [
+                              "dividend",
+                              "split",
+                              "unclassified_adjustment"
+                            ]
+                          },
+                          "effectiveAt": {
+                            "type": "string"
+                          },
+                          "quantity": {
+                            "type": "string",
+                            "pattern": "^-?\\d+(\\.\\d+)?$",
+                            "description": "Exact decimal"
+                          },
+                          "quantityDisplay": {
+                            "type": "string",
+                            "pattern": "^-?\\d+(\\.\\d+)?$",
+                            "description": "Rounded toward zero at the mint's decimals"
+                          },
+                          "splitFactor": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "pattern": "^-?\\d+(\\.\\d+)?$"
+                          },
+                          "usd": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "pattern": "^-?\\d+(\\.\\d+)?$",
+                            "description": "Null means unknown, never zero"
+                          },
+                          "valuation": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "enum": [
+                              "issuer_net_cash",
+                              "market_estimate",
+                              null
+                            ]
+                          },
+                          "warnings": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "reasons": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "headline": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "nextOffset": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/income/{id}": {
+      "get": {
+        "summary": "One entry with its chain, classification and issuer evidence",
+        "tags": [
+          "ledger"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+            },
+            "in": "query",
+            "name": "owner",
+            "required": true,
+            "description": "Solana wallet address (base58)"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^\\d+$"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "id",
+                    "owner",
+                    "mint",
+                    "kind",
+                    "quantity",
+                    "quantityDisplay",
+                    "symbol",
+                    "usd",
+                    "valuation",
+                    "warnings",
+                    "reasons",
+                    "headline",
+                    "effectiveAt",
+                    "evidence"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "owner": {
+                      "type": "string"
+                    },
+                    "mint": {
+                      "type": "string"
+                    },
+                    "kind": {
+                      "type": "string",
+                      "enum": [
+                        "dividend",
+                        "split",
+                        "unclassified_adjustment"
+                      ]
+                    },
+                    "quantity": {
+                      "type": "string",
+                      "pattern": "^-?\\d+(\\.\\d+)?$"
+                    },
+                    "quantityDisplay": {
+                      "type": "string",
+                      "pattern": "^-?\\d+(\\.\\d+)?$"
+                    },
+                    "symbol": {
+                      "type": "string"
+                    },
+                    "usd": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "pattern": "^-?\\d+(\\.\\d+)?$"
+                    },
+                    "valuation": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "enum": [
+                        "issuer_net_cash",
+                        "market_estimate",
+                        null
+                      ]
+                    },
+                    "warnings": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "reasons": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "headline": {
+                      "type": "string"
+                    },
+                    "effectiveAt": {
+                      "type": "string"
+                    },
+                    "evidence": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "chain",
+                        "classification",
+                        "issuerRecord"
+                      ],
+                      "properties": {
+                        "chain": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "updateSignature",
+                            "explorerUrl",
+                            "observedSlot",
+                            "instructionPath",
+                            "scheduledAt",
+                            "effectiveAt",
+                            "immediate",
+                            "status",
+                            "multiplierBefore",
+                            "multiplierAfter"
+                          ],
+                          "properties": {
+                            "updateSignature": {
+                              "type": "string"
+                            },
+                            "explorerUrl": {
+                              "type": "string"
+                            },
+                            "observedSlot": {
+                              "type": "string",
+                              "pattern": "^-?\\d+(\\.\\d+)?$"
+                            },
+                            "instructionPath": {
+                              "type": "array",
+                              "items": {
+                                "type": "integer"
+                              }
+                            },
+                            "scheduledAt": {
+                              "type": "string"
+                            },
+                            "effectiveAt": {
+                              "type": "string"
+                            },
+                            "immediate": {
+                              "type": "boolean"
+                            },
+                            "status": {
+                              "type": "string",
+                              "enum": [
+                                "scheduled",
+                                "active",
+                                "superseded",
+                                "orphaned"
+                              ]
+                            },
+                            "multiplierBefore": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "bits",
+                                "exact"
+                              ],
+                              "properties": {
+                                "bits": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ]
+                                },
+                                "exact": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ],
+                                  "pattern": "^-?\\d+(\\.\\d+)?$"
+                                }
+                              }
+                            },
+                            "multiplierAfter": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "bits",
+                                "exact"
+                              ],
+                              "properties": {
+                                "bits": {
+                                  "type": "string"
+                                },
+                                "exact": {
+                                  "type": "string",
+                                  "pattern": "^-?\\d+(\\.\\d+)?$"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "classification": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "result",
+                            "reasons"
+                          ],
+                          "properties": {
+                            "result": {
+                              "type": "string",
+                              "enum": [
+                                "dividend",
+                                "split",
+                                "unclassified",
+                                "pending"
+                              ]
+                            },
+                            "classifierVersion": {
+                              "type": "string"
+                            },
+                            "issuerEventId": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "issuerRevision": {
+                              "type": [
+                                "integer",
+                                "null"
+                              ]
+                            },
+                            "netCashPerShare": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "pattern": "^-?\\d+(\\.\\d+)?$"
+                            },
+                            "reasons": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            },
+                            "warnings": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        },
+                        "issuerRecord": {
+                          "anyOf": [
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "source",
+                                "evidenceSha256",
+                                "record"
+                              ],
+                              "properties": {
+                                "source": {
+                                  "type": "string",
+                                  "enum": [
+                                    "fixtures",
+                                    "live"
+                                  ]
+                                },
+                                "evidenceSha256": {
+                                  "type": "string"
+                                },
+                                "record": {
+                                  "type": "object"
+                                }
+                              }
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "apiKey": []
+    }
+  ]
+}
