@@ -1,0 +1,121 @@
+{
+ "_note": "Aggregates only; no wallet addresses. Buckets are behavioural heuristics (thresholds below), not identities. Reproduce: tools/validate/wallet-profile.mjs",
+ "computedAt": "2026-09-13T19:23:21.283Z",
+ "thresholds": {
+  "PROFILE_MIN_USD": 10,
+  "HOT_WALLET_SPAN_DAYS": 7,
+  "BROAD_T22_ACCOUNTS": 40,
+  "BROAD_DIVIDEND_ASSETS": 25,
+  "CONCENTRATED_SUPPLY_SHARE": 0.1
+ },
+ "dividendAssets": 339,
+ "failedAssets": [
+  {
+   "symbol": "ROKx",
+   "error": "getProgramAccounts failed after 10 attempts: HTTP 429"
+  }
+ ],
+ "onCurveWallets": 213140,
+ "tiers": {
+  ">=$10": {
+   "wallets": 1381,
+   "incomeUsd": 23936726,
+   "byBucket": {
+    "issuer_authority": {
+     "wallets": 1,
+     "incomeUsd": 19170055
+    },
+    "high_throughput": {
+     "wallets": 66,
+     "incomeUsd": 4135864
+    },
+    "broad_book": {
+     "wallets": 34,
+     "incomeUsd": 408459
+    },
+    "plausibly_individual": {
+     "wallets": 1212,
+     "incomeUsd": 207696
+    },
+    "profile_failed": {
+     "wallets": 68,
+     "incomeUsd": 14639
+    }
+   }
+  },
+  ">=$100": {
+   "wallets": 330,
+   "incomeUsd": 23903502,
+   "byBucket": {
+    "issuer_authority": {
+     "wallets": 1,
+     "incomeUsd": 19170055
+    },
+    "high_throughput": {
+     "wallets": 33,
+     "incomeUsd": 4134866
+    },
+    "broad_book": {
+     "wallets": 11,
+     "incomeUsd": 407881
+    },
+    "plausibly_individual": {
+     "wallets": 272,
+     "incomeUsd": 178058
+    },
+    "profile_failed": {
+     "wallets": 13,
+     "incomeUsd": 12644
+    }
+   }
+  },
+  ">=$1000": {
+   "wallets": 64,
+   "incomeUsd": 23824369,
+   "byBucket": {
+    "issuer_authority": {
+     "wallets": 1,
+     "incomeUsd": 19170055
+    },
+    "high_throughput": {
+     "wallets": 11,
+     "incomeUsd": 4126767
+    },
+    "broad_book": {
+     "wallets": 4,
+     "incomeUsd": 405547
+    },
+    "plausibly_individual": {
+     "wallets": 44,
+     "incomeUsd": 111342
+    },
+    "profile_failed": {
+     "wallets": 4,
+     "incomeUsd": 10658
+    }
+   }
+  },
+  ">=$10000": {
+   "wallets": 12,
+   "incomeUsd": 23691424,
+   "byBucket": {
+    "issuer_authority": {
+     "wallets": 1,
+     "incomeUsd": 19170055
+    },
+    "high_throughput": {
+     "wallets": 8,
+     "incomeUsd": 4111218
+    },
+    "broad_book": {
+     "wallets": 2,
+     "incomeUsd": 398428
+    },
+    "plausibly_individual": {
+     "wallets": 1,
+     "incomeUsd": 11721
+    }
+   }
+  }
+ }
+}

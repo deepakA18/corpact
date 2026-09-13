@@ -1,419 +1,538 @@
-# Parity — Unified Liquidity & Execution Layer for Tokenized Equities on Solana
+# Tokenized-stock dividend income on Solana
 
-**Implementation specification. Scoped as a production product, not a hackathon build.**
+Implementation plan · v2 · 13 September 2026
 
-This document is the source of truth for engineering. It is written to be handed to Claude Code as a standing brief. Read it fully before writing code. Phase 0 is investigation, not implementation — do not skip it.
-
----
-
-## 1. Problem
-
-Tokenized US equities on Solana are a real market (>$4.9B H1 2026 volume, >95% cross-chain share), but the same underlying company exists as multiple, mutually incompatible tokens:
-
-- **xStocks** (Backed Finance, Jersey) — bearer debt instrument / tracker certificate. On-chain multiplier adjusts on dividends and splits. 24/5 issuer mint/redeem.
-- **Ondo Global Markets** — custody-backed, total-return tracking, broker-dealer held. Issuer window closes Friday night through Sunday night.
-- **Backpack Securities (SPCX etc.)** — closest to real ownership; redeemable via ACATS/DTCC into a UCC Article 8 security entitlement.
-- **PreStocks and similar** — SPV-based synthetic pre-IPO exposure. Structurally fragile; the May 2026 Anthropic/OpenAI transfer-void notices cut those tokens ~38–46% in a session.
-
-Consequences:
-
-1. **Fragmented depth.** Circle's ~$171M of tokenized market cap is split across CRCLON (~$130M) and CRCLX (~$41M) — two shallow books on the same chain instead of one deep one.
-2. **Non-fungible units.** One xStock token and one Ondo token are not the same claim on the same number of shares. Multipliers and total-return accrual diverge over time.
-3. **Peg breaks off-hours.** When issuer mint/redeem windows close, the arbitrage loop that holds the peg is unavailable. Weekend moves of 3–5% against reference have been routine; extreme cases (a ~4× off-hours spike on an AMZN token, +12% intraday on an AAPL token) are documented.
-4. **Invisible instrument risk.** Nothing in any UI distinguishes a redeemable, custody-backed claim from an unauthorized SPV wrapper until it breaks.
-
-## 2. What we are building
-
-A **two-tier liquidity system**, one instance per underlying company.
-
-**Tier 1 — Parity Pool.** An N-asset concentrated-liquidity AMM over every allowlisted wrapper of a single underlying, operating in *normalized share units* rather than raw tokens. Depositors mint a canonical share token (`pNVDA`, `pAAPL`, …) representing exactly one normalized share of economic exposure, backed pro rata by the pool's wrapper basket.
-
-**Tier 2 — Quote Pool.** A single concentrated-liquidity market `pTICKER/USDC`. All USDC-side liquidity and price discovery concentrates here, in one book, instead of scattering across four wrapper pairs.
-
-**Execution layer.** Long-term (TWAMM-style) orders for recurring buys and basket rebalances, NAV-banded conditional orders, and an off-hours execution regime for when the peg-keeping arbitrageurs are absent.
-
-**Risk layer.** Per-wrapper exposure caps, depeg circuit breakers, and issuer-quality tiering enforced on-chain.
-
-### Why the canonical token is the product
-
-It collapses "which NVDA do I buy" into "NVDA," consolidates depth into one book, and becomes the natural integration target for wallets, lenders, and index products. Depth compounds: every new wrapper wants inclusion, every router wants the deepest venue.
-
-### Research basis
-
-Four Paradigm papers are load-bearing. Read them before implementing the corresponding module.
-
-| Paper | URL | Used for |
-|---|---|---|
-| Orbital (Robinson, Moallemi, White, 2025) | https://www.paradigm.xyz/2025/06/orbital | Tier 1 N-asset parity AMM |
-| TWAMM (White, Robinson, Adams, 2021) | https://www.paradigm.xyz/2021/07/twamm | Long-term order execution |
-| Gradual Dutch Auctions (Frankie, Robinson, White, andy8052, 2022) | https://www.paradigm.xyz/2022/04/gda | Off-hours clearing without LPs |
-| Loss-Versus-Fair (Moallemi, Robinson, 2024) | https://arxiv.org/abs/2406.00113 | Execute-now vs wait cost model |
+> **What changed from v1, and why.** v1 was scoped as a full product: an
+> 8-week build ending in an audited on-chain vault that harvests dividends
+> and runs recurring buys unattended. The engineering in v1 was sound — the
+> rebase mechanics, the protected-floor accounting, and the units discipline
+> were all correct. But it committed a whole company's worth of work before
+> confirming the two things the product actually depends on: (1) that the
+> dividend-paying tokenized stocks have enough real holders to matter, and
+> (2) that the automated "convert and buy" flow doesn't cross into regulated
+> brokerage activity. v2 puts those two checks first, makes the **Observe-only
+> tracker the core product**, and moves the vault/keeper/automation into a
+> clearly-gated later phase that only begins if the wedge is validated. The
+> insight of this product is making an invisible rebase legible. That insight
+> ships in ~10 days with no custom program and no audit. Everything past it is
+> a separate, heavier bet.
 
 ---
 
-## 3. Phase 0 — Investigation (blocking)
+## 0. Validate before building (do this first, in this order)
 
-**Do not write program code until these are answered and written up in `docs/findings/`.** Each has the power to change the architecture.
+These two checks decide whether there is a product at all. Each costs less
+than a day. **Do not write application code until both clear.** If either
+fails, the honest outcome is to stop, and that is a cheap thing to learn now
+rather than after an 8-week build.
 
-### 0.1 Token-2022 transfer hooks — highest risk item
+### 0.1 Demand check — do the dividend-paying tokens have holders?
 
-xStocks and Ondo use Solana Token Extensions, including transfer hooks, to enforce transfer eligibility. If a hook rejects transfers to or from a program-owned PDA, Tier 1 cannot custody that wrapper at all.
+The premise of this product is that tokenized-stock holders have dividends
+worth seeing. But the most liquid, widely-held xStocks are growth names
+(NVDA, TSLA) that pay little or nothing — that is precisely why they were
+chosen for tokenization. The dividend-paying tickers (e.g. SPYx, KOx, JNJx,
+and other income names) may have few holders. If so, the tracker is elegant
+engineering around an event that rarely fires for anyone.
 
-For each candidate wrapper mint, determine and document:
+Concretely, before anything else:
 
-- Which token program owns the mint (SPL Token vs Token-2022).
-- Full extension list: `TransferHook`, `PermanentDelegate`, `DefaultAccountState`, `TransferFeeConfig`, `ConfidentialTransfer`, `MetadataPointer`, `NonTransferableAccount`, `MintCloseAuthority`.
-- If `TransferHook` is present: the hook program ID, its source if public, the extra-account-metas PDA layout, and the exact eligibility predicate.
-- Empirically, on mainnet fork: can a PDA hold the token? Can a CPI-initiated transfer to and from that PDA succeed? Does the hook require the *owner* to be on an allowlist?
-- Does `PermanentDelegate` exist, and who holds it? A permanent delegate can claw back pool assets. This may be disqualifying for inclusion, or may require explicit user disclosure.
+- [ ] For every dividend-paying tokenized stock on Solana, pull current
+      unique holder count and total supply from RPC / RWA.xyz / the issuer
+      API.
+- [ ] For each, pull the multiplier-change history and count actual dividend
+      activations in the last 12 months.
+- [ ] Cross the two: **how many real wallets have received at least one
+      dividend rebase on an xStock in the last year, and what was the median
+      USD value of those events?**
 
-**Deliverable:** `docs/findings/token-extensions.md` with a per-mint compatibility matrix and a go/no-go per wrapper. If the top two issuers both block PDA custody, escalate immediately — the product needs a different shape (routing/attestation rather than pooling).
+**Go/no-go:** if the answer is "a few hundred wallets, cents per event," the
+product is real but the market is negligible — stop, and say so. If it is
+"thousands of wallets with material distributions," proceed. Either way you
+have spent an afternoon, not a quarter. Record the numbers in an ADR; they
+also become the honest slide in any pitch.
 
-### 0.2 Share-normalization data
+### 0.2 Regulatory boundary check — where does "track" become "manage"?
 
-Tier 1 requires, per wrapper, a `shares_per_token` scalar: how many underlying shares one token currently represents.
+Displaying a holder's own dividend information touches nothing and is almost
+certainly fine. Selling the dividend-equivalent portion of a tokenized
+*security* into USDC on the user's behalf — especially on a schedule, via a
+vault the app controls — moves toward operating an unlicensed brokerage or a
+discretionary managed account. The line between the two is the difference
+between a weekend project and a licensed financial business.
 
-- xStocks: locate the on-chain multiplier account or issuer API. Determine update frequency, authority, and whether historical values are queryable.
-- Ondo: total-return tracking means `shares_per_token` drifts continuously with reinvested dividends rather than stepping. Determine the published NAV/accrual source and its update cadence.
-- Backpack: determine the redemption ratio source.
+- [ ] One written read from securities counsel on: (a) is a read-only
+      dividend tracker a regulated activity in the target jurisdiction(s);
+      (b) at what point does user-directed conversion become
+      broker-dealer / investment-adviser activity; (c) does an app-controlled
+      vault that sells on a schedule constitute discretionary management.
+- [ ] Confirm the target audience against issuer geographic/person
+      restrictions. xStocks are not available to US persons; eligibility must
+      not be inferred from wallet connectivity.
 
-Document update latency, authority keys, and failure modes for each. **The normalization oracle is the single greatest source of value leakage in this design** — a stale or wrong scalar is a free arbitrage against LPs.
-
-**Deliverable:** `docs/findings/normalization-sources.md`.
-
-### 0.3 Legal posture
-
-The canonical token is plausibly a new instrument wrapping securities exposure. Before mainnet:
-
-- Engage securities counsel in the operating jurisdiction. Written memo required.
-- Determine whether Parity is a non-custodial protocol, an issuer, or both.
-- Determine geofencing requirements and whether the canonical token must itself carry a transfer hook.
-- Confirm whether pooling wrappers with different legal characteristics (debt instrument vs security entitlement) creates a disclosure obligation.
-
-**Do not ship mainnet without this memo.** Devnet and testnet work may proceed in parallel.
-
-### 0.4 Pyth coverage
-
-Confirm per-ticker availability of US equity feeds and any NAV feeds, plus market-hours and staleness semantics. Pyth explicitly does not publish a current price outside US equity trading hours; the system must treat "no price" as a first-class state, not an error.
-
-**Deliverable:** `docs/findings/oracle-coverage.md`.
-
----
-
-## 4. Architecture
-
-```
-┌──────────────────────────────────────────────────────────────┐
-│  Clients: Next.js web app · REST/WS API · SDK (TS + Rust)    │
-└────────────────────────────┬─────────────────────────────────┘
-                             │
-┌────────────────────────────┴─────────────────────────────────┐
-│  Off-chain services                                           │
-│   indexer · pricing · corporate-actions · risk · keeper      │
-└────────────────────────────┬─────────────────────────────────┘
-                             │
-┌────────────────────────────┴─────────────────────────────────┐
-│  On-chain programs (Anchor)                                   │
-│   registry · parity_pool · quote_pool · orders · baskets      │
-└──────────────────────────────────────────────────────────────┘
-```
-
-### 4.1 Repository layout
-
-```
-parity/
-  programs/
-    registry/           # wrapper allowlist, normalization, risk state
-    parity_pool/        # Tier 1 N-asset parity AMM
-    quote_pool/         # Tier 2 CLMM (Phase 3; see §5.2)
-    orders/             # TWAMM + conditional orders
-    baskets/            # index/portfolio wrappers (Phase 5)
-  reference/            # Python reference implementations (source of truth for math)
-    orbital.py
-    twamm.py
-    gda.py
-    lvf.py
-  services/
-    indexer/            # Yellowstone gRPC -> Timescale
-    pricing/            # Pyth Hermes, NAV, basis
-    corpactions/        # multiplier + dividend ingestion
-    risk/               # depeg detection, breaker triggers
-    keeper/             # crank execution
-    api/                # REST + WS
-  app/                  # Next.js frontend
-  sdk/
-    ts/
-    rust/
-  docs/
-    findings/
-    adr/                # architecture decision records
-  tests/
-    fuzz/
-    integration/
-    fork/
-```
-
-### 4.2 Language and tooling
-
-- Programs: Rust + Anchor. Pin the toolchain in `rust-toolchain.toml`; pin Anchor and Solana CLI versions in `Anchor.toml` and document them in the README.
-- Fixed-point math: a single internal `U128Q64` type in a shared crate. **No floating point anywhere in program code.** All rounding decisions explicit and directional (always round in favour of the pool).
-- Reference implementations in Python with `mpmath` arbitrary precision. Rust math is verified against these by differential test.
-- Off-chain services: Rust for indexer and keeper (latency and correctness), TypeScript for API and frontend.
-- Storage: PostgreSQL + TimescaleDB for time series. Redis for hot quotes.
+**Go/no-go:** if read-only tracking is clean (expected), **Phase 1 ships
+regardless of the answer on automation.** The automation phases (3+) do not
+begin until the boundary is drawn and the required posture (licensing,
+partnership, or a narrower non-discretionary design) is decided.
 
 ---
 
-## 5. On-chain programs
+## 1. What to ship
 
-### 5.1 `registry`
+Build a dashboard that makes tokenized-stock dividends **legible**: it
+detects the rebase that delivers a dividend, records the income it
+represents, values it, measures yield, and clearly separates what is retained
+stock exposure from what could be converted to cash.
 
-Global configuration and the trust root for everything else.
+The core product — the thing that is genuinely absent from every existing
+interface and confirmed absent by the issuer's own support docs — is the
+**evidence-backed income ledger**. That is Phase 1 and Phase 2. It needs no
+custom program and no audit.
 
-**State**
+Everything beyond that (unattended harvesting, recurring buys from a
+program-controlled vault) is a **separate, heavier bet** documented in
+Appendix A. It begins only if Phase 0.1 shows real demand and Phase 0.2
+resolves the regulatory boundary.
 
-```rust
-#[account]
-pub struct Underlying {
-    pub symbol: [u8; 12],            // "NVDA"
-    pub pyth_feed_id: [u8; 32],
-    pub canonical_mint: Pubkey,      // pNVDA
-    pub wrapper_count: u8,
-    pub status: UnderlyingStatus,    // Active | Halted | Winding Down
-    pub bump: u8,
-}
+Ship in increments:
 
-#[account]
-pub struct Wrapper {
-    pub underlying: Pubkey,
-    pub mint: Pubkey,
-    pub token_program: Pubkey,       // SPL Token or Token-2022
-    pub issuer_tier: IssuerTier,     // Tier1 | Tier2 | Tier3
-    pub shares_per_token: u128,      // Q64.64, normalization scalar
-    pub spt_last_update: i64,
-    pub spt_max_staleness: i64,
-    pub max_weight_bps: u16,         // exposure cap within the pool
-    pub state: WrapperState,         // Active | DepositsPaused | Frozen
-    pub has_transfer_hook: bool,
-    pub hook_program: Option<Pubkey>,
-}
-```
+1. **Observe (core):** connect a wallet, reconstruct holdings, identify
+   verified dividend events, show income and the evidence behind it. This is
+   the product. If you build only this, you have shipped the wedge.
+2. **Act (optional, pending 0.2):** quote and execute a *user-signed* sale of
+   the dividend-equivalent portion into USDC. No custody, no automation — the
+   user signs each transaction in their own wallet.
+3. **Automate (deferred — see Appendix A):** program vault, bounded
+   harvesting, scheduled buys. Only after validation, counsel, and audit.
 
-**Issuer tiers** (encode the PreStocks lesson directly in state):
+### Product contract
 
-- **Tier 1** — redeemable into the real security through recognised rails; regulated broker-dealer custody; current attestations. Eligible for full weight.
-- **Tier 2** — custody-backed with issuer-side redemption only, no retail redemption path. Capped weight.
-- **Tier 3** — synthetic or SPV-based, or lacking current attestation. **Not eligible for Parity Pools.** May be displayed in the app with an explicit risk label, never pooled.
-
-Admission and tier changes are governance actions behind a timelock (minimum 48h) with an emergency-halt path that can only *restrict*, never expand.
-
-**Normalization updates.** `update_shares_per_token` is callable by a permissioned oracle authority. It must:
-
-- reject updates exceeding a configured per-update delta bound (guards against a compromised or fat-fingered authority),
-- emit an event carrying old and new values plus the source attestation hash,
-- pause swaps on affected pools for a configured settlement window when the delta exceeds a threshold (a discrete corporate action), so the pool is not arbitraged across the step.
-
-### 5.2 `parity_pool` (Tier 1)
-
-An Orbital-style N-asset AMM. Reserves are tracked in **normalized share units**: `normalized = raw_balance × shares_per_token`.
-
-Because normalized units of every wrapper represent the same economic claim, they should trade at parity — which is precisely the setting Orbital is designed for, and why it is the right invariant rather than a generic multi-asset constant product.
-
-**Invariant.** Reserves `r ∈ R^n` lie on a sphere: `‖r − R·1‖² = R²`, where `1` is the all-ones vector. The equal-price point sits at `r = R(1 − 1/√n)·1`. Concentrated liquidity is expressed as *ticks*: spherical caps bounded by a plane `r · (1/√n)1 ≥ k`, where `k` encodes how far a wrapper is allowed to depeg before that tick's liquidity stops supporting it. Ticks are either interior (free on the sphere) or boundary (pinned to the plane); interior ticks aggregate to a sphere and boundary ticks to a circle, so the combined tradeable surface is a torus.
-
-**Implementation contract for Claude Code:**
-
-1. Implement `reference/orbital.py` first, following the paper's derivations exactly, with arbitrary-precision arithmetic. Include tick aggregation and tick-crossing.
-2. Implement the Rust version in fixed point.
-3. Write a differential test harness that runs ≥10⁶ randomized trades through both and asserts agreement within 1e-12 relative error, with the Rust side never returning more output than the Python side.
-4. Property tests that must hold under fuzz:
-   - the invariant is non-decreasing across every operation (fees accrue to the pool),
-   - no sequence of swaps can extract value from the pool at constant oracle price,
-   - a swap followed by its exact reverse leaves the caller strictly worse off by at least the fee,
-   - tick crossing is path-independent for the same net trade.
-
-Do not attempt to derive the quartic solve from memory. Use the paper. If the paper's formulation is ambiguous at any point, record the ambiguity in `docs/adr/` and choose the conservative (pool-favouring) reading.
-
-**Canonical token mechanics.**
-
-- `deposit(wrapper, amount)` → mints `amount × shares_per_token` of `pTICKER`, subject to that wrapper's `max_weight_bps` cap. Deposits that would breach the cap are rejected, not partially filled.
-- `withdraw_proportional(amount)` → burns `pTICKER`, returns a pro-rata slice of every wrapper. Always available while the pool is not frozen.
-- `withdraw_single(wrapper, amount)` → burns `pTICKER`, returns one wrapper, priced along the Orbital curve so that draining an underweight wrapper costs more. Disabled for any wrapper in `DepositsPaused` or `Frozen`.
-
-`withdraw_proportional` is the run-safety valve: it cannot be gamed to exit the good assets and leave the bad ones behind.
-
-### 5.3 `quote_pool` (Tier 2)
-
-`pTICKER/USDC` concentrated liquidity.
-
-**Phase decision (ADR-001).** Do **not** build a CLMM from scratch in v1. Deploy on an audited existing CLMM (Orca Whirlpools or Raydium CLMM) and implement long-term orders as keeper-sliced execution against it. Building a novel CLMM *and* a novel N-asset AMM simultaneously doubles the audit surface for no user-visible gain.
-
-Revisit in Phase 4: a native pool with in-kind TWAMM execution is meaningfully more efficient (no per-slice fee, no sandwich surface) and becomes worth the risk once volume justifies it. Write the ADR with this reasoning so the decision is revisitable rather than re-litigated.
-
-### 5.4 `orders`
-
-Three order types, one account layout, one crank.
-
-**Long-term orders (TWAMM semantics).** A constant-rate order over a duration. Solana has no per-block hook, so execution is *lazy with closed-form catch-up*: the crank computes the exact state transition between `last_executed_slot` and the current slot in one step rather than iterating.
-
-- Implement the closed-form solution from the TWAMM paper for constant-rate orders against constant product.
-- Verify against a numerical ODE integrator in `reference/twamm.py` to ≤1e-9 relative error across a wide parameter sweep, including near-degenerate cases (one-sided flow, very short durations, very large rates relative to reserves).
-- Bound state growth: order expiries snap to fixed intervals so the number of distinct expiry checkpoints stays small and the crank's work per call is O(intervals crossed), not O(orders).
-- Anyone may crank; the cranker receives a fee from executed volume. Never make execution dependent on a single privileged keeper.
-
-**Recurring buys.** Sugar over long-term orders: a schedule that opens a new long-term order per period. This is the primary retail product surface.
-
-**NAV-banded conditional orders.** Execute only when `|pool_price − reference_NAV| ≤ band_bps`, where `reference_NAV` comes from Pyth. Required behaviour:
-
-- If the equity market is closed (Pyth reports no current price), the order does not execute unless the user explicitly opted into off-hours execution.
-- Pyth's confidence interval widens the band automatically — never treat the point estimate as exact.
-- Stale price beyond `max_staleness` blocks execution entirely.
-
-This is the mechanism that stops a user from silently buying a 4% weekend premium.
-
-### 5.5 `baskets` (Phase 5)
-
-Index and portfolio products over canonical tokens: weights, rebalance policy, fee accrual. Rebalances route through long-term orders rather than market orders — this is the whole reason TWAMM is in the stack, since basket rebalancing in thin books is exactly where naive execution bleeds.
-
----
-
-## 6. Off-hours execution regime
-
-When Pyth reports the equity market closed, the peg-keeping arbitrage loop is unavailable for most wrappers (Ondo's window closes Friday night to Sunday night; xStocks runs 24/5). Liquidity thins, and the token can move on sentiment with nothing anchoring it.
-
-Three responses, in order of implementation:
-
-1. **Dynamic fee.** Raise the Tier 2 fee tier during closed-market hours, parameterized by realized volatility and Pyth confidence. Simple, effective, ships first.
-2. **LVF-informed guidance.** Use the Loss-Versus-Fair closed form to compute the expected cost of executing now versus waiting for market open, and surface it in the UI as a number, not a warning banner: *"Executing now costs an estimated 180bps versus Monday's open."* Implement in `reference/lvf.py` and expose through the pricing API.
-3. **GDA fallback (Phase 4).** For wrappers where LP depth collapses off-hours, a gradual Dutch auction clears inventory at a continuous rate without requiring LPs willing to make markets — the specific property that makes GDA, rather than an AMM, the right off-hours mechanism.
-
----
-
-## 7. Risk engine
-
-### 7.1 Depeg detection
-
-Continuously compute, per wrapper:
-
-- `basis_bps = (wrapper_price_normalized − reference_NAV) / reference_NAV × 10000`
-- rolling z-score of basis against a trailing window, segmented by market-open vs market-closed (their distributions are different; do not pool them)
-- realized depth: USDC obtainable within 100bps, 300bps, 1000bps of mid
-
-### 7.2 Circuit breakers
-
-Graduated, on-chain, and **asymmetric** — a breaker may always restrict, and lifting always requires governance:
-
-| Trigger | Action |
+| User sees | Exact meaning |
 |---|---|
-| basis beyond soft band, sustained | raise that wrapper's swap fee; flag in UI |
-| basis beyond hard band, or depth collapse | `DepositsPaused` — no new deposits of that wrapper; `withdraw_single` disabled; `withdraw_proportional` stays open |
-| issuer attestation stale beyond threshold | `DepositsPaused` + tier review |
-| issuer/company transfer-void notice, or redemption suspension | `Frozen` — wrapper excluded from swap routing; proportional withdrawal only |
+| Dividend income | Dividend-attributed additional stock exposure; USD amount is an estimate unless issuer valuation evidence is available |
+| Available to convert | The remaining dividend-equivalent portion of a tracked position, subject to current balance and execution checks |
+| Received in USDC | Actual finalized proceeds from a user-signed sale |
+| Retained in stock | Dividend-equivalent exposure remains in the stock; it is not cash |
+| Stock adjustment | A split, reverse split, correction, or unresolved multiplier change; not automatically income |
 
-The PreStocks case is the design target for the last row: the failure mode was legal, not technical, and arrived as a public notice hours before the price moved. The corporate-actions service must ingest issuer and company notices, and the runbook must allow a human to trigger `Frozen` in minutes.
-
-### 7.3 Exposure caps
-
-`max_weight_bps` per wrapper, enforced at deposit. Tier 1 issuers get the highest caps. No single wrapper should ever be able to reach 100% of a pool — the whole point of the basket is that one issuer failing is a haircut, not a wipeout. Document the loss-mutualization behaviour prominently in the app; users must understand that the canonical token socializes wrapper risk in exchange for depth.
-
----
-
-## 8. Off-chain services
-
-### 8.1 `indexer`
-
-Yellowstone gRPC (Geyser) subscription to program accounts and transactions → TimescaleDB. Must be replayable from genesis of the program deployment; keep a checkpointed cursor and support full rebuild. Every derived number the API serves must be reconstructible from chain state alone.
-
-### 8.2 `pricing`
-
-- Pyth Hermes for reference prices; handle market-closed and stale states explicitly as enum variants, never as null.
-- Compute canonical NAV, per-wrapper basis, and pool mid.
-- Serve LVF estimates.
-- Publish a signed price snapshot feed for clients that want to verify.
-
-### 8.3 `corpactions`
-
-Ingest multiplier changes, dividend distributions, splits, and issuer notices per wrapper. Feeds `update_shares_per_token`. Requires a human-in-the-loop approval step for any discrete action above a delta threshold — this is the highest-consequence write in the system.
-
-### 8.4 `keeper`
-
-Cranks long-term and conditional orders. Must be:
-
-- **Permissionless in design.** Run a first-party keeper, but ensure any third party can run one and be paid. Publish the keeper as open source.
-- **Idempotent.** Double-cranking must be a no-op, not a double-execution.
-- **Priority-fee aware.** Budget dynamically; alert on sustained inclusion failure.
-
-### 8.5 `api`
-
-REST + WebSocket. Endpoints for quotes, positions (denominated in shares, not tokens), order management, basis and NAV series, and pool composition. The pool composition endpoint is a trust surface — publish the full wrapper breakdown, tiers, and caps openly.
+Default mode is **retain in stock** — the product's job is to *show* income,
+not to push anyone to sell it. Do not add yield farming, leverage, pooled
+vault shares, bank payouts, cross-chain tracking, tax filing, or automated
+purchases to the core product.
 
 ---
 
-## 9. Frontend
+## 2. Verified mechanics and integration decisions
 
-Next.js. Principles:
+> This section is carried forward from v1 largely intact — it was correct.
+> The mechanic is the foundation and it verifies.
 
-- **Positions are denominated in shares and dollars, never in wrapper token counts.** The user owns NVDA exposure; the basket is an implementation detail they can inspect but never have to reason about.
-- **Show basis on every trade.** Before confirmation: reference price, execution price, basis in bps, and in dollars. After fill: a receipt showing realized basis.
-- **Disclose the basket.** One tap from any position to the wrapper composition with issuer tiers and caps. Do not hide the risk you are mutualizing.
-- **Market-state is always visible.** Open / closed / off-hours, with what that means for execution.
-- Recurring buys and baskets are the primary surfaces. Single trades are secondary.
+### Issuer behavior
 
-Consult `/mnt/skills/public/frontend-design/SKILL.md` before starting UI work.
+xStocks delivers the economic benefit of dividends by **reinvestment into the
+same underlying stock, net of withholding, reflected through multiplier
+changes** — not as cash. Splits and reverse splits also change that
+multiplier. **Therefore an increase alone cannot establish dividend income**;
+it must be classified against issuer evidence.
+[xStocks dividend mechanics](https://docs.xstocks.fi/docs/dividends-and-stock-splits)
+
+On Solana this is the **Scaled UI Amount** extension: it changes displayed
+quantity while token-account base units stay unchanged. Config includes
+current and pending multipliers and an activation timestamp; conversions use
+floating-point and may not round-trip exactly.
+[Scaled UI Amount spec](https://solana.com/docs/tokens/extensions/scaled-ui-amount)
+
+**Implementation decision (unchanged, and load-bearing):** observe the
+**mint**, not just token accounts. A scheduled activation can happen with no
+account write, so a balance-subscription-only design will silently miss every
+dividend. Preserve historical multiplier versions; use raw integer amounts
+for transaction construction; normalize prices and quantities into matching
+units.
+[Integration guide](https://solana.com/docs/tokens/extensions/scaled-ui-amount/integration-guide)
+
+Native Solana deployments use Token-2022.
+[xStocks developer overview](https://docs.xstocks.fi/developers)
+
+### APIs to integrate
+
+| Integration | Documented surface | Use |
+|---|---|---|
+| xStocks assets | `GET https://api.xstocks.fi/api/v2/public/assets` and `/public/assets/{symbol}` | Resolve canonical deployment addresses and underlying identifiers |
+| xStocks current multiplier | `/public/assets/{symbol}/multiplier?network={NETWORK}` | Reconcile mint state and pending activation |
+| xStocks multiplier history | `/public/assets/{symbol}/multiplier/history?network={NETWORK}` | Backfill and compare historical transitions |
+| xStocks price data | `/public/assets/{symbol}/price-data` | Supplement valuation after verifying units and timestamps |
+| Corporate actions | Public Corporate Actions operations in issuer OpenAPI | Classify transitions; **schema unverified — exercise in Phase 0** |
+| Solana RPC + archival stream | Mint/account state, finalized transactions, ordered historical changes | Canonical balances and observed multiplier transitions |
+| Jupiter Swap V2 | `GET https://api.jup.ag/swap/v2/build` | Obtain raw swap instructions (Act phase only) |
+
+Resolve the network enum from the current schema rather than guessing.
+**The corporate-action response schema and live API availability have not
+been exercised for this plan** — confirming them is a Phase 0 task, and if the
+corporate-action feed is unavailable or unreliable, classification quality
+drops and the tracker must degrade honestly to "unclassified adjustment"
+rather than guess.
+
+**Recurring-buy note (Act/Automate only):** Jupiter's legacy Recurring API is
+unmaintained; Trigger V2 is beta, documents a $10 minimum per round, and
+exposes no user-configurable DCA slippage — which conflicts with small
+variable dividends. If automation is ever built, schedule against the app's
+own funded USDC and reuse the swap executor rather than depending on Trigger
+V2.
+[Jupiter Build](https://developers.jup.ag/docs/swap/build)
+
+Everything below is a proposed design, not a claim that the issuer or Jupiter
+already provides these features.
 
 ---
 
-## 10. Testing and security
+## 3. Architecture (core product)
 
-**Non-negotiable bars before mainnet:**
+For Phase 1–2, the stack is deliberately boring and program-free:
 
-1. Differential tests: Rust vs Python reference for every math module, ≥10⁶ cases each.
-2. Fuzzing: `cargo-fuzz` or Trident on all instruction handlers, 72h clean run minimum.
-3. Invariant tests: every property in §5.2 as a stateful property test.
-4. Mainnet-fork integration tests against real wrapper mints, including transfer-hook paths.
-5. Two independent audits from firms with Solana AMM experience. One must specifically cover the Orbital implementation, since it is novel code with no prior production deployment to compare against.
-6. A public testnet period with real wrappers and capped TVL, minimum 8 weeks.
-7. Incident runbooks, rehearsed: wrapper freeze, oracle failure, keeper outage, normalization authority compromise.
+- **Next.js + TypeScript** app.
+- **Fastify** API.
+- **Postgres** as the durable, immutable event ledger.
+- A **persistent worker** for indexing and reconciliation (not request-scoped
+  serverless — subscriptions and reconciliation must run continuously).
+- **Zod** at integration boundaries; **decimal/rational** arithmetic in the
+  accounting package.
+- **No Rust/Anchor** in the core product. Anchor appears only in Appendix A.
 
-**Explicit non-goals for v1:** cross-chain, leverage, perps, pre-IPO assets, anything requiring custody of user funds outside program PDAs.
+```mermaid
+flowchart TD
+    CH["Solana state and history"] --> IX["Indexer and reconciliation"]
+    IS["Issuer actions and multipliers"] --> IX
+    IX --> LE["Postgres event ledger"]
+    PR["Prices and quotes"] --> AC["Accounting engine"]
+    LE --> AC
+    AC --> API["API and dashboard"]
+    AC --> EX["(Act phase) user-signed swap builder"]
+```
 
----
+| Path | Responsibility |
+|---|---|
+| `apps/web` | Wallet connection, income dashboard, event evidence, (Act) transaction review |
+| `apps/api` | Auth, validated reads, quotes, user-signed intents, export |
+| `apps/worker` | Ingestion, replay, issuer sync, attribution |
+| `packages/domain` | Unit types, action states, API contracts |
+| `packages/accounting` | Pure deterministic ledger reducer, principal/income partition, metrics |
+| `packages/solana` | Mint decoding, transaction decoding, wallet SDK bridge, simulation |
+| `packages/issuers` | xStocks adapter and future issuer interfaces |
+| `packages/execution` | (Act) Jupiter builder + transaction verifier |
+| `packages/db` | Schema, migrations, outbox, queries |
+| `fixtures` | Sanitized chain/issuer recordings and synthetic scenarios |
+| `ops` | Deployment, alerts, restore/incident runbooks |
 
-## 11. Phases
-
-Each phase ends with a written ADR and a demo against real mainnet wrapper mints on a fork.
-
-**Phase 0 — Investigation (2–4 weeks).** §3 deliverables. Go/no-go on architecture.
-
-**Phase 1 — Foundations.** `registry` program; normalization oracle service; indexer; pricing service with Pyth integration including market-hours and staleness handling. Deliverable: a public, accurate, real-time basis dashboard for every wrapper on Solana. This ships standalone, is useful on its own, and establishes credibility before any pooled funds exist.
-
-**Phase 2 — Parity Pool.** `reference/orbital.py`, then `parity_pool`, then canonical mints for the three deepest underlyings. Audit gate.
-
-**Phase 3 — Quote Pool + basic execution.** Deploy Tier 2 on an existing CLMM. Ship swaps, NAV-banded orders, and the app. Audit gate.
-
-**Phase 4 — Long-term orders.** `reference/twamm.py`, then `orders`. Recurring buys ship here — this is the first genuinely retail product. Consider native TWAMM pool per ADR-001. GDA off-hours fallback.
-
-**Phase 5 — Baskets.** Index and portfolio products with TWAMM rebalancing.
-
-**Phase 6 — Distribution.** SDK, router integrations, wallet partnerships. The canonical tokens are more valuable as a standard than as an app.
-
----
-
-## 12. Success metrics
-
-- Depth at 100bps for `pTICKER/USDC` versus the sum of depth at 100bps across all individual wrapper pairs. **If the consolidated book is not deeper than the fragmented ones, the core thesis is wrong** — measure this from Phase 3 and be honest about it.
-- Median realized basis on user fills versus median basis of a naive same-size market order in the deepest single wrapper.
-- Share of off-hours volume executing inside the NAV band.
-- Wrapper diversity within pools (no pool dominated by one issuer).
-- Third-party integrations routing to canonical tokens.
+Commit ledger writes and job-outbox rows in the same transaction. Scale by
+mint ingestion and indexed holder fan-out, not per-wallet polling.
 
 ---
 
-## 13. Instructions for Claude Code
+## 4. Feasibility spike (Phase 0 engineering, days 1–2)
 
-- **Start at Phase 0.** Produce the three `docs/findings/` documents before writing any program code. If Phase 0 invalidates the architecture, say so loudly rather than building around the problem.
-- **Python reference first, always.** For every math module, the Python arbitrary-precision implementation is the source of truth. Rust is verified against it. Never write the Rust first.
-- **Do not derive the Orbital or TWAMM math from memory.** Fetch the papers. If a formulation is ambiguous, write an ADR and take the pool-favouring reading.
-- **No floating point in program code.** Every rounding decision explicit and directional.
-- **Ask before adding a dependency** to any program crate. Audit surface is the scarce resource.
-- **Write the ADR before the code** for any decision this document leaves open.
-- When you disagree with something in this spec, say so and argue the case. This document is a starting position, not a contract.
+Runs alongside the 0.1/0.2 validation checks. Proves the mechanic on real
+data before the dashboard is built around assumed behavior.
+
+- [ ] Resolve 3–5 native Solana xStock mints; verify program owner, decimals,
+      full extension set, update/freeze authorities, trading status.
+- [ ] Find an actual historical dividend **and** a split with matching issuer
+      evidence and chain transitions. If no live event is available, use
+      historical replay plus clearly-labeled synthetic events.
+- [ ] Decode multiplier fields from mint bytes, including the binary
+      floating-point representation; compare against issuer API and RPC
+      display.
+- [ ] Confirm action IDs, net/gross fields, correction semantics, timestamps,
+      pagination, coverage, and reuse rights from issuer API responses.
+- [ ] Prove balance history for token accounts that were later closed, and
+      ownership changes; pick an archival provider that actually supplies it.
+- [ ] Establish each price provider's unit convention against a known non-1
+      multiplier.
+- [ ] (Act phase only) Obtain representative xStock→USDC routes and simulate.
+      Do not infer route support from a token appearing in metadata search.
+- [ ] Record all dependencies, provider limits, and unresolved assumptions in
+      an ADR.
+
+**Go/no-go:** attribution needs event classification plus reliable historical
+ownership. If historical coverage is incomplete, ship "tracked since [date]."
+If classification evidence is missing for an event, show "unclassified
+adjustment" with conversion disabled for it. **Never fabricate mint addresses,
+API fields, live dividends, or integration success in demo data.**
+
+---
+
+## 5. Detection and historical reconstruction
+
+> Carried forward from v1 — this section was correct and is the technical
+> heart of the tracker. Condensed here; the full runtime algorithm,
+> classification table, and wallet-history rules from v1 §5 apply unchanged.
+
+Persist immutable observations before interpretation (multiplier transitions
+and corporate actions as separate typed records, each with an evidence hash
+and distinct timestamps for issuer date / configured activation / publication
+block time / first-observed-active / ingestion time).
+
+Runtime essentials:
+
+1. Subscribe to each allowlisted mint and indexed token accounts; poll mint
+   state every 30–60s as a reconciliation fallback.
+2. Decode pending transitions and **schedule activation checks independently
+   of account-write subscriptions** (this is the trap — a dividend activates
+   with no transfer).
+3. Supersede replaced-before-activation updates; never book their income.
+4. Determine balance boundaries from finalized chain progression and ordered
+   history, not local wall-clock time.
+5. Join transitions with versioned issuer evidence; preserve every match and
+   rejection reason.
+6. Emit confirmed income only after the necessary history and classification
+   are complete; quarantine ambiguous boundary holdings.
+
+Classification is by **evidence, never by size** — a small split resembles a
+dividend and a special dividend can be large:
+
+| Evidence | Result |
+|---|---|
+| Finalized transition + matching dividend record + reconciled factors | Confirmed dividend |
+| Matching split/reverse split | Adjust quantity basis; zero income |
+| Positive change, no matched action | Unclassified adjustment; no spending |
+| Combined actions | Decompose by issuer factors/ordering; else quarantine |
+| Correction / conflicting sources | Pause affected conversion; append correction |
+| Announced dividend, no transition yet | Upcoming; not spendable |
+
+Wallet history: replay per token account (including non-associated and closed
+accounts, inner instructions, resolved lookup tables) and aggregate by
+ownership at each event. Same-owner transfers are neutral; a receiving wallet
+gets no historical income just because received tokens carry a high
+multiplier. Expose `coverageStart`, `coverageEnd`, and gaps; exclude
+unsupported positions visibly rather than assigning them zero income.
+
+---
+
+## 6. Accounting
+
+> Carried forward from v1 **unchanged** — I verified this section
+> independently and it is correct, including the protected-floor logic and the
+> worked example. This is the part most implementations would get subtly
+> wrong; keep it exactly as specified.
+
+### Units
+
+- `R`: integer base units. `D = 10^decimals`. `B = R/D`. `M`: active
+  multiplier. `Q = B × M`: displayed quantity.
+- `pScaled`: USD per displayed unit. `pUnscaled = M × pScaled`.
+- Value identity: `Q × pScaled = B × pUnscaled`. **Never multiply a scaled
+  balance by an unscaled price.**
+- `R` is BigInt / integer numeric, serialized as string. Preserve original
+  multiplier bytes; derive an exact rational for accounting. Never use JS
+  `number` for money; never apply a blanket epsilon that could erase small
+  dividends.
+
+### Event income
+
+For a verified dividend-only transition on eligible balance `R_event`:
+
+```text
+Q_before = (R_event / D) × M_before
+Q_after  = (R_event / D) × M_after
+dividend_quantity   = Q_after - Q_before
+income_estimate_usd = dividend_quantity × event_price_scaled
+```
+
+With a verified split factor `S` combined with a dividend:
+`dividend_quantity = Q_after - (Q_before × S)`. A pure split yields zero
+income. Negative residuals are corrections, not negative dividends.
+
+Prefer issuer reinvestment price / net cash allocation for USD valuation;
+otherwise a contemporaneous scaled market price labeled **estimated**. Missing
+price → retain quantity with USD `null`, never zero. Do not deduct
+withholding twice.
+
+### Protected floor (the core accounting idea)
+
+Historical income and currently-convertible exposure are different ledgers.
+Maintain a **protected stock-quantity floor `P`** per position epoch:
+
+- New purchase/deposit: `P += deposited_raw / D × current_M`.
+- Dividend: **`P` unchanged.**
+- Verified split: `P = P × S`.
+- Price moves: no effect on `P`.
+
+```text
+available_quantity  = max(0, current_Q - P)
+protected_raw       = ceil(P × D / current_M)
+maximum_harvest_raw = max(0, R_current - protected_raw)
+```
+
+Harvesting consumes available exposure and leaves `P` unchanged. `ceil`
+ensures rounding always favors keeping the user's principal. **Why it
+matters:** naively summing every historical dividend into a spendable balance
+double-counts, because retained dividend exposure earns further dividends. The
+floor computes what is convertible *now*, including growth of retained
+exposure, without minting a second claim.
+
+Ordinary external sale of `W` raw units: `P_after = P_before × (R_before − W)
+/ R_before`, removing the same proportion of unharvested income while
+preserving historical income earned.
+
+The worked example, ledger invariants, and yield metrics from v1 §6.4–§7
+apply unchanged. Do not headline an APY from a single distribution; show
+coverage and valuation status on every metric.
+
+---
+
+## 7. Core product surfaces (Phase 1–2)
+
+### Dashboard
+
+Four primary values: **dividend income**, **available to convert**, **USDC
+received**, **tracking-start date** (shown prominently — coverage honesty is
+the whole credibility of the product). Position rows show scaled quantity,
+value, recent dividend, available income, yield period, status. Keep raw
+multipliers out of the main flow; put chain evidence in expandable detail.
+
+### Event detail
+
+> "Your position gained 0.04 stock-equivalent units from a verified dividend
+> adjustment. Estimated value at the event: $8.12. This remains invested in
+> the stock." — with issuer action, date, valuation source, transaction link.
+
+A split reads "Stock split applied; no dividend income recorded." Missing
+evidence reads "Balance adjustment detected; classification pending." **Never
+show a green income toast for an unclassified increase.**
+
+### Act phase (user-signed, no custody)
+
+If Phase 0.2 clears read-plus-user-signed-conversion: the user selects a
+position, sees a fresh exact-input quote (units sold, minimum USDC, all fees,
+quote lifetime), and the app builds a transaction the user signs **in their
+own wallet**. The builder must decode and validate the transaction before
+signing — expected token programs, source/destination owners, allowed route
+programs, raw debit, minimum output — and reject any unexpected transfer,
+approval, authority change, or account closure. Reconcile against finalized
+balance deltas, not an optimistic toast.
+
+This path has **no vault, no keeper, no custody, no automation**. It is a
+convenience wrapper over a swap the user authorizes each time. Do not label it
+"principal protected on-chain" — a normal wallet can move funds between quote
+and signature.
+
+---
+
+## 8. Delivery sequence (core product)
+
+Assumes one or two engineers. A solo developer sequences the same gates on a
+longer calendar.
+
+| Phase | Estimate | Work | Exit gate |
+|---|---|---|---|
+| **0. Validate** | Days 1–2 | Demand check (0.1), counsel read (0.2), feasibility spike (§4) | Real holder/dividend numbers; regulatory boundary drawn; mechanic proven on real bytes |
+| **1. Ledger + tracker** | Days 3–7 | Indexer, backfill, classification, accounting reducer, dashboard | Historical dividend + split replay, exact reconciliation, honest partial coverage |
+| **2. User-signed cash-out** | Days 8–10 | Quotes, transaction verification, signatures, receipts, export | End-to-end demo; controlled mainnet manual canary |
+| **— decision point —** | | Is demand real (0.1)? Is automation legally clear (0.2)? Is there user pull for it? | Explicit go/no-go on Appendix A |
+
+**The first ~10 days ship the entire wedge.** The tracker is the insight; the
+user-signed conversion is a thin, unregulated-if-0.2-clears convenience. Stop
+here unless the decision point clears.
+
+### First demo script (core)
+
+1. Connect a test wallet holding a supported token.
+2. Show raw quantity, displayed quantity, protected floor in debug detail.
+3. Schedule a dividend multiplier change; let it activate with no account
+   transfer.
+4. Show the verified dividend entry, extra quantity, estimated event value.
+5. Apply a split; confirm income does **not** increase.
+6. (If Act enabled) user signs a conversion of the available portion; show the
+   real receipt.
+
+Keep synthetic demo events visibly separate from verified mainnet history.
+
+---
+
+## Appendix A — Deferred: unattended automation (do not start without the decision point)
+
+> This is the entire vault/keeper/oracle design from v1 §10–§11. It is
+> **correct engineering** and is preserved for when/if it is needed — but it
+> is a different, heavier product than the wedge. It introduces custody, a
+> trust assumption (the classification oracle), an audit requirement, and the
+> regulatory questions of discretionary management. **It begins only after
+> Phase 0.1 shows real demand, Phase 0.2 resolves the boundary, and there is
+> evidence users actually want automation rather than a tracker.**
+
+The deferred scope, in brief (full spec in v1 §10–§11, §13–§15 program tests):
+
+- **Per-user program vault** (Anchor): owner-isolated position per mint plus an
+  income-USDC account. Owner signs deposits and policy; a keeper pays fees and
+  triggers permitted operations but never holds a user key. No pooled
+  accounting, no transferable vault-share token.
+- **Classification oracle**: 2-of-3 independent signers approve
+  evidence-backed action records. This is an explicit **trust assumption, not
+  a trustless dividend proof** — a compromised quorum could misclassify a
+  split and authorize excess sales within caps. Requires conservative
+  owner-set caps, alerts, multisig config, and external review.
+- **Bounded harvest CPI**: atomic checks (active policy, non-replayed intent,
+  complete action sequence, fresh valuation, activation guard window),
+  on-chain recomputation of `maximum_harvest_raw`, a restricted CPI adapter
+  for the exact verified Jupiter route, and full post-swap reconciliation with
+  rollback on any failure.
+- **Emergency exit that works with keeper and attestors offline** — a hard
+  requirement, not a feature.
+- **Execution reliability**: the full intent state machine, persisted signed
+  transactions, rebroadcast-don't-rebuild on timeout, receipt uniqueness, and
+  the economic-limit defaults (slippage ceiling, quote max age, minimum
+  economic order size, corporate-action guard) from v1 §11.
+- **Security gate**: external audit, hostile-execution and replay tests, restore
+  drills, funded per-route canaries. "This document authorizes planning, not
+  live fund movement."
+
+If automation is pursued, its own Phase 0 is the securities-counsel
+determination on discretionary management — resolved **before** the 8-week
+build, not after.
+
+---
+
+## Appendix B — Operations & data (core product)
+
+Carried from v1 §8, §14, condensed to what the tracker needs:
+
+- Postgres with point-in-time recovery; immutable raw-event storage with
+  hashes; a primary RPC/history provider plus an independent reconciliation
+  RPC.
+- Integer numeric for raw amounts; rational or audited fixed-point for the
+  floor; separate decimal USD. **No floating SQL columns for ledger values.**
+- CI gates: lint/typecheck, accounting fixtures + property tests, migration
+  checks, integration replay, transaction-decoder tests.
+- Monitoring: finalized indexing lag (p95 < 60s), income publication latency,
+  exact raw-unit reconciliation at checkpoints (any mismatch disables affected
+  conversion), price/issuer staleness per feed.
+- Incident rules: pause the affected mint on source disagreement; keep reads
+  available; corrections use reversal/replacement entries and never erase a
+  settled receipt.
+- Confirm audience against issuer geographic/person restrictions; do not infer
+  eligibility from wallet connectivity.
+
+---
+
+## Release checklist (core product)
+
+- [ ] **0.1 demand numbers recorded**; product proceeds only if material.
+- [ ] **0.2 counsel read recorded**; Act phase enabled only if clear.
+- [ ] Supported assets come from issuer identities + live mint verification.
+- [ ] A confirmed dividend is distinguishable from a split, forecast, and
+      unclassified adjustment.
+- [ ] Scheduled events, late ingestion, historical transfers, and corrections
+      replay deterministically.
+- [ ] Partial ownership/price history is visible and excluded from yield
+      claims.
+- [ ] Available conversion uses the current protected-floor partition, not
+      cumulative historical USD income.
+- [ ] Actual proceeds and estimated dividend value stay separate.
+- [ ] (Act) User-signed swaps have decoded transaction review, bounded inputs,
+      finalized receipts; nothing labeled "principal protected on-chain."
+- [ ] No custody, no automation, no keeper in the core product.
+
+**Shipping order:** validate demand and boundary → prove one issuer and one
+dividend end to end → make the accounting legible → (optionally) ship
+user-signed conversion → stop and decide before anything custodial. The core
+product is the evidence-backed income ledger. It is the one wedge that is
+confirmed absent, needs no license to display, needs no liquidity to be
+useful, and maps to a real user who wants to see their income.
