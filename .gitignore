@@ -1,11 +1,12 @@
-target/
 node_modules/
-.anchor/
-test-ledger/
 dist/
 .next/
-*.log
+coverage/
 .env
 .env.*
 !.env.example
+*.log
+*.tsbuildinfo
 .DS_Store
+tools/validate/out/
+tools/validate/package*.json

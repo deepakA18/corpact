@@ -1,0 +1,121 @@
+{
+ "_source": "api.xstocks.fi/api/v2/public — recorded 2026-09-13T16:14:12.445Z (multiplier history) and 2026-09-13 (corporate actions history, all versions)",
+ "symbol": "SPYx",
+ "mint": "XsoCS1TfEyfFhfvj8EtZ528L3CaKBDBRqRapnBbDF2W",
+ "multiplierHistory": [
+  {
+   "id": "edb40e5f-97c1-49a3-a26e-ea03f5475537",
+   "reason": "Dividend",
+   "multiplier": 1.005714560286254,
+   "previousMultiplier": 1.003909240011759,
+   "activationDateTime": "2026-06-18T04:00:00.000Z"
+  },
+  {
+   "id": "18c60b9f-b584-4396-a86f-8904ce394d26",
+   "reason": "Dividend",
+   "multiplier": 1.003909240011759,
+   "previousMultiplier": 1.0025607582229898,
+   "activationDateTime": "2026-05-01T00:15:00.000Z"
+  },
+  {
+   "id": "bcede013-57cb-4fb7-b7dc-b1996aea584f",
+   "reason": "Dividend",
+   "multiplier": 1.0025607582229898,
+   "previousMultiplier": 1.00099942056,
+   "activationDateTime": "2026-01-30T23:55:00.000Z"
+  },
+  {
+   "id": "18b849a1-631b-4627-9d7e-fe6f4a9f753a",
+   "reason": "Dividend",
+   "multiplier": 1.00099942056,
+   "previousMultiplier": 1,
+   "activationDateTime": "2025-10-31T23:55:00.000Z"
+  }
+ ],
+ "corporateActions": [
+  {
+   "eventId": "aeb368f9-101e-44ae-b77a-305d11b5237e",
+   "version": 2,
+   "xstockSymbol": "SPYx",
+   "spvSymbol": "SPY",
+   "caType": "CashDividend",
+   "effectiveTimeUtc": "2026-06-18T04:00:00.000Z",
+   "multiplierOld": "1.003909240011759",
+   "multiplierNew": "1.005714560286254",
+   "grossCashflowUsd": "1.903516",
+   "netCashflowUsd": "1.3324612",
+   "withholdingTaxRate": "0.3",
+   "fromUnits": null,
+   "toUnits": null,
+   "redemptionPriceUsd": null,
+   "notes": null,
+   "createdTimeUtc": "2026-06-18T03:34:22.184Z",
+   "status": "Initial",
+   "xstockIsin": "CH1436219716",
+   "spvIsin": "US78462F1030"
+  },
+  {
+   "eventId": "83999b87-53f0-4468-8d07-01fdd938929b",
+   "version": 2,
+   "xstockSymbol": "SPYx",
+   "spvSymbol": "SPY",
+   "caType": "CashDividend",
+   "effectiveTimeUtc": "2026-05-01T00:15:00.000Z",
+   "multiplierOld": "1.002560758222989779",
+   "multiplierNew": "1.003909240011759",
+   "grossCashflowUsd": "1.796999",
+   "netCashflowUsd": null,
+   "withholdingTaxRate": null,
+   "fromUnits": null,
+   "toUnits": null,
+   "redemptionPriceUsd": null,
+   "notes": "Processed at the payable date. Dividend per share calculated in $ 0.9666246302 ",
+   "createdTimeUtc": "2026-04-30T23:50:21.924Z",
+   "status": "Initial",
+   "xstockIsin": "CH1436219716",
+   "spvIsin": "US78462F1030"
+  },
+  {
+   "eventId": "c577c497-172d-4939-9eae-da1dc0eb6c78",
+   "version": 1,
+   "xstockSymbol": "SPYx",
+   "spvSymbol": "SPY",
+   "caType": "CashDividend",
+   "effectiveTimeUtc": "2026-01-30T23:55:00.000Z",
+   "multiplierOld": "1.00099942056",
+   "multiplierNew": "1.002560758222989779",
+   "grossCashflowUsd": "1.993368",
+   "netCashflowUsd": "1.3953576",
+   "withholdingTaxRate": "0.3",
+   "fromUnits": null,
+   "toUnits": null,
+   "redemptionPriceUsd": null,
+   "notes": null,
+   "createdTimeUtc": "2026-01-30T21:31:20.810Z",
+   "status": "Initial",
+   "xstockIsin": "CH1436219716",
+   "spvIsin": "US78462F1030"
+  },
+  {
+   "eventId": "604ecc95-7b67-4f4d-b0b4-786ba513058e",
+   "version": 1,
+   "xstockSymbol": "SPYx",
+   "spvSymbol": "SPY",
+   "caType": "CashDividend",
+   "effectiveTimeUtc": "2025-10-31T23:55:00.000Z",
+   "multiplierOld": "1",
+   "multiplierNew": "1.00099942056",
+   "grossCashflowUsd": "1.831114",
+   "netCashflowUsd": "1.2817798",
+   "withholdingTaxRate": "0.3",
+   "fromUnits": null,
+   "toUnits": null,
+   "redemptionPriceUsd": null,
+   "notes": null,
+   "createdTimeUtc": "2025-10-31T20:41:14.685Z",
+   "status": "Initial",
+   "xstockIsin": "CH1436219716",
+   "spvIsin": "US78462F1030"
+  }
+ ]
+}

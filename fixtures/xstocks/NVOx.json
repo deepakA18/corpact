@@ -1,0 +1,121 @@
+{
+ "_source": "api.xstocks.fi/api/v2/public — recorded 2026-09-13T16:14:12.445Z (multiplier history) and 2026-09-13 (corporate actions history, all versions)",
+ "symbol": "NVOx",
+ "mint": "XsfAzPzYrYjd4Dpa9BU3cusBsvWfVB9gBcyGC87S57n",
+ "multiplierHistory": [
+  {
+   "id": "8d29ef5a-3a07-4fea-b595-fa3d854878b7",
+   "reason": "Dividend",
+   "multiplier": 1.0370549907437874,
+   "previousMultiplier": 1.0306506859428242,
+   "activationDateTime": "2026-08-15T00:30:00.000Z"
+  },
+  {
+   "id": "87e09529-f711-4de7-bb7c-789406ef1244",
+   "reason": "Dividend",
+   "multiplier": 1.0306506859428242,
+   "previousMultiplier": 1.0051095254039053,
+   "activationDateTime": "2026-03-28T23:55:00.000Z"
+  },
+  {
+   "id": "0d66a6e0-8985-4dfb-aa7a-32e3dfc634f9",
+   "reason": "Dividend",
+   "multiplier": 1.0051095254039053,
+   "previousMultiplier": 1.003841218823,
+   "activationDateTime": "2025-09-05T23:55:00.000Z"
+  },
+  {
+   "id": "26f27464-176c-44a4-9609-9bcd60654b45",
+   "reason": "Dividend",
+   "multiplier": 1.003841218823,
+   "previousMultiplier": 1,
+   "activationDateTime": "2025-08-26T23:55:00.000Z"
+  }
+ ],
+ "corporateActions": [
+  {
+   "eventId": "b4eabf32-e0a9-4a57-96aa-5e6069c6ede4",
+   "version": 2,
+   "xstockSymbol": "NVOx",
+   "spvSymbol": "NVO",
+   "caType": "CashDividend",
+   "effectiveTimeUtc": "2026-08-15T00:30:00.000Z",
+   "multiplierOld": "1.0306506859428242",
+   "multiplierNew": "1.0370549907437874",
+   "grossCashflowUsd": "0.407362",
+   "netCashflowUsd": "0.2851534",
+   "withholdingTaxRate": "0.3",
+   "fromUnits": null,
+   "toUnits": null,
+   "redemptionPriceUsd": null,
+   "notes": null,
+   "createdTimeUtc": "2026-08-14T20:55:32.637Z",
+   "status": "Initial",
+   "xstockIsin": "CH1436219443",
+   "spvIsin": "US6701002056"
+  },
+  {
+   "eventId": "a0e1223a-ab7a-4ea9-a433-059b52940f40",
+   "version": 2,
+   "xstockSymbol": "NVOx",
+   "spvSymbol": "NVO",
+   "caType": "CashDividend",
+   "effectiveTimeUtc": "2026-03-28T23:55:00.000Z",
+   "multiplierOld": "1.005109525403905239",
+   "multiplierNew": "1.0306506859428242",
+   "grossCashflowUsd": "0.915824",
+   "netCashflowUsd": null,
+   "withholdingTaxRate": null,
+   "fromUnits": null,
+   "toUnits": null,
+   "redemptionPriceUsd": null,
+   "notes": null,
+   "createdTimeUtc": "2026-03-28T12:12:50.594Z",
+   "status": "Initial",
+   "xstockIsin": "CH1436219443",
+   "spvIsin": "US6701002056"
+  },
+  {
+   "eventId": "52063999-ed43-45a1-bc83-7d745ef85409",
+   "version": 2,
+   "xstockSymbol": "NVOx",
+   "spvSymbol": "NVO",
+   "caType": "CashDividend",
+   "effectiveTimeUtc": "2025-09-05T23:55:00.000Z",
+   "multiplierOld": "1.003841218823",
+   "multiplierNew": "1.005109525403905239",
+   "grossCashflowUsd": "0",
+   "netCashflowUsd": "0.1232128",
+   "withholdingTaxRate": "0",
+   "fromUnits": null,
+   "toUnits": null,
+   "redemptionPriceUsd": null,
+   "notes": "We were incorrectly charged 30% WHT, even though NVO is a foreign company. The issue was fixed on Sep 05, which led us to adjust multiplier again, new total net dividend value is 41,1554 cents, delta vs previously recorded net dividend is 12,32128",
+   "createdTimeUtc": "2025-09-05T20:39:30.261Z",
+   "status": "Corrected",
+   "xstockIsin": "CH1436219443",
+   "spvIsin": "US6701002056"
+  },
+  {
+   "eventId": "52063999-ed43-45a1-bc83-7d745ef85409",
+   "version": 1,
+   "xstockSymbol": "NVOx",
+   "spvSymbol": "NVO",
+   "caType": "CashDividend",
+   "effectiveTimeUtc": "2025-08-26T23:55:00.000Z",
+   "multiplierOld": "1",
+   "multiplierNew": "1.003841218823",
+   "grossCashflowUsd": "0.411554",
+   "netCashflowUsd": "0.2883412",
+   "withholdingTaxRate": "0.3",
+   "fromUnits": null,
+   "toUnits": null,
+   "redemptionPriceUsd": null,
+   "notes": null,
+   "createdTimeUtc": "2025-08-26T20:38:17.104Z",
+   "status": "Initial",
+   "xstockIsin": "CH1436219443",
+   "spvIsin": "US6701002056"
+  }
+ ]
+}

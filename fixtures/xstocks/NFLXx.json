@@ -1,0 +1,37 @@
+{
+ "_source": "api.xstocks.fi/api/v2/public — recorded 2026-09-13T16:14:12.445Z (multiplier history) and 2026-09-13 (corporate actions history, all versions)",
+ "symbol": "NFLXx",
+ "mint": "XsEH7wWfJJu2ZT3UCFeVfALnVA6CP5ur7Ee11KmzVpL",
+ "multiplierHistory": [
+  {
+   "id": "1f11136b-c16e-4b18-802e-6244326e1144",
+   "reason": "Split",
+   "multiplier": 10,
+   "previousMultiplier": 1,
+   "activationDateTime": "2025-11-16T23:55:00.000Z"
+  }
+ ],
+ "corporateActions": [
+  {
+   "eventId": "4efcfed6-2e00-45f3-9e87-f1b5e0367400",
+   "version": 1,
+   "xstockSymbol": "NFLXx",
+   "spvSymbol": "NFLX",
+   "caType": "ForwardSplit",
+   "effectiveTimeUtc": "2025-11-16T23:55:00.000Z",
+   "multiplierOld": "1",
+   "multiplierNew": "10",
+   "grossCashflowUsd": null,
+   "netCashflowUsd": null,
+   "withholdingTaxRate": null,
+   "fromUnits": "1",
+   "toUnits": "10",
+   "redemptionPriceUsd": null,
+   "notes": null,
+   "createdTimeUtc": "2025-11-16T12:24:50.706Z",
+   "status": "Initial",
+   "xstockIsin": "CH1436219526",
+   "spvIsin": "US64110L1061"
+  }
+ ]
+}

@@ -1,0 +1,5763 @@
+{
+ "_source": "Recorded from api.xstocks.fi/api/v2/public during Phase 0 validation (2026-09-13T16:14:12.445Z and 2026-09-13). Development-time recording; the build reads these files instead of polling the live feed. Data rights unresolved - see docs/findings/counsel-questions-api.md.",
+ "bySymbol": {
+  "XRXx": [],
+  "FLNCx": [],
+  "PCTx": [],
+  "WRLDx": [],
+  "WGSx": [],
+  "INDIx": [],
+  "BETRx": [],
+  "QUBTx": [],
+  "METCx": [],
+  "WYFIx": [],
+  "DRSx": [],
+  "AIx": [],
+  "GSATx": [],
+  "MPx": [],
+  "SAILx": [],
+  "DVAx": [],
+  "BSYx": [],
+  "SCIx": [],
+  "DYx": [],
+  "DCIx": [],
+  "RYANx": [],
+  "FRHCx": [],
+  "BXPx": [],
+  "GDDYx": [],
+  "SMTCx": [],
+  "FDSx": [
+   {
+    "id": "09040efe-3992-4ecb-8b0a-17292c8682c8",
+    "reason": "Dividend",
+    "multiplier": 1.002628001812415,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-29T00:30:00.000Z"
+   }
+  ],
+  "ALSNx": [],
+  "WMSx": [
+   {
+    "id": "85249784-685a-4a0b-8585-90e09fa43081",
+    "reason": "Dividend",
+    "multiplier": 1.001031459515214,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-01T00:30:00.000Z"
+   }
+  ],
+  "AMx": [],
+  "SFx": [
+   {
+    "id": "36888dba-f0fc-40ca-ab07-5a77e2e12c63",
+    "reason": "Dividend",
+    "multiplier": 1.002946273830156,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-01T00:00:00.000Z"
+   }
+  ],
+  "AEISx": [],
+  "TTMIx": [],
+  "BPOPx": [],
+  "DPZx": [],
+  "AXSMx": [],
+  "EGPx": [],
+  "EHCx": [],
+  "HIIx": [],
+  "KTOSx": [],
+  "PAGx": [],
+  "SEICx": [],
+  "HRLx": [],
+  "WTRGx": [],
+  "MGMx": [],
+  "HALOx": [],
+  "GFLx": [],
+  "ARx": [],
+  "DOCUx": [],
+  "IESCx": [],
+  "AMKRx": [],
+  "GMEDx": [],
+  "JKHYx": [],
+  "AFGx": [],
+  "HUBSx": [],
+  "AMHx": [],
+  "FIVEx": [],
+  "BMRNx": [],
+  "JEFx": [],
+  "OCx": [],
+  "CRx": [
+   {
+    "id": "6e95b220-17be-4de8-b9d4-d3b25410eef4",
+    "reason": "Dividend",
+    "multiplier": 1.0008623188405796,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-29T00:30:00.000Z"
+   }
+  ],
+  "VNOMx": [],
+  "IVZx": [],
+  "AHRx": [],
+  "MDGLx": [],
+  "UHALx": [],
+  "ITx": [],
+  "NWSAx": [],
+  "AURx": [],
+  "ARWRx": [],
+  "STRLx": [],
+  "CORTx": [],
+  "Hx": [
+   {
+    "id": "044d0188-8d3c-4f04-9672-e9023779df2d",
+    "reason": "Dividend",
+    "multiplier": 1.0005913161006927,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-27T00:30:00.000Z"
+   }
+  ],
+  "MANHx": [],
+  "BAXx": [],
+  "RVTYx": [],
+  "NWSx": [],
+  "GWREx": [],
+  "CACIx": [],
+  "BBIOx": [],
+  "Wx": [],
+  "FNx": [],
+  "TXRHx": [
+   {
+    "id": "1a2beb68-19c6-4b77-b29f-ef52e05e7b52",
+    "reason": "Dividend",
+    "multiplier": 1.0026840490797546,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-01T00:30:00.000Z"
+   }
+  ],
+  "DINOx": [],
+  "CNAx": [],
+  "DOCNx": [],
+  "AGNCx": [
+   {
+    "id": "bf1dc5bc-0bcf-4380-9757-22664dbff009",
+    "reason": "Dividend",
+    "multiplier": 1.0077064220183487,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-29T00:30:00.000Z"
+   }
+  ],
+  "ULSx": [
+   {
+    "id": "ae7dd918-95e4-4b68-9bd9-62bf180991cc",
+    "reason": "Dividend",
+    "multiplier": 1.001015,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-29T00:30:00.000Z"
+   }
+  ],
+  "CCKx": [],
+  "MEDPx": [],
+  "WTSx": [
+   {
+    "id": "9e0bdc3b-8b0d-47f2-bf70-bbbade80c276",
+    "reason": "Dividend",
+    "multiplier": 1.0012057416267943,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-01T00:30:00.000Z"
+   }
+  ],
+  "HLx": [],
+  "NVRx": [],
+  "CRBGx": [],
+  "OWLx": [],
+  "RBRKx": [],
+  "Ux": [],
+  "ASx": [],
+  "IOTx": [],
+  "CDEx": [],
+  "GFSx": [],
+  "BENx": [],
+  "IONQx": [],
+  "MVLLx": [],
+  "UIx": [
+   {
+    "id": "4d86bfa8-6d04-43c3-bd8e-befd5a3d9df7",
+    "reason": "Dividend",
+    "multiplier": 1.0011679319262534,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-29T00:30:00.000Z"
+   }
+  ],
+  "DRAMx": [],
+  "GHx": [],
+  "TOSTx": [],
+  "AFRMx": [],
+  "KORUx": [],
+  "MUUx": [],
+  "INTWx": [],
+  "AXTIx": [],
+  "SOXSx": [],
+  "DJTx": [],
+  "SUOPTx": [],
+  "MMGx": [],
+  "NWGx": [],
+  "BANKCx": [],
+  "SNXXx": [],
+  "SHEINx": [],
+  "JDLOGx": [],
+  "CTINSx": [],
+  "TNGYIx": [],
+  "KUNLx": [],
+  "ZHAOMx": [],
+  "LAOPGx": [],
+  "WRFHDx": [],
+  "SNBIOx": [],
+  "HAIDLx": [],
+  "ENNHLx": [],
+  "SMOIHx": [],
+  "SZIGHx": [],
+  "JTGEXx": [],
+  "CRESMx": [
+   {
+    "id": "7b8bc128-0529-4d9e-82fd-4ec8f89774e7",
+    "reason": "Dividend",
+    "multiplier": 1.02783530572,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-10T00:30:00.000Z"
+   }
+  ],
+  "CSPCx": [],
+  "CMERPx": [],
+  "CRESBx": [],
+  "HRZRBx": [],
+  "BDWAPx": [],
+  "WHRFRx": [],
+  "CMENDx": [],
+  "ASMPTx": [],
+  "WXXDCx": [],
+  "MIXUx": [],
+  "PRADx": [],
+  "SITCx": [],
+  "CRESPx": [],
+  "JDHLTx": [],
+  "SNDSCx": [],
+  "SINOTx": [
+   {
+    "id": "188cd9d8-0555-43ee-ad3a-3a17f0f28459",
+    "reason": "Dividend",
+    "multiplier": 1.026433691756,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-10T00:30:00.000Z"
+   }
+  ],
+  "SINOx": [],
+  "WHGROx": [
+   {
+    "id": "b2103179-673a-4f2a-9501-8d793c25d6a0",
+    "reason": "Dividend",
+    "multiplier": 1.029261155816,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-11T00:30:00.000Z"
+   }
+  ],
+  "CLONPx": [],
+  "CTFJWx": [],
+  "PWAHLx": [],
+  "CTPCAx": [],
+  "CRAUTx": [],
+  "CKAHx": [
+   {
+    "id": "4632181c-9906-429c-bda0-58fc8f7ab55a",
+    "reason": "Dividend",
+    "multiplier": 1.008563074352548,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-13T23:55:00.000Z"
+   }
+  ],
+  "CLPHDx": [],
+  "GENTEx": [],
+  "SWPRPx": [],
+  "WUXIBx": [],
+  "NONGx": [],
+  "COVELx": [],
+  "HKCGAx": [],
+  "HKEXCx": [],
+  "CKINFx": [],
+  "KUAIx": [],
+  "HNDLDx": [],
+  "PICCx": [],
+  "MTRCPx": [],
+  "CHONGx": [],
+  "MEITx": [],
+  "GEELx": [],
+  "BOCHKx": [],
+  "COSCx": [],
+  "CKHUTx": [
+   {
+    "id": "243f5841-8c75-4443-96fe-f199ec143749",
+    "reason": "Dividend",
+    "multiplier": 1.0108278867102396,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-13T23:55:00.000Z"
+   }
+  ],
+  "BOCOMx": [],
+  "CPETCx": [],
+  "POPMTx": [],
+  "ZJGLDx": [],
+  "HAIERx": [],
+  "CITICx": [
+   {
+    "id": "3e7a7d2b-da5f-413c-be11-3235587d09c0",
+    "reason": "Dividend",
+    "multiplier": 1.0176757902403497,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-13T23:55:00.000Z"
+   }
+  ],
+  "CRESLx": [
+   {
+    "id": "ade50e31-cd81-40d7-b570-4ee61333e16d",
+    "reason": "Dividend",
+    "multiplier": 1.007684630739,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-10T00:30:00.000Z"
+   }
+  ],
+  "ANTASx": [],
+  "PSBOCx": [],
+  "XIAOx": [],
+  "CCONBx": [],
+  "BYDCOx": [],
+  "CSHEEx": [],
+  "ICBCx": [],
+  "AIAGRx": [],
+  "PICOx": [],
+  "CLINSx": [],
+  "TCENTx": [],
+  "TWSTx": [],
+  "CBRSx": [],
+  "CRWVx": [],
+  "NBISx": [],
+  "TEx": [],
+  "QUREx": [],
+  "SHAZx": [],
+  "ARMx": [],
+  "AAOIx": [],
+  "VIKx": [],
+  "BEx": [],
+  "BKRx": [
+   {
+    "id": "7e39e8e2-0b2a-4c3b-8a7a-1a9580114307",
+    "reason": "Dividend",
+    "multiplier": 1.002565737052,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-07T00:30:00.000Z"
+   }
+  ],
+  "SKHYx": [],
+  "JMKEx": [],
+  "PENx": [],
+  "BJx": [],
+  "FDXFx": [],
+  "NYTx": [],
+  "ELANx": [],
+  "TLNx": [],
+  "RNRx": [],
+  "SJMx": [
+   {
+    "id": "b1761e43-e498-4cc3-a69c-1a1a8b77397c",
+    "reason": "Dividend",
+    "multiplier": 1.006499212468,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-14T00:30:00.000Z"
+   }
+  ],
+  "CDWx": [
+   {
+    "id": "56f914a1-beeb-4e69-a515-210088e690df",
+    "reason": "Dividend",
+    "multiplier": 1.003213114754,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-25T00:30:00.000Z"
+   }
+  ],
+  "QSRx": [],
+  "BNYx": [],
+  "MKCx": [],
+  "FHNx": [
+   {
+    "id": "0bddc65a-e2bd-4b0b-96ba-1b9f7ee09005",
+    "reason": "Dividend",
+    "multiplier": 1.004806138934,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-11T00:30:00.000Z"
+   }
+  ],
+  "VLTOx": [],
+  "RBAx": [
+   {
+    "id": "ac914803-8a65-4f83-a3e9-44cc24d48501",
+    "reason": "Dividend",
+    "multiplier": 1.002943975258713,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-25T00:30:00.000Z"
+   }
+  ],
+  "EGx": [
+   {
+    "id": "4115040f-c03b-4527-ae5e-e03d751a3d74",
+    "reason": "Dividend",
+    "multiplier": 1.005407890111673,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-09T00:30:00.000Z"
+   }
+  ],
+  "CLXx": [
+   {
+    "id": "02846174-ff06-42f6-9984-eb3d53b8e997",
+    "reason": "Dividend",
+    "multiplier": 1.008083140878,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-12T00:30:00.000Z"
+   }
+  ],
+  "APGx": [],
+  "ROIVx": [],
+  "TRMBx": [],
+  "APAx": [],
+  "CHTRx": [],
+  "HASx": [
+   {
+    "id": "68945a59-73c6-42dd-9ef1-efabe65b759d",
+    "reason": "Dividend",
+    "multiplier": 1.005213320566,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-19T00:30:00.000Z"
+   }
+  ],
+  "TWx": [
+   {
+    "id": "cde7660f-5263-4300-a25a-53bd63eb3d8b",
+    "reason": "Dividend",
+    "multiplier": 1.000909935005,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-01T00:30:00.000Z"
+   }
+  ],
+  "KNXx": [
+   {
+    "id": "16cea003-1448-4fbf-85e8-333d8736c2fd",
+    "reason": "Dividend",
+    "multiplier": 1.00201236165,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-04T00:30:00.000Z"
+   }
+  ],
+  "CPTx": [],
+  "TYLx": [],
+  "AITx": [
+   {
+    "id": "22b56667-6138-42b7-ac26-85bae30ea7e1",
+    "reason": "Dividend",
+    "multiplier": 1.000998266316,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-14T00:30:00.000Z"
+   }
+  ],
+  "GGGx": [],
+  "PNWx": [
+   {
+    "id": "2d873abe-2a7a-4c2d-b1dc-daa728f3511b",
+    "reason": "Dividend",
+    "multiplier": 1.006307555203,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-01T00:30:00.000Z"
+   }
+  ],
+  "DTx": [],
+  "CGx": [
+   {
+    "id": "26daa4c4-16b2-4c11-a269-46c10366ed97",
+    "reason": "Dividend",
+    "multiplier": 1.004971590909,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-15T00:30:00.000Z"
+   }
+  ],
+  "SAIAx": [],
+  "ALLYx": [
+   {
+    "id": "551005fd-6fba-4cdc-b606-ecb250e48129",
+    "reason": "Dividend",
+    "multiplier": 1.004829806808,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-07-31T00:30:00.000Z"
+   }
+  ],
+  "ZBRAx": [],
+  "ELSx": [],
+  "ALGNx": [],
+  "RIVNx": [],
+  "PRx": [],
+  "NTNXx": [],
+  "AIZx": [
+   {
+    "id": "6dbf4bea-864e-4b2d-b867-80c99095fcb3",
+    "reason": "Dividend",
+    "multiplier": 1.002156485209,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-29T00:30:00.000Z"
+   }
+  ],
+  "AVYx": [
+   {
+    "id": "81140f95-ec18-420c-8474-baa7710db2b3",
+    "reason": "Dividend",
+    "multiplier": 1.004044606229,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-02T00:30:00.000Z"
+   }
+  ],
+  "ARWx": [],
+  "GLPIx": [
+   {
+    "id": "018b5699-1d1c-4996-a360-53c18844d458",
+    "reason": "Dividend",
+    "multiplier": 1.014006832601,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-11T00:30:00.000Z"
+   }
+  ],
+  "SWKx": [
+   {
+    "id": "77734250-3bdd-4413-bc26-00cce25e0cfa",
+    "reason": "Dividend",
+    "multiplier": 1.006039441249,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-05T00:30:00.000Z"
+   }
+  ],
+  "TRUx": [
+   {
+    "id": "074bf681-828f-40a2-b002-5ed33773354b",
+    "reason": "Dividend",
+    "multiplier": 1.001047402442,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-20T00:30:00.000Z"
+   }
+  ],
+  "UDRx": [
+   {
+    "id": "8fae0d25-c1ad-4f20-aa5d-de05f27cebcc",
+    "reason": "Dividend",
+    "multiplier": 1.002675276753,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-15T00:30:00.000Z"
+   }
+  ],
+  "PINSx": [],
+  "ZSx": [],
+  "SOLSx": [
+   {
+    "id": "8d3c6e0c-1d20-4c1b-aa2e-9a04fbd99e0f",
+    "reason": "Dividend",
+    "multiplier": 1.000931346461,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-27T00:30:00.000Z"
+   }
+  ],
+  "JLLx": [],
+  "DOCx": [
+   {
+    "id": "d698b755-3f87-4357-9ff1-a968260a3c93",
+    "reason": "Dividend",
+    "multiplier": 1.0069410957723546,
+    "previousMultiplier": 1.003423232323,
+    "activationDateTime": "2026-09-12T00:30:00.000Z"
+   },
+   {
+    "id": "8ce72612-86d0-430a-90e5-4c3cdd0d86b0",
+    "reason": "Dividend",
+    "multiplier": 1.003423232323,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-15T00:30:00.000Z"
+   }
+  ],
+  "COOx": [],
+  "PTCx": [],
+  "LECOx": [],
+  "SUIx": [],
+  "WSOx": [],
+  "WRBx": [],
+  "FNFx": [],
+  "OHIx": [
+   {
+    "id": "cf506139-51c6-4a67-9ff0-fc1e79b220ac",
+    "reason": "Dividend",
+    "multiplier": 1.009401540589,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-01T00:30:00.000Z"
+   }
+  ],
+  "BRx": [
+   {
+    "id": "1fcc0d37-4e08-46bc-9d62-81af1903c3aa",
+    "reason": "Dividend",
+    "multiplier": 1.004285072447,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-03T00:30:00.000Z"
+   }
+  ],
+  "CSGPx": [],
+  "GLx": [],
+  "THCx": [],
+  "ROLx": [
+   {
+    "id": "744f4784-90e9-4259-95eb-8d565cd7c372",
+    "reason": "Dividend",
+    "multiplier": 1.00338500265,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-08T00:30:00.000Z"
+   }
+  ],
+  "MAAx": [],
+  "EQHx": [
+   {
+    "id": "e64856ef-7b4a-4b95-bb53-8417c1f49a3f",
+    "reason": "Dividend",
+    "multiplier": 1.004407135362,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-01T00:30:00.000Z"
+   }
+  ],
+  "UNMx": [],
+  "DECKx": [],
+  "SGIx": [
+   {
+    "id": "b91c1683-3321-4e61-95a7-2ebabd431896",
+    "reason": "Dividend",
+    "multiplier": 1.001802484096,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-20T00:30:00.000Z"
+   }
+  ],
+  "NBIXx": [],
+  "RGAx": [
+   {
+    "id": "f008d76d-a09b-4b0e-abaf-03d8d54097f3",
+    "reason": "Dividend",
+    "multiplier": 1.002777552838,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-18T00:30:00.000Z"
+   }
+  ],
+  "EXELx": [],
+  "Jx": [
+   {
+    "id": "a9a82399-9ded-4450-86ed-f5bad001374a",
+    "reason": "Dividend",
+    "multiplier": 1.001703393268,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-21T00:30:00.000Z"
+   }
+  ],
+  "LDOSx": [],
+  "DKSx": [
+   {
+    "id": "8fea0c38-8234-465e-8183-52c97120fed1",
+    "reason": "Dividend",
+    "multiplier": 1.006572029443,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-11T00:30:00.000Z"
+   }
+  ],
+  "PFGCx": [],
+  "REGx": [
+   {
+    "id": "15b32ac0-5e9d-4380-9f4c-ab1134aab818",
+    "reason": "Dividend",
+    "multiplier": 1.007017660337,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-11T00:30:00.000Z"
+   }
+  ],
+  "PNFPx": [
+   {
+    "id": "d0274570-226e-43e4-8add-e6c4cc62aeb2",
+    "reason": "Dividend",
+    "multiplier": 1.003288546462,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-07T00:30:00.000Z"
+   }
+  ],
+  "DKNGx": [],
+  "BALLx": [
+   {
+    "id": "c0bca255-c717-4916-b754-6a7cf47d1921",
+    "reason": "Dividend",
+    "multiplier": 1.002223280927,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-01T00:30:00.000Z"
+   }
+  ],
+  "ROKUx": [],
+  "LAMRx": [],
+  "EVRx": [
+   {
+    "id": "421ab90d-6335-4d37-873f-85da217983f3",
+    "reason": "Dividend",
+    "multiplier": 1.002132685198,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-28T00:30:00.000Z"
+   }
+  ],
+  "BWAx": [
+   {
+    "id": "203e3733-b516-4d44-b604-60f93697431b",
+    "reason": "Dividend",
+    "multiplier": 1.001854738155,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-01T00:30:00.000Z"
+   }
+  ],
+  "RPMx": [],
+  "CBREx": [],
+  "SSNCx": [
+   {
+    "id": "8d180ad2-6145-40c8-b459-3b69f09bd689",
+    "reason": "Dividend",
+    "multiplier": 1.002531035314,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-01T00:30:00.000Z"
+   }
+  ],
+  "RRXx": [],
+  "GENx": [
+   {
+    "id": "e19da21a-65b3-4e8a-88c5-0ba32eb02f2f",
+    "reason": "Dividend",
+    "multiplier": 1.003072331461,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-15T00:30:00.000Z"
+   }
+  ],
+  "ARMKx": [
+   {
+    "id": "d1686c45-851b-439f-8110-1dc706dc7d06",
+    "reason": "Dividend",
+    "multiplier": 1.001388429752,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-19T00:30:00.000Z"
+   }
+  ],
+  "GPCx": [
+   {
+    "id": "b9ba6271-a25b-4f23-9b56-4af3472534e2",
+    "reason": "Dividend",
+    "multiplier": 1.005404374364,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-04T00:30:00.000Z"
+   }
+  ],
+  "TOLx": [],
+  "XYZx": [],
+  "RLx": [],
+  "AAx": [
+   {
+    "id": "3f63cd77-21d1-42e4-9f82-c2cf8eb3bb09",
+    "reason": "Dividend",
+    "multiplier": 1.001355800891,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-11T00:30:00.000Z"
+   }
+  ],
+  "CLHx": [],
+  "BBYx": [],
+  "HEIx": [],
+  "KMIx": [
+   {
+    "id": "e231ee8b-6222-437b-8f49-359dfc0b093d",
+    "reason": "Dividend",
+    "multiplier": 1.006471410814,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-01T00:30:00.000Z"
+   }
+  ],
+  "RDDTx": [],
+  "CVNAx": [],
+  "SCCOx": [
+   {
+    "id": "cfca7751-0934-4714-98a9-55aaecf895e6",
+    "reason": "Dividend",
+    "multiplier": 1.019224471246712,
+    "previousMultiplier": 1.003847883664,
+    "activationDateTime": "2026-08-12T00:30:00.000Z"
+   },
+   {
+    "id": "5808aadc-4b9d-4a7c-a35a-c55a92ac7b1d",
+    "reason": "Dividend",
+    "multiplier": 1.003847883664,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-11T00:30:00.000Z"
+   }
+  ],
+  "MLIx": [
+   {
+    "id": "ba360994-f285-4fcd-b840-0a03a4469e90",
+    "reason": "Dividend",
+    "multiplier": 1.001945679797,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-04T00:30:00.000Z"
+   }
+  ],
+  "CSLx": [
+   {
+    "id": "088f029f-8b0e-4ff9-9f4c-1d749b0e129d",
+    "reason": "Dividend",
+    "multiplier": 1.002455382198,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-19T00:30:00.000Z"
+   }
+  ],
+  "TEAMx": [],
+  "NDAQx": [
+   {
+    "id": "f8e7f7f2-8968-414c-9d98-ef42de93305f",
+    "reason": "Dividend",
+    "multiplier": 1.0023584393,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-11T00:30:00.000Z"
+   }
+  ],
+  "LVSx": [
+   {
+    "id": "13d34f9c-2933-4e57-9bbb-8b3e4e546d72",
+    "reason": "Dividend",
+    "multiplier": 1.004441624365,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-04T00:30:00.000Z"
+   }
+  ],
+  "Px": [],
+  "ITTx": [
+   {
+    "id": "1a8cf706-d6e0-46ba-a7a6-6304ab9aa401",
+    "reason": "Dividend",
+    "multiplier": 1.001322370675,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-05T00:30:00.000Z"
+   }
+  ],
+  "GNRCx": [],
+  "MASx": [
+   {
+    "id": "3a6d4360-03c5-46a5-addb-83c81adcde7e",
+    "reason": "Dividend",
+    "multiplier": 1.00305635148,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-22T00:30:00.000Z"
+   }
+  ],
+  "WPCx": [],
+  "OKTAx": [],
+  "TSNx": [
+   {
+    "id": "fd8d9647-fff0-456a-9e8e-4822ac7dae59",
+    "reason": "Dividend",
+    "multiplier": 1.006474428727,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-01T00:30:00.000Z"
+   }
+  ],
+  "ELx": [
+   {
+    "id": "be78156c-bf90-4753-a497-96aab9039b54",
+    "reason": "Dividend",
+    "multiplier": 1.002369668246,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-29T00:30:00.000Z"
+   }
+  ],
+  "IBKRx": [
+   {
+    "id": "9f6183e0-86c0-4ee9-947a-2abbce84d630",
+    "reason": "Dividend",
+    "multiplier": 1.000629561106,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-01T00:30:00.000Z"
+   }
+  ],
+  "CFx": [
+   {
+    "id": "21d81992-31db-44ed-bc0d-14babfe0f0f6",
+    "reason": "Dividend",
+    "multiplier": 1.003588210167,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-14T00:30:00.000Z"
+   }
+  ],
+  "OVVx": [],
+  "ARESx": [],
+  "NLYx": [],
+  "NDSNx": [
+   {
+    "id": "ed601c8c-a5f9-4cf2-8045-4bd00375ac85",
+    "reason": "Dividend",
+    "multiplier": 1.0020959419,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-10T00:30:00.000Z"
+   }
+  ],
+  "TWLOx": [],
+  "GPNx": [
+   {
+    "id": "69d86476-a9fd-4e21-baee-a217d02acd10",
+    "reason": "Dividend",
+    "multiplier": 1.001976284585,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-11T00:30:00.000Z"
+   }
+  ],
+  "CPNGx": [],
+  "ONTOx": [],
+  "DASHx": [],
+  "ZTSx": [],
+  "UPSx": [
+   {
+    "id": "691d5b1a-21a4-4d84-a9ac-d28eb8bb1e7d",
+    "reason": "Dividend",
+    "multiplier": 1.010985645933,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-15T00:30:00.000Z"
+   }
+  ],
+  "MDBx": [],
+  "FCNCAx": [
+   {
+    "id": "f0fab0f1-7e5b-44be-87a5-97ee99b01c5f",
+    "reason": "Dividend",
+    "multiplier": 1.00066998774,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-29T00:30:00.000Z"
+   }
+  ],
+  "CTSHx": [
+   {
+    "id": "01b26b94-6b43-4075-9923-8c93455974ae",
+    "reason": "Dividend",
+    "multiplier": 1.004080551139,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-18T00:30:00.000Z"
+   }
+  ],
+  "STZx": [
+   {
+    "id": "3b1abd99-2749-415c-ba6e-61e0bea09418",
+    "reason": "Dividend",
+    "multiplier": 1.005472485769,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-07-30T00:30:00.000Z"
+   }
+  ],
+  "VEEVx": [],
+  "TXTx": [
+   {
+    "id": "153497c3-d623-460d-be63-3784c7c3e604",
+    "reason": "Dividend",
+    "multiplier": 1.000176767677,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-11T00:30:00.000Z"
+   }
+  ],
+  "ABNBx": [],
+  "LENx": [],
+  "BAMx": [
+   {
+    "id": "245c28d7-491f-4d0f-9f8a-1579f6eaafbf",
+    "reason": "Dividend",
+    "multiplier": 1.0072309094397545,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-29T00:30:00.000Z"
+   }
+  ],
+  "INCYx": [],
+  "NKEx": [
+   {
+    "id": "54af9b0c-ecf9-4791-96ad-c91a88105a1c",
+    "reason": "Dividend",
+    "multiplier": 1.007347670251,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-01T00:30:00.000Z"
+   }
+  ],
+  "MARx": [
+   {
+    "id": "976b8251-481a-4740-adcd-41b81bab9bb8",
+    "reason": "Dividend",
+    "multiplier": 1.001419641617,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-20T00:30:00.000Z"
+   }
+  ],
+  "MDLZx": [],
+  "WDAYx": [],
+  "SBACx": [
+   {
+    "id": "72c8d690-ecd5-49a5-87fa-6fa5b192242d",
+    "reason": "Dividend",
+    "multiplier": 1.004796360248,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-20T00:30:00.000Z"
+   }
+  ],
+  "TSCOx": [
+   {
+    "id": "df9fb716-3a3b-4d65-91e5-f15d9202c5c7",
+    "reason": "Dividend",
+    "multiplier": 1.004802744425,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-22T00:30:00.000Z"
+   }
+  ],
+  "FISVx": [],
+  "APHx": [
+   {
+    "id": "303b5f48-ae27-4805-94db-dc8521338d1d",
+    "reason": "Split",
+    "multiplier": 2,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-03T08:45:00.000Z"
+   }
+  ],
+  "KEYx": [
+   {
+    "id": "b50216e8-8ed8-4842-bc11-b30b07735495",
+    "reason": "Dividend",
+    "multiplier": 1.006640444239,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-01T00:30:00.000Z"
+   }
+  ],
+  "DDOGx": [],
+  "CMEx": [
+   {
+    "id": "d9fee4af-e871-4030-beed-3e4ff7f0a52b",
+    "reason": "Dividend",
+    "multiplier": 1.003270675341,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-09T00:30:00.000Z"
+   }
+  ],
+  "SYFx": [
+   {
+    "id": "dee98865-b10f-4903-8bc5-89b5e84ab172",
+    "reason": "Dividend",
+    "multiplier": 1.003009610521,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-05T00:30:00.000Z"
+   }
+  ],
+  "FISx": [
+   {
+    "id": "b3419b6e-86f7-4c93-9c4a-dfd7b596942f",
+    "reason": "Dividend",
+    "multiplier": 1.007995846314,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-11T00:30:00.000Z"
+   }
+  ],
+  "ALBx": [
+   {
+    "id": "e5d0566e-1fc4-4436-b644-2e1fa120293d",
+    "reason": "Dividend",
+    "multiplier": 1.002350339858,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-11T00:30:00.000Z"
+   }
+  ],
+  "CHDx": [
+   {
+    "id": "8fca6736-cefd-4e62-b793-300eb6561b72",
+    "reason": "Dividend",
+    "multiplier": 1.002124457165,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-14T00:30:00.000Z"
+   }
+  ],
+  "WWDx": [
+   {
+    "id": "c82c8d81-9c64-4798-a583-17ddb743a392",
+    "reason": "Dividend",
+    "multiplier": 1.000622308654,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-20T00:30:00.000Z"
+   }
+  ],
+  "PFGx": [
+   {
+    "id": "2b18b7ab-3aa6-48dc-84b9-1ffe1e3cce21",
+    "reason": "Dividend",
+    "multiplier": 1.005282544246,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-03T00:30:00.000Z"
+   }
+  ],
+  "FTVx": [
+   {
+    "id": "ee54e6e6-be8f-4a28-acf9-09c54b366bfe",
+    "reason": "Dividend",
+    "multiplier": 1.000851137745,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-04T00:30:00.000Z"
+   }
+  ],
+  "OMCx": [],
+  "WSTx": [
+   {
+    "id": "4a71d6a7-5f6f-4017-a501-d8a9156494b1",
+    "reason": "Dividend",
+    "multiplier": 1.000456973294,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-07-29T00:30:00.000Z"
+   }
+  ],
+  "UTHRx": [],
+  "DGXx": [],
+  "DRIx": [],
+  "DGx": [],
+  "ESSx": [],
+  "Lx": [
+   {
+    "id": "e905eef8-8868-47c5-ab95-13b7e573ac13",
+    "reason": "Dividend",
+    "multiplier": 1.000389061805,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-19T00:30:00.000Z"
+   }
+  ],
+  "RFx": [
+   {
+    "id": "b7a70264-7a12-4088-b68f-a5ce71443933",
+    "reason": "Dividend",
+    "multiplier": 1.00702811245,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-01T00:30:00.000Z"
+   }
+  ],
+  "TROWx": [],
+  "EVRGx": [
+   {
+    "id": "48140f55-13b6-4a65-b9a9-521b9d2649ff",
+    "reason": "Dividend",
+    "multiplier": 1.005796497081,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-18T00:30:00.000Z"
+   }
+  ],
+  "WCCx": [
+   {
+    "id": "18022903-1210-4dd6-994a-4377f0158fe6",
+    "reason": "Dividend",
+    "multiplier": 1.00101744186,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-11T00:30:00.000Z"
+   }
+  ],
+  "JBHTx": [
+   {
+    "id": "b69bc727-430a-4435-8050-fb7b4008f46c",
+    "reason": "Dividend",
+    "multiplier": 1.001178671656,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-07T00:30:00.000Z"
+   }
+  ],
+  "EWBCx": [
+   {
+    "id": "63ebfbae-150e-48af-bbe4-867eab976ff0",
+    "reason": "Dividend",
+    "multiplier": 1.00427480916,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-01T00:30:00.000Z"
+   }
+  ],
+  "ZBHx": [],
+  "EXEx": [
+   {
+    "id": "0f293263-96bc-4e55-9162-0ec84cd79795",
+    "reason": "Dividend",
+    "multiplier": 1.004180515164,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-13T00:30:00.000Z"
+   }
+  ],
+  "IPx": [
+   {
+    "id": "38eb90e9-a7d9-44a0-8d7f-3e03cb39740a",
+    "reason": "Dividend",
+    "multiplier": 1.007873297665,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-14T00:30:00.000Z"
+   }
+  ],
+  "BROx": [
+   {
+    "id": "d439c35a-0039-4b30-a733-8d18f6f8c76f",
+    "reason": "Dividend",
+    "multiplier": 1.001616741321,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-12T00:30:00.000Z"
+   }
+  ],
+  "MRNAx": [],
+  "HPQx": [
+   {
+    "id": "0f00c8ee-bb02-4252-9016-99fc1def0650",
+    "reason": "Dividend",
+    "multiplier": 1.006737247353,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-09T00:30:00.000Z"
+   }
+  ],
+  "FFIVx": [],
+  "INVHx": [],
+  "ILMNx": [],
+  "PKGx": [],
+  "LSCCx": [],
+  "BURLx": [],
+  "KHCx": [
+   {
+    "id": "d06f2a6c-b14b-49f6-bd3a-15eb89fe6907",
+    "reason": "Dividend",
+    "multiplier": 1.011014948859,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-04T00:30:00.000Z"
+   }
+  ],
+  "IEXx": [],
+  "SNXx": [],
+  "ZMx": [],
+  "VRSNx": [
+   {
+    "id": "0a98df96-bf6f-441a-a596-1ccbd07624e5",
+    "reason": "Dividend",
+    "multiplier": 1.00204885452,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-19T00:30:00.000Z"
+   }
+  ],
+  "MTDx": [],
+  "DOWx": [
+   {
+    "id": "5b02acbd-ebaa-448b-b242-eb47d056c530",
+    "reason": "Dividend",
+    "multiplier": 1.008030154048,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-29T00:30:00.000Z"
+   }
+  ],
+  "ESx": [],
+  "CHRWx": [
+   {
+    "id": "6d46a76d-8d56-4dcc-8d00-68cef8caae78",
+    "reason": "Dividend",
+    "multiplier": 1.003006442377,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-04T00:30:00.000Z"
+   }
+  ],
+  "VRSKx": [],
+  "CPAYx": [],
+  "EXPDx": [],
+  "USFDx": [],
+  "CMSx": [
+   {
+    "id": "a3dd230e-9e85-449c-8cb0-c22fea11d318",
+    "reason": "Dividend",
+    "multiplier": 1.005603932584,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-07T00:30:00.000Z"
+   }
+  ],
+  "AWKx": [
+   {
+    "id": "4d5b1029-4b4d-4c5b-89ac-8ea6afabc909",
+    "reason": "Dividend",
+    "multiplier": 1.004625322997,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-11T00:30:00.000Z"
+   }
+  ],
+  "LUVx": [
+   {
+    "id": "1bb1575f-faf6-4730-8cf3-afc8d66b719c",
+    "reason": "Dividend",
+    "multiplier": 1.003263403263,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-03T00:30:00.000Z"
+   }
+  ],
+  "BWXTx": [
+   {
+    "id": "b210c84d-420f-427a-abff-d9526be63796",
+    "reason": "Dividend",
+    "multiplier": 1.001101783841,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-18T00:30:00.000Z"
+   }
+  ],
+  "INSMx": [],
+  "MKSIx": [
+   {
+    "id": "88c1c1ad-f1d5-4b3a-a804-23298b82dd0d",
+    "reason": "Dividend",
+    "multiplier": 1.000626992942,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-25T00:30:00.000Z"
+   }
+  ],
+  "NIx": [
+   {
+    "id": "207f7ea2-389d-44ba-b278-d5219b0a4111",
+    "reason": "Dividend",
+    "multiplier": 1.004659418682,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-07-31T00:30:00.000Z"
+   }
+  ],
+  "MTZx": [],
+  "VTRSx": [
+   {
+    "id": "588d553b-1458-4cb5-ae50-651422c29f18",
+    "reason": "Dividend",
+    "multiplier": 1.005210918114,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-21T00:30:00.000Z"
+   }
+  ],
+  "FWONKx": [],
+  "WYx": [
+   {
+    "id": "45afe8b1-1fb9-4041-a96a-0a926629111e",
+    "reason": "Dividend",
+    "multiplier": 1.006380208333,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-04T00:30:00.000Z"
+   }
+  ],
+  "LNTx": [
+   {
+    "id": "27af41a5-e1e5-49cc-8c1e-853267ec8022",
+    "reason": "Dividend",
+    "multiplier": 1.005282832557,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-07-31T00:30:00.000Z"
+   }
+  ],
+  "HSTx": [],
+  "MKLx": [],
+  "ATIx": [],
+  "KIMx": [
+   {
+    "id": "34d075e1-d47b-485d-8387-cf43781b8b3a",
+    "reason": "Dividend",
+    "multiplier": 1.008193979933,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-04T00:30:00.000Z"
+   }
+  ],
+  "RSx": [
+   {
+    "id": "8589c595-372e-4c1c-a82e-1c26ea8c7818",
+    "reason": "Dividend",
+    "multiplier": 1.002058097142,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-14T00:30:00.000Z"
+   }
+  ],
+  "XYLx": [
+   {
+    "id": "e117d0af-8a55-433d-a970-ecce552660eb",
+    "reason": "Dividend",
+    "multiplier": 1.002653852936,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-27T00:30:00.000Z"
+   }
+  ],
+  "CINFx": [],
+  "EFXx": [
+   {
+    "id": "343c0635-ab4f-4bec-818f-22e71f278370",
+    "reason": "Dividend",
+    "multiplier": 1.002016979676,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-29T00:30:00.000Z"
+   }
+  ],
+  "WSMx": [],
+  "XPOx": [],
+  "DLTRx": [],
+  "GISx": [],
+  "TPLx": [
+   {
+    "id": "508ce4a8-5fc2-4e30-9e89-da8acd38083e",
+    "reason": "Dividend",
+    "multiplier": 1.001121974675,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-01T00:30:00.000Z"
+   }
+  ],
+  "ULTAx": [],
+  "SOFIx": [],
+  "LPLAx": [
+   {
+    "id": "a888170b-2714-417f-8e1f-64215fae8c15",
+    "reason": "Dividend",
+    "multiplier": 1.00056005974,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-14T00:30:00.000Z"
+   }
+  ],
+  "IFFx": [],
+  "AKAMx": [],
+  "RGLDx": [],
+  "FEx": [
+   {
+    "id": "12818c30-3378-4ee1-ab56-647b3790be03",
+    "reason": "Dividend",
+    "multiplier": 1.006871437619,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-07T00:30:00.000Z"
+   }
+  ],
+  "CPRTx": [],
+  "HSYx": [
+   {
+    "id": "be85e7d9-c247-4989-a427-f6d0c2c112c0",
+    "reason": "Dividend",
+    "multiplier": 1.005460992908,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-14T00:30:00.000Z"
+   }
+  ],
+  "PPLx": [
+   {
+    "id": "c35e2d6f-cb5a-42a2-a163-6e0ce1984468",
+    "reason": "Dividend",
+    "multiplier": 1.005774240232,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-10T00:30:00.000Z"
+   }
+  ],
+  "ENTGx": [
+   {
+    "id": "0799a645-6fe4-488e-a5d9-728b98d2814d",
+    "reason": "Dividend",
+    "multiplier": 1.000592417062,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-07-29T00:30:00.000Z"
+   }
+  ],
+  "RJFx": [],
+  "SNAx": [
+   {
+    "id": "2d0f9636-bcb5-40fe-bfe6-18e7f6b81517",
+    "reason": "Dividend",
+    "multiplier": 1.004316292234,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-19T00:30:00.000Z"
+   }
+  ],
+  "MTSIx": [],
+  "CRSx": [
+   {
+    "id": "99a3a2de-463d-4dba-b75d-2d119c266d85",
+    "reason": "Dividend",
+    "multiplier": 1.000284333239,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-25T00:30:00.000Z"
+   }
+  ],
+  "FICOx": [],
+  "HUBBx": [
+   {
+    "id": "390b0fd3-0df6-48c5-9d3a-17544b9d7eb5",
+    "reason": "Dividend",
+    "multiplier": 1.002162467911,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-29T00:30:00.000Z"
+   }
+  ],
+  "EIXx": [],
+  "FTAIx": [],
+  "NRGx": [
+   {
+    "id": "8a713aa8-9dc9-46e7-95d9-ccddc9edff0d",
+    "reason": "Dividend",
+    "multiplier": 1.002475984809,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-01T00:30:00.000Z"
+   }
+  ],
+  "BSPx": [],
+  "ATOx": [
+   {
+    "id": "78ad9fd4-8ea4-472d-afcf-6efdb383beb3",
+    "reason": "Dividend",
+    "multiplier": 1.004195385076,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-22T00:30:00.000Z"
+   }
+  ],
+  "PPGx": [
+   {
+    "id": "ea622d02-23cd-40b8-badb-70386a88d36f",
+    "reason": "Dividend",
+    "multiplier": 1.004326762446,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-08T00:30:00.000Z"
+   }
+  ],
+  "FSLRx": [],
+  "LIIx": [],
+  "LYVx": [],
+  "EQTx": [
+   {
+    "id": "e9067d11-b405-49da-a73a-073bae508152",
+    "reason": "Dividend",
+    "multiplier": 1.002188743604,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-05T00:30:00.000Z"
+   }
+  ],
+  "DXCMx": [],
+  "NTRSx": [
+   {
+    "id": "9c9ed33e-46cb-4d34-9f61-c63ce8b9c41f",
+    "reason": "Dividend",
+    "multiplier": 1.003286297314,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-04T00:30:00.000Z"
+   }
+  ],
+  "CNPx": [
+   {
+    "id": "fab6fdd7-29db-4079-958f-adc007b2a720",
+    "reason": "Dividend",
+    "multiplier": 1.004158415842,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-20T00:30:00.000Z"
+   }
+  ],
+  "MLMx": [
+   {
+    "id": "3df36919-b394-45b3-b952-5e5b8c9e53ec",
+    "reason": "Dividend",
+    "multiplier": 1.001133603239,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-01T00:30:00.000Z"
+   }
+  ],
+  "Ax": [],
+  "PCGx": [],
+  "TDYx": [],
+  "IQVx": [],
+  "RVMDx": [],
+  "MSCIx": [
+   {
+    "id": "b6d6eb29-172b-43d0-bcde-115710f5c870",
+    "reason": "Dividend",
+    "multiplier": 1.002494610945,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-14T00:30:00.000Z"
+   }
+  ],
+  "KVUEx": [
+   {
+    "id": "7199cdca-b55d-4b70-a6d0-2ac6ad90adc8",
+    "reason": "Dividend",
+    "multiplier": 1.007716535433,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-12T00:30:00.000Z"
+   }
+  ],
+  "CASYx": [
+   {
+    "id": "ba2caa3d-5766-4bbd-9beb-b327fb7649b1",
+    "reason": "Dividend",
+    "multiplier": 1.000524495677,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-07-31T00:30:00.000Z"
+   }
+  ],
+  "VICIx": [],
+  "NTRAx": [],
+  "WECx": [
+   {
+    "id": "8f5eab9a-e145-4235-89a7-6f1628da4433",
+    "reason": "Dividend",
+    "multiplier": 1.006045973885,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-14T00:30:00.000Z"
+   }
+  ],
+  "AEEx": [
+   {
+    "id": "779c3b64-fc25-477d-b995-2e29f647d2c0",
+    "reason": "Dividend",
+    "multiplier": 1.004930966469,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-05T00:30:00.000Z"
+   }
+  ],
+  "PAYXx": [
+   {
+    "id": "384ce86c-292f-4dfc-b3e8-27e5e48cc0b9",
+    "reason": "Dividend",
+    "multiplier": 1.007213370281,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-07-28T00:30:00.000Z"
+   }
+  ],
+  "DOVx": [
+   {
+    "id": "063fd7f5-10f4-4f70-a69f-862a02ad86c3",
+    "reason": "Dividend",
+    "multiplier": 1.001849708073,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-29T00:30:00.000Z"
+   }
+  ],
+  "STLDx": [],
+  "CFGx": [
+   {
+    "id": "a36a9821-e2c6-44b5-80fd-fc492037760e",
+    "reason": "Dividend",
+    "multiplier": 1.004515495723,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-07-30T00:30:00.000Z"
+   }
+  ],
+  "OTISx": [
+   {
+    "id": "480ec229-1a49-4473-965f-b53ccc18ac02",
+    "reason": "Dividend",
+    "multiplier": 1.004217444886,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-14T00:30:00.000Z"
+   }
+  ],
+  "FERGx": [
+   {
+    "id": "a3339148-273f-4474-9703-a5c284c33273",
+    "reason": "Dividend",
+    "multiplier": 1.002601904444,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-21T00:30:00.000Z"
+   }
+  ],
+  "FANGx": [
+   {
+    "id": "e58ab357-02fa-407b-ad20-2ea7cabfb346",
+    "reason": "Dividend",
+    "multiplier": 1.00383389763,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-13T00:30:00.000Z"
+   }
+  ],
+  "IRx": [
+   {
+    "id": "32947cc8-b755-425d-b1d9-61a2692841ec",
+    "reason": "Dividend",
+    "multiplier": 1.000165172251,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-13T00:30:00.000Z"
+   }
+  ],
+  "EMEx": [],
+  "KMBx": [
+   {
+    "id": "f2d0dcfd-6517-4925-9402-d931d151f796",
+    "reason": "Dividend",
+    "multiplier": 1.008300138953,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-04T00:30:00.000Z"
+   }
+  ],
+  "Qx": [
+   {
+    "id": "85830531-964f-4e77-8e19-36194e162557",
+    "reason": "Dividend",
+    "multiplier": 1.000465657742,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-29T00:30:00.000Z"
+   }
+  ],
+  "RMDx": [
+   {
+    "id": "9c730748-42ae-4e15-8882-49506ec6f4aa",
+    "reason": "Dividend",
+    "multiplier": 1.002003034901,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-20T00:30:00.000Z"
+   }
+  ],
+  "EXCx": [
+   {
+    "id": "e60cf92e-add2-4b7b-87db-665f239db10c",
+    "reason": "Dividend",
+    "multiplier": 1.006602290591,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-04T00:30:00.000Z"
+   }
+  ],
+  "DTEx": [],
+  "EXRx": [],
+  "OXYx": [
+   {
+    "id": "814fba1c-a886-4a0a-87da-8d6ae9773d5e",
+    "reason": "Dividend",
+    "multiplier": 1.003197389886,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-10T00:30:00.000Z"
+   }
+  ],
+  "IRMx": [],
+  "HIGx": [
+   {
+    "id": "ae70b385-aa82-42e4-a0e9-ed06c5017df3",
+    "reason": "Dividend",
+    "multiplier": 1.003057213568,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-01T00:30:00.000Z"
+   }
+  ],
+  "GEHCx": [],
+  "EDx": [
+   {
+    "id": "a97f9fa4-fb98-42c1-aa79-90a4323079da",
+    "reason": "Dividend",
+    "multiplier": 1.005691187248,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-19T00:30:00.000Z"
+   }
+  ],
+  "CWx": [],
+  "TTWOx": [],
+  "NTAPx": [],
+  "PRUx": [
+   {
+    "id": "d4a8b959-af9e-4fdd-9881-e1fb33aab378",
+    "reason": "Dividend",
+    "multiplier": 1.008089145687,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-25T00:30:00.000Z"
+   }
+  ],
+  "KRx": [
+   {
+    "id": "fe068f4b-6fd0-4bd3-b631-359da641c975",
+    "reason": "Dividend",
+    "multiplier": 1.004770225406,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-14T00:30:00.000Z"
+   }
+  ],
+  "BIIBx": [],
+  "WATx": [],
+  "CNCx": [],
+  "AXONx": [],
+  "HALx": [
+   {
+    "id": "a6a933d4-a4a4-48fa-8ffe-ec7e15caeef1",
+    "reason": "Dividend",
+    "multiplier": 1.003233695652,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-02T00:30:00.000Z"
+   }
+  ],
+  "IDXXx": [],
+  "ROPx": [],
+  "ADMx": [
+   {
+    "id": "cf9e5409-4042-4785-bf07-4c2c93a16a28",
+    "reason": "Dividend",
+    "multiplier": 1.004414796847,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-19T00:30:00.000Z"
+   }
+  ],
+  "CMGx": [],
+  "DHIx": [
+   {
+    "id": "95ec5035-bd61-437c-8ead-91c001d5cef1",
+    "reason": "Dividend",
+    "multiplier": 1.002079894355,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-06T00:30:00.000Z"
+   }
+  ],
+  "HUMx": [],
+  "CCIx": [],
+  "VMCx": [
+   {
+    "id": "50805693-ee01-4ed0-a646-9494b84ec9e3",
+    "reason": "Dividend",
+    "multiplier": 1.001298238105,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-13T00:30:00.000Z"
+   }
+  ],
+  "PSAx": [],
+  "ALNYx": [],
+  "SYYx": [],
+  "BDXx": [
+   {
+    "id": "403bdd32-d047-4ac6-b060-7622ab81e08f",
+    "reason": "Dividend",
+    "multiplier": 1.004103852596,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-09T00:30:00.000Z"
+   }
+  ],
+  "AMPx": [
+   {
+    "id": "1b107929-9c50-4b7f-a21b-e31a3122d81f",
+    "reason": "Dividend",
+    "multiplier": 1.002180126044,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-01T00:30:00.000Z"
+   }
+  ],
+  "TPRx": [
+   {
+    "id": "c4d3cbdb-4a9b-4c6f-a800-34fd6349f89d",
+    "reason": "Dividend",
+    "multiplier": 1.002640701468,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-04T00:30:00.000Z"
+   }
+  ],
+  "CORx": [
+   {
+    "id": "df983c4b-5aff-4b71-870a-f044d91df5e4",
+    "reason": "Dividend",
+    "multiplier": 1.001354795007,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-14T00:30:00.000Z"
+   }
+  ],
+  "MTBx": [
+   {
+    "id": "bb0eca05-f03a-45b5-b0c2-ca93edc5daba",
+    "reason": "Dividend",
+    "multiplier": 1.004488330341,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-01T00:30:00.000Z"
+   }
+  ],
+  "VTRx": [],
+  "AFLx": [
+   {
+    "id": "568d1c71-df11-4cd4-b65e-214db6b14d4f",
+    "reason": "Dividend",
+    "multiplier": 1.003507763082,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-19T00:30:00.000Z"
+   }
+  ],
+  "HBANx": [],
+  "FASTx": [
+   {
+    "id": "0bc9c269-08d4-4b89-9dc6-5a1d5dbd7d29",
+    "reason": "Dividend",
+    "multiplier": 1.00382031906,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-07-28T00:30:00.000Z"
+   }
+  ],
+  "UALx": [],
+  "ETRx": [
+   {
+    "id": "f5c778fd-9f7b-4ed8-98e7-4017ccccfae5",
+    "reason": "Dividend",
+    "multiplier": 1.004153917478,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-13T00:30:00.000Z"
+   }
+  ],
+  "ONx": [],
+  "XELx": [],
+  "ODFLx": [
+   {
+    "id": "e80db75a-98c9-4790-89b3-906337360350",
+    "reason": "Dividend",
+    "multiplier": 1.001085503449,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-02T00:30:00.000Z"
+   }
+  ],
+  "JBLx": [
+   {
+    "id": "ceac2f7e-44a0-4f62-83a1-23edfc6c100e",
+    "reason": "Dividend",
+    "multiplier": 1.000151204234,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-14T00:30:00.000Z"
+   }
+  ],
+  "WABx": [
+   {
+    "id": "13d73ef2-b86d-4fcf-8056-c040812d5b1e",
+    "reason": "Dividend",
+    "multiplier": 1.000721769499,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-18T00:30:00.000Z"
+   }
+  ],
+  "MCHPx": [
+   {
+    "id": "832050ee-e81e-44ef-89aa-cbf5ccdce6d5",
+    "reason": "Dividend",
+    "multiplier": 1.004186382755,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-22T00:30:00.000Z"
+   }
+  ],
+  "YUMx": [
+   {
+    "id": "2b2ecc6a-ccfb-4f3e-ad80-700deff0bded",
+    "reason": "Dividend",
+    "multiplier": 1.003511470805,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-09T00:30:00.000Z"
+   }
+  ],
+  "PEGx": [
+   {
+    "id": "aa1a07be-b946-4224-ab9d-d95a452a55cb",
+    "reason": "Dividend",
+    "multiplier": 1.006317349138,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-09T00:30:00.000Z"
+   }
+  ],
+  "CTVAx": [
+   {
+    "id": "04536f42-e9ab-400c-9c7b-a00bb9f01c3d",
+    "reason": "Dividend",
+    "multiplier": 1.001488833747,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-01T00:30:00.000Z"
+   }
+  ],
+  "RSGx": [],
+  "METx": [
+   {
+    "id": "e333f814-e6a5-4519-8c23-0c6fb463862b",
+    "reason": "Dividend",
+    "multiplier": 1.004306406396,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-04T00:30:00.000Z"
+   }
+  ],
+  "STTx": [],
+  "KDPx": [],
+  "OKEx": [
+   {
+    "id": "9bc2edf3-57a1-4f82-92f0-8b36f591b317",
+    "reason": "Dividend",
+    "multiplier": 1.008247990309,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-01T00:30:00.000Z"
+   }
+  ],
+  "AIGx": [],
+  "EWx": [],
+  "ADSKx": [],
+  "ALABx": [],
+  "DALx": [],
+  "CARRx": [],
+  "CAHx": [],
+  "FITBx": [],
+  "AJGx": [
+   {
+    "id": "f8c6f7b4-a311-4ebb-bf1c-249fd6163e5c",
+    "reason": "Dividend",
+    "multiplier": 1.001865316533,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-05T00:30:00.000Z"
+   }
+  ],
+  "TRGPx": [
+   {
+    "id": "d0be8ad5-f614-4a96-b9c8-d7c3d73ac78b",
+    "reason": "Dividend",
+    "multiplier": 1.003260788552,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-07-31T00:30:00.000Z"
+   }
+  ],
+  "AZOx": [],
+  "AMEx": [],
+  "DVNx": [],
+  "Dx": [
+   {
+    "id": "05b6e3bd-5de9-4328-9063-ea15dd518ab1",
+    "reason": "Dividend",
+    "multiplier": 1.006995807756,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-04T00:30:00.000Z"
+   }
+  ],
+  "CIENx": [],
+  "MCOx": [
+   {
+    "id": "85ae858b-9e48-4c71-b715-20a2ea25fc7d",
+    "reason": "Dividend",
+    "multiplier": 1.001476188526,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-14T00:30:00.000Z"
+   }
+  ],
+  "Ox": [
+   {
+    "id": "0360378a-e4ec-43ef-9bdd-4de6269f5968",
+    "reason": "Dividend",
+    "multiplier": 1.0060139568018365,
+    "previousMultiplier": 1.002944280615,
+    "activationDateTime": "2026-08-29T00:30:00.000Z"
+   },
+   {
+    "id": "2b061e77-e444-4583-8d08-990af7ed85a1",
+    "reason": "Dividend",
+    "multiplier": 1.002944280615,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-07-31T00:30:00.000Z"
+   }
+  ],
+  "REGNx": [
+   {
+    "id": "e673c33d-c7f9-460e-9922-4cefb449c7a3",
+    "reason": "Dividend",
+    "multiplier": 1.000816448079,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-18T00:30:00.000Z"
+   }
+  ],
+  "ROKx": [
+   {
+    "id": "8d2a1e95-589d-442f-904a-15608ff883fd",
+    "reason": "Dividend",
+    "multiplier": 1.002149676213,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-15T00:30:00.000Z"
+   }
+  ],
+  "SPGx": [
+   {
+    "id": "5c817dfd-feba-4da3-9ab3-c73e714090cc",
+    "reason": "Dividend",
+    "multiplier": 1.007433452898,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-09T00:30:00.000Z"
+   }
+  ],
+  "LHXx": [
+   {
+    "id": "fac30d03-d203-4d67-a790-99d5e41ed1b9",
+    "reason": "Dividend",
+    "multiplier": 1.00333791104,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-04T00:30:00.000Z"
+   }
+  ],
+  "SREx": [],
+  "EOGx": [],
+  "TRVx": [
+   {
+    "id": "7d99c0fc-1438-4a94-a325-b77d7562526b",
+    "reason": "Dividend",
+    "multiplier": 1.002385171051,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-10T00:30:00.000Z"
+   }
+  ],
+  "GWWx": [
+   {
+    "id": "e36b33e3-1c7f-40ef-949a-39583b1f9bcd",
+    "reason": "Dividend",
+    "multiplier": 1.001364330163,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-08T00:30:00.000Z"
+   }
+  ],
+  "FIXx": [
+   {
+    "id": "5bff264f-a866-4f8c-8e68-96e1c5b83a8a",
+    "reason": "Dividend",
+    "multiplier": 1.000362314673,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-13T00:30:00.000Z"
+   }
+  ],
+  "Fx": [
+   {
+    "id": "3985a369-3030-4d0d-a19c-5be105b85068",
+    "reason": "Dividend",
+    "multiplier": 1.0075,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-11T00:30:00.000Z"
+   }
+  ],
+  "MPCx": [
+   {
+    "id": "0dd23b6d-dde8-456a-95d0-7aa1e96d2e50",
+    "reason": "Dividend",
+    "multiplier": 1.00191147156,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-19T00:30:00.000Z"
+   }
+  ],
+  "MPWRx": [],
+  "SHWx": [
+   {
+    "id": "a7017b70-e8dc-4438-808a-c16d0543aff0",
+    "reason": "Dividend",
+    "multiplier": 1.001614251535,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-21T00:30:00.000Z"
+   }
+  ],
+  "APOx": [
+   {
+    "id": "a4b4791a-7085-482f-a3b7-0d37ad9bbb00",
+    "reason": "Dividend",
+    "multiplier": 1.002941725812,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-19T00:30:00.000Z"
+   }
+  ],
+  "TFCx": [
+   {
+    "id": "621a23f8-2d49-4f76-ae9a-a781cbef3824",
+    "reason": "Dividend",
+    "multiplier": 1.006869220608,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-14T00:30:00.000Z"
+   }
+  ],
+  "DLRx": [],
+  "CTASx": [
+   {
+    "id": "66676ce2-3f9b-4384-b265-f5788a08fb2a",
+    "reason": "Dividend",
+    "multiplier": 1.001813652217,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-14T00:30:00.000Z"
+   }
+  ],
+  "KKRx": [
+   {
+    "id": "49f0efb8-adb5-4c16-906a-1556ce61fefc",
+    "reason": "Dividend",
+    "multiplier": 1.001327691859,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-08T00:30:00.000Z"
+   }
+  ],
+  "NOCx": [
+   {
+    "id": "2ed7dac7-840c-4e08-9ca4-848aac92b9db",
+    "reason": "Dividend",
+    "multiplier": 1.003169162527,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-29T00:30:00.000Z"
+   }
+  ],
+  "APDx": [],
+  "ALLx": [
+   {
+    "id": "785fa037-5895-4ca4-8c5e-78707a35bc08",
+    "reason": "Dividend",
+    "multiplier": 1.002901220355,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-29T00:30:00.000Z"
+   }
+  ],
+  "PCARx": [
+   {
+    "id": "56906af3-c432-4077-a5bf-a6a032d30471",
+    "reason": "Dividend",
+    "multiplier": 1.001848638044,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-12T00:30:00.000Z"
+   }
+  ],
+  "HCAx": [],
+  "KEYSx": [],
+  "COHRx": [],
+  "NUEx": [],
+  "ECLx": [],
+  "MSIx": [],
+  "TDGx": [],
+  "NSCx": [
+   {
+    "id": "2e4d411b-8a7a-4988-851a-ae601007d5a3",
+    "reason": "Dividend",
+    "multiplier": 1.002759446359,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-07T00:30:00.000Z"
+   }
+  ],
+  "CLx": [],
+  "AEPx": [
+   {
+    "id": "1b96fe57-680a-4de8-b203-987d031ebcbf",
+    "reason": "Dividend",
+    "multiplier": 1.005289111588,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-08T00:30:00.000Z"
+   }
+  ],
+  "INTUx": [],
+  "FDXx": [
+   {
+    "id": "653e6c16-58e5-41f4-829c-671ff8771faf",
+    "reason": "Dividend",
+    "multiplier": 1.00273726722,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-12T00:30:00.000Z"
+   }
+  ],
+  "URIx": [
+   {
+    "id": "df76e02c-de9b-40c5-8209-1853d6ab7d98",
+    "reason": "Dividend",
+    "multiplier": 1.001205851748,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-12T00:30:00.000Z"
+   }
+  ],
+  "HPEx": [],
+  "BSXx": [],
+  "VLOx": [
+   {
+    "id": "df6e6411-3677-472d-9606-9ec6969d5692",
+    "reason": "Dividend",
+    "multiplier": 1.002694812486,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-07-31T00:30:00.000Z"
+   }
+  ],
+  "ICEx": [],
+  "ROSTx": [
+   {
+    "id": "26763aea-dcc5-462a-bb2e-31101acf2f3e",
+    "reason": "Dividend",
+    "multiplier": 1.001350296935,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-05T00:30:00.000Z"
+   }
+  ],
+  "ORLYx": [],
+  "HLTx": [
+   {
+    "id": "043a36bd-3954-4617-aaaa-8d5a76c25fab",
+    "reason": "Dividend",
+    "multiplier": 1.000318558296,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-21T00:30:00.000Z"
+   }
+  ],
+  "ITWx": [],
+  "PSXx": [
+   {
+    "id": "7f25f918-445b-4582-b130-ddaf04a2575c",
+    "reason": "Dividend",
+    "multiplier": 1.00369569736,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-18T00:30:00.000Z"
+   }
+  ],
+  "WMx": [
+   {
+    "id": "4ce308d0-f472-4ce0-9776-ffc8b6f33ea0",
+    "reason": "Dividend",
+    "multiplier": 1.003080039112,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-11T00:30:00.000Z"
+   }
+  ],
+  "CIx": [
+   {
+    "id": "c017f23b-5858-4b76-b19d-6798f9d4b51a",
+    "reason": "Dividend",
+    "multiplier": 1.003865213082,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-05T00:30:00.000Z"
+   }
+  ],
+  "ELVx": [
+   {
+    "id": "589b04d2-9517-4d27-b9d4-21664484f13b",
+    "reason": "Dividend",
+    "multiplier": 1.0030335097,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-10T00:30:00.000Z"
+   }
+  ],
+  "EMRx": [
+   {
+    "id": "cc2f1d96-e514-48da-a421-46fe26cd3af8",
+    "reason": "Dividend",
+    "multiplier": 1.002365872968,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-14T00:30:00.000Z"
+   }
+  ],
+  "GMx": [
+   {
+    "id": "8b10ab82-6122-449c-810a-a6260e06d7c9",
+    "reason": "Dividend",
+    "multiplier": 1.001444622793,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-04T00:30:00.000Z"
+   }
+  ],
+  "SNOWx": [],
+  "FTNTx": [],
+  "BXx": [
+   {
+    "id": "d976e840-9f6f-42b1-a817-d998fe5a3b84",
+    "reason": "Dividend",
+    "multiplier": 1.007068493151,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-01T00:30:00.000Z"
+   }
+  ],
+  "AMTx": [],
+  "MMMx": [
+   {
+    "id": "5fa27d75-b13c-44e7-86af-ad5e61b9d07e",
+    "reason": "Dividend",
+    "multiplier": 1.003050961109,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-22T00:30:00.000Z"
+   }
+  ],
+  "CSXx": [
+   {
+    "id": "fd86c9bd-06d6-4687-8762-8413e7200f6e",
+    "reason": "Dividend",
+    "multiplier": 1.001911076443,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-29T00:30:00.000Z"
+   }
+  ],
+  "SNPSx": [],
+  "PNCx": [],
+  "FCXx": [],
+  "MRSHx": [],
+  "WMBx": [
+   {
+    "id": "94927aad-53b8-4d31-bd3f-84512cb317ba",
+    "reason": "Dividend",
+    "multiplier": 1.00504669047,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-11T00:30:00.000Z"
+   }
+  ],
+  "CMIx": [
+   {
+    "id": "c71917db-b783-4070-8497-1ce4c8c4c611",
+    "reason": "Dividend",
+    "multiplier": 1.002595913964,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-21T00:30:00.000Z"
+   }
+  ],
+  "ADPx": [
+   {
+    "id": "092ff89d-a19b-4c54-9aee-311872b4e5f8",
+    "reason": "Dividend",
+    "multiplier": 1.004451427075,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-11T00:30:00.000Z"
+   }
+  ],
+  "GDx": [],
+  "CDNSx": [],
+  "SOx": [
+   {
+    "id": "4fe586f5-5020-45f5-8182-ea123135ea94",
+    "reason": "Dividend",
+    "multiplier": 1.005732758621,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-15T00:30:00.000Z"
+   }
+  ],
+  "USBx": [],
+  "MCKx": [
+   {
+    "id": "89799b62-aedb-434b-bd4b-056981762f84",
+    "reason": "Dividend",
+    "multiplier": 1.000743234085,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-01T00:30:00.000Z"
+   }
+  ],
+  "SYKx": [],
+  "NOWx": [],
+  "LMTx": [
+   {
+    "id": "d4d25d82-a6a0-43fa-8291-e06db5c23997",
+    "reason": "Dividend",
+    "multiplier": 1.004303048661,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-01T00:30:00.000Z"
+   }
+  ],
+  "EQIXx": [
+   {
+    "id": "1e9ac074-0d15-414e-9fdd-b83568780170",
+    "reason": "Dividend",
+    "multiplier": 1.00332875614,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-19T00:30:00.000Z"
+   }
+  ],
+  "VRTXx": [],
+  "DUKx": [
+   {
+    "id": "1279169a-8a5f-49a0-93c7-d33e587c8f7b",
+    "reason": "Dividend",
+    "multiplier": 1.006100891638,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-14T00:30:00.000Z"
+   }
+  ],
+  "HWMx": [
+   {
+    "id": "1803c7b3-514d-4d05-918b-77aefa17ed68",
+    "reason": "Dividend",
+    "multiplier": 1.000338257628,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-07T00:30:00.000Z"
+   }
+  ],
+  "COFx": [
+   {
+    "id": "a3e7b8ac-5f36-49ab-bb73-6b8ea5316e29",
+    "reason": "Dividend",
+    "multiplier": 1.002463270872,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-15T00:30:00.000Z"
+   }
+  ],
+  "PHx": [
+   {
+    "id": "b8feca3f-2a40-41c5-acdf-96136561c596",
+    "reason": "Dividend",
+    "multiplier": 1.001407006894,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-29T00:30:00.000Z"
+   }
+  ],
+  "SBUXx": [
+   {
+    "id": "3729bc46-dc25-4e97-a91a-b949a266208a",
+    "reason": "Dividend",
+    "multiplier": 1.003998157531,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-14T00:30:00.000Z"
+   }
+  ],
+  "NEMx": [
+   {
+    "id": "4e4e29ec-c142-423c-9691-9e9d47535423",
+    "reason": "Dividend",
+    "multiplier": 1.001454138702,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-03T00:30:00.000Z"
+   }
+  ],
+  "COPx": [
+   {
+    "id": "9b7c89c6-a8f8-4f4e-934a-1942a31d0b04",
+    "reason": "Dividend",
+    "multiplier": 1.004637955513,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-15T00:30:00.000Z"
+   }
+  ],
+  "BMYx": [],
+  "PLDx": [],
+  "DEx": [],
+  "MOx": [],
+  "WELLx": [
+   {
+    "id": "1a65c053-e869-4bc6-ae24-e8166f4051cd",
+    "reason": "Dividend",
+    "multiplier": 1.002632626875,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-12T00:30:00.000Z"
+   }
+  ],
+  "CVSx": [],
+  "PGRx": [],
+  "UNPx": [
+   {
+    "id": "b3db7e3e-2c55-4349-b005-e0853abee084",
+    "reason": "Dividend",
+    "multiplier": 1.003233466706,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-29T00:30:00.000Z"
+   }
+  ],
+  "SCHWx": [
+   {
+    "id": "a6e86445-4ac8-44c1-9094-bc1423e617c7",
+    "reason": "Dividend",
+    "multiplier": 1.002035253498,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-14T00:30:00.000Z"
+   }
+  ],
+  "GLWx": [
+   {
+    "id": "20484861-b1e8-45bd-a4aa-070568bc8072",
+    "reason": "Dividend",
+    "multiplier": 1.001315612834,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-29T00:30:00.000Z"
+   }
+  ],
+  "LOWx": [],
+  "DISx": [],
+  "TJXx": [
+   {
+    "id": "c6e86e55-93f2-4a34-a07f-070a30af5f1d",
+    "reason": "Dividend",
+    "multiplier": 1.002201690584,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-13T00:30:00.000Z"
+   }
+  ],
+  "NEEx": [
+   {
+    "id": "08f60baa-a9e8-4c02-bf8e-588550f329c9",
+    "reason": "Dividend",
+    "multiplier": 1.005226308853,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-28T00:30:00.000Z"
+   }
+  ],
+  "GILDx": [],
+  "VZx": [],
+  "ISRGx": [],
+  "BAx": [],
+  "AMGNx": [
+   {
+    "id": "77e3d829-feb5-45a7-964b-15f73bf0e1bd",
+    "reason": "Dividend",
+    "multiplier": 1.004067046319,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-21T00:30:00.000Z"
+   }
+  ],
+  "TXNx": [
+   {
+    "id": "0026b7e9-6bda-4357-a372-3099571f4b68",
+    "reason": "Dividend",
+    "multiplier": 1.003565791362,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-07-31T00:30:00.000Z"
+   }
+  ],
+  "RTXx": [
+   {
+    "id": "49b633db-1230-4e1e-b73f-63d7fa313364",
+    "reason": "Dividend",
+    "multiplier": 1.002317670537,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-14T00:30:00.000Z"
+   }
+  ],
+  "QCOMx": [
+   {
+    "id": "db5022d3-4f5d-4bff-868c-1b9cbb3817e3",
+    "reason": "Dividend",
+    "multiplier": 1.003789126853,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-03T00:30:00.000Z"
+   }
+  ],
+  "WDCx": [
+   {
+    "id": "a3ae93c8-b14e-433f-946b-197c23cffb80",
+    "reason": "Dividend",
+    "multiplier": 1.000224618149,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-05T00:30:00.000Z"
+   }
+  ],
+  "Cx": [
+   {
+    "id": "be84b1d4-2a50-4088-a909-f6880c7ae26f",
+    "reason": "Dividend",
+    "multiplier": 1.003540958852,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-01T00:30:00.000Z"
+   }
+  ],
+  "MSx": [
+   {
+    "id": "5818785c-8cb3-41eb-a580-4a03d9cb0b44",
+    "reason": "Dividend",
+    "multiplier": 1.003832238408,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-07-31T00:30:00.000Z"
+   }
+  ],
+  "SPCXx": [],
+  "WFCx": [
+   {
+    "id": "65a6cba8-d90c-492c-bbe3-c355afa3ad3c",
+    "reason": "Dividend",
+    "multiplier": 1.003995889942,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-07T00:30:00.000Z"
+   }
+  ],
+  "CATx": [
+   {
+    "id": "64aba56b-0722-4fc9-a039-40cd1246f9e8",
+    "reason": "Dividend",
+    "multiplier": 1.0012961784886627,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-07-19T23:55:00.000Z"
+   }
+  ],
+  "ADIx": [
+   {
+    "id": "2f406670-49df-4262-86e9-95ba60457b51",
+    "reason": "Dividend",
+    "multiplier": 1.002126249517,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-01T00:30:00.000Z"
+   }
+  ],
+  "BOTx": [],
+  "GEx": [],
+  "DAXx": [
+   {
+    "id": "99c26a5f-b827-4204-bd34-5eea530473cd",
+    "reason": "Dividend",
+    "multiplier": 1.013533965245,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-06-28T23:55:00.000Z"
+   }
+  ],
+  "ENHAx": [],
+  "SOXXx": [
+   {
+    "id": "94090779-0ff5-4e8b-84d4-5b4835d80909",
+    "reason": "Dividend",
+    "multiplier": 1.0003319215094,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-06-14T23:55:00.000Z"
+   }
+  ],
+  "MDLNx": [],
+  "EWYx": [],
+  "SATAx": [
+   {
+    "id": "b6590c40-56b6-42f5-b490-a39b8e26f6da",
+    "reason": "Dividend",
+    "multiplier": 1.0448050734486107,
+    "previousMultiplier": 1.0442648822915417,
+    "activationDateTime": "2026-09-12T00:30:00.000Z"
+   },
+   {
+    "id": "cb975597-32de-4dfa-afd3-e78afd051270",
+    "reason": "Dividend",
+    "multiplier": 1.0442648822915417,
+    "previousMultiplier": 1.0437263733339637,
+    "activationDateTime": "2026-09-11T00:30:00.000Z"
+   },
+   {
+    "id": "19cef06f-2d03-407b-8e01-0a6959e58c18",
+    "reason": "Dividend",
+    "multiplier": 1.0437263733339637,
+    "previousMultiplier": 1.0431881420759446,
+    "activationDateTime": "2026-09-10T00:30:00.000Z"
+   },
+   {
+    "id": "85f9eb1d-77d8-415b-be90-66f929574805",
+    "reason": "Dividend",
+    "multiplier": 1.0431881420759446,
+    "previousMultiplier": 1.0426495424524533,
+    "activationDateTime": "2026-09-09T00:30:00.000Z"
+   },
+   {
+    "id": "6a464c2d-7817-4e43-9e6b-cb196c067fd4",
+    "reason": "Dividend",
+    "multiplier": 1.0426495424524533,
+    "previousMultiplier": 1.0421118664969364,
+    "activationDateTime": "2026-09-05T00:30:00.000Z"
+   },
+   {
+    "id": "e33678fc-2940-427e-a3d9-d352032aaf99",
+    "reason": "Dividend",
+    "multiplier": 1.0421118664969364,
+    "previousMultiplier": 1.0415744140992613,
+    "activationDateTime": "2026-09-04T00:30:00.000Z"
+   },
+   {
+    "id": "1e9f3959-66f5-4174-accb-b6e65cf0f3a6",
+    "reason": "Dividend",
+    "multiplier": 1.0415744140992613,
+    "previousMultiplier": 1.0410372388839972,
+    "activationDateTime": "2026-09-03T00:30:00.000Z"
+   },
+   {
+    "id": "f766013c-5a5b-42ae-990f-a8701fc7c61d",
+    "reason": "Dividend",
+    "multiplier": 1.0410372388839972,
+    "previousMultiplier": 1.040500072263399,
+    "activationDateTime": "2026-09-02T00:30:00.000Z"
+   },
+   {
+    "id": "8c827bcc-867c-4215-8c3f-8a7595488421",
+    "reason": "Dividend",
+    "multiplier": 1.040500072263399,
+    "previousMultiplier": 1.0399635047516984,
+    "activationDateTime": "2026-09-01T02:45:00.000Z"
+   },
+   {
+    "id": "fba8ca6a-3d54-4708-88ac-b2c410e30d51",
+    "reason": "Dividend",
+    "multiplier": 1.039962106902836,
+    "previousMultiplier": 1.039425816810371,
+    "activationDateTime": "2026-09-01T00:30:00.000Z"
+   },
+   {
+    "id": "112ff286-fd05-4d53-8fce-5156ad32d5f9",
+    "reason": "Dividend",
+    "multiplier": 1.0399635047516984,
+    "previousMultiplier": 1.039425816810371,
+    "activationDateTime": "2026-09-01T00:15:00.000Z"
+   },
+   {
+    "id": "87a138bc-a51b-4fad-a9c1-b5f369d54987",
+    "reason": "Dividend",
+    "multiplier": 1.039425816810371,
+    "previousMultiplier": 1.0388898032734013,
+    "activationDateTime": "2026-08-28T00:30:00.000Z"
+   },
+   {
+    "id": "577333cb-ae52-42e6-a3e0-c8c5ee0e3c88",
+    "reason": "Dividend",
+    "multiplier": 1.0388898032734013,
+    "previousMultiplier": 1.0383540661491464,
+    "activationDateTime": "2026-08-27T00:30:00.000Z"
+   },
+   {
+    "id": "8718299f-0746-4fe3-9497-5f8af5fe997b",
+    "reason": "Dividend",
+    "multiplier": 1.0383540661491464,
+    "previousMultiplier": 1.0378185517764298,
+    "activationDateTime": "2026-08-26T00:30:00.000Z"
+   },
+   {
+    "id": "ca942331-d41b-48ee-8201-53d5c37d61d3",
+    "reason": "Dividend",
+    "multiplier": 1.0378185517764298,
+    "previousMultiplier": 1.0372833670776531,
+    "activationDateTime": "2026-08-25T00:30:00.000Z"
+   },
+   {
+    "id": "657a5cf9-6cd5-4e98-bdb7-e60814466d72",
+    "reason": "Dividend",
+    "multiplier": 1.0372833670776531,
+    "previousMultiplier": 1.036748458364174,
+    "activationDateTime": "2026-08-22T00:30:00.000Z"
+   },
+   {
+    "id": "35e4965b-de84-467c-9bf6-3faed9897089",
+    "reason": "Dividend",
+    "multiplier": 1.036748458364174,
+    "previousMultiplier": 1.0362132906556063,
+    "activationDateTime": "2026-08-21T00:30:00.000Z"
+   },
+   {
+    "id": "55ed8b11-d246-48ff-a8d2-34d89c76a08d",
+    "reason": "Dividend",
+    "multiplier": 1.0362132906556063,
+    "previousMultiplier": 1.035678559680093,
+    "activationDateTime": "2026-08-20T00:30:00.000Z"
+   },
+   {
+    "id": "03f6eeda-4242-431f-98e1-d405774320d2",
+    "reason": "Dividend",
+    "multiplier": 1.035678559680093,
+    "previousMultiplier": 1.0351427650501601,
+    "activationDateTime": "2026-08-19T00:30:00.000Z"
+   },
+   {
+    "id": "0775ceab-1975-490f-b2c2-434f8f7856ce",
+    "reason": "Dividend",
+    "multiplier": 1.0351427650501601,
+    "previousMultiplier": 1.0346061177268926,
+    "activationDateTime": "2026-08-18T00:30:00.000Z"
+   },
+   {
+    "id": "1ecc220e-101f-43e2-9eb9-acdcfc9a7e99",
+    "reason": "Dividend",
+    "multiplier": 1.0346061177268926,
+    "previousMultiplier": 1.0340685604254922,
+    "activationDateTime": "2026-08-15T00:30:00.000Z"
+   },
+   {
+    "id": "f39e2312-2c54-4adc-b76e-5a433086e342",
+    "reason": "Dividend",
+    "multiplier": 1.0340685604254922,
+    "previousMultiplier": 1.033533652336593,
+    "activationDateTime": "2026-08-14T00:30:00.000Z"
+   },
+   {
+    "id": "cf92817c-9c3e-4331-9418-aea4468f4452",
+    "reason": "Dividend",
+    "multiplier": 1.033533652336593,
+    "previousMultiplier": 1.0329974082093256,
+    "activationDateTime": "2026-08-13T00:30:00.000Z"
+   },
+   {
+    "id": "a621edae-0229-40a4-a297-5aff25a1aff0",
+    "reason": "Dividend",
+    "multiplier": 1.0329974082093256,
+    "previousMultiplier": 1.0324600374418267,
+    "activationDateTime": "2026-08-12T00:30:00.000Z"
+   },
+   {
+    "id": "42c54d8e-e6aa-4d20-9f8b-00fc9916607c",
+    "reason": "Dividend",
+    "multiplier": 1.0324600374418267,
+    "previousMultiplier": 1.0319203891989255,
+    "activationDateTime": "2026-08-11T00:30:00.000Z"
+   },
+   {
+    "id": "bd995cef-2aa2-449a-bf40-be1e07f6bfa8",
+    "reason": "Dividend",
+    "multiplier": 1.0319203891989255,
+    "previousMultiplier": 1.031385358691814,
+    "activationDateTime": "2026-08-08T00:30:00.000Z"
+   },
+   {
+    "id": "4116b9d6-4bd3-44fb-941e-77c3cfdcfeb3",
+    "reason": "Dividend",
+    "multiplier": 1.031385358691814,
+    "previousMultiplier": 1.0308469811191714,
+    "activationDateTime": "2026-08-07T00:30:00.000Z"
+   },
+   {
+    "id": "d0869f6a-7944-4ced-96a4-cabbc674db9d",
+    "reason": "Dividend",
+    "multiplier": 1.0308469811191714,
+    "previousMultiplier": 1.0303047154799332,
+    "activationDateTime": "2026-08-06T00:30:00.000Z"
+   },
+   {
+    "id": "0a22f2a5-ba09-43df-abf5-d0156dee9544",
+    "reason": "Dividend",
+    "multiplier": 1.0303047154799332,
+    "previousMultiplier": 1.0297614612992405,
+    "activationDateTime": "2026-08-05T00:30:00.000Z"
+   },
+   {
+    "id": "8dd7844a-195a-45e6-a0a1-d7db15fe0721",
+    "reason": "Dividend",
+    "multiplier": 1.0297614612992405,
+    "previousMultiplier": 1.029215480844769,
+    "activationDateTime": "2026-08-04T00:30:00.000Z"
+   },
+   {
+    "id": "a58fd67e-0f39-40c8-938f-998efcd54667",
+    "reason": "Dividend",
+    "multiplier": 1.029215480844769,
+    "previousMultiplier": 1.0286677073287285,
+    "activationDateTime": "2026-08-01T00:30:00.000Z"
+   },
+   {
+    "id": "f3531247-a370-44d5-9eba-2b2f6200a738",
+    "reason": "Dividend",
+    "multiplier": 1.0286677073287285,
+    "previousMultiplier": 1.0281219703302718,
+    "activationDateTime": "2026-07-31T00:30:00.000Z"
+   },
+   {
+    "id": "13d07466-de08-49a6-8018-342b259ccb47",
+    "reason": "Dividend",
+    "multiplier": 1.0281219703302718,
+    "previousMultiplier": 1.0275914963959887,
+    "activationDateTime": "2026-07-30T00:30:00.000Z"
+   },
+   {
+    "id": "2f74044b-dad4-4ed7-bcad-71ddea1d254e",
+    "reason": "Dividend",
+    "multiplier": 1.0275914963959887,
+    "previousMultiplier": 1.0270607406887566,
+    "activationDateTime": "2026-07-29T00:30:00.000Z"
+   },
+   {
+    "id": "cf1a3f21-2fb2-4652-8092-8a7390d01142",
+    "reason": "Dividend",
+    "multiplier": 1.0270607406887566,
+    "previousMultiplier": 1.0265377114498524,
+    "activationDateTime": "2026-07-28T00:30:00.000Z"
+   },
+   {
+    "id": "a1c616d4-be1b-4bc0-bf67-834f44123b59",
+    "reason": "Dividend",
+    "multiplier": 1.0265377114498524,
+    "previousMultiplier": 1.0260139747653745,
+    "activationDateTime": "2026-07-25T00:30:00.000Z"
+   },
+   {
+    "id": "934bce81-c896-47e4-b038-6fa0b74a1378",
+    "reason": "Dividend",
+    "multiplier": 1.0260139747653745,
+    "previousMultiplier": 1.0254889840397816,
+    "activationDateTime": "2026-07-24T00:30:00.000Z"
+   },
+   {
+    "id": "6f1006c8-2587-4b87-a379-6715c0e91e7b",
+    "reason": "Dividend",
+    "multiplier": 1.0254889840397816,
+    "previousMultiplier": 1.0249738325472093,
+    "activationDateTime": "2026-07-23T00:30:00.000Z"
+   },
+   {
+    "id": "4efbfaa4-0b32-442f-bde1-4ca42ff61ac9",
+    "reason": "Dividend",
+    "multiplier": 1.0249738325472093,
+    "previousMultiplier": 1.0244599870151339,
+    "activationDateTime": "2026-07-22T00:30:00.000Z"
+   },
+   {
+    "id": "fe2ef4aa-7d95-49b8-a025-ea5eaa160cfe",
+    "reason": "Dividend",
+    "multiplier": 1.0244599870151339,
+    "previousMultiplier": 1.0239437216691913,
+    "activationDateTime": "2026-07-21T00:30:00.000Z"
+   },
+   {
+    "id": "2dbc5d17-e53e-4d5a-a191-9dc1a2bc9973",
+    "reason": "Dividend",
+    "multiplier": 1.0239437216691913,
+    "previousMultiplier": 1.0234274526273723,
+    "activationDateTime": "2026-07-19T23:55:00.000Z"
+   },
+   {
+    "id": "edf13f76-31cc-47d9-a40b-463c35f75c0a",
+    "reason": "Dividend",
+    "multiplier": 1.0234274526273723,
+    "previousMultiplier": 1.0229099620050095,
+    "activationDateTime": "2026-07-17T00:30:00.000Z"
+   },
+   {
+    "id": "b7cff053-1743-4a56-85b5-3cae37f34533",
+    "reason": "Dividend",
+    "multiplier": 1.0229099620050095,
+    "previousMultiplier": 1.022399590399486,
+    "activationDateTime": "2026-07-16T00:30:00.000Z"
+   },
+   {
+    "id": "b9b42b28-75ff-4c2e-93e9-a77a0a337d53",
+    "reason": "Dividend",
+    "multiplier": 1.022399590399486,
+    "previousMultiplier": 1.021885112766444,
+    "activationDateTime": "2026-07-15T00:30:00.000Z"
+   },
+   {
+    "id": "ac9d9c16-57a1-4995-9a78-7b817c851438",
+    "reason": "Dividend",
+    "multiplier": 1.021885112766444,
+    "previousMultiplier": 1.021364987842069,
+    "activationDateTime": "2026-07-14T00:30:00.000Z"
+   },
+   {
+    "id": "f9e3e427-a01d-47d5-b95c-49c8b04c8928",
+    "reason": "Dividend",
+    "multiplier": 1.021364987842069,
+    "previousMultiplier": 1.0208488048050164,
+    "activationDateTime": "2026-07-12T23:55:00.000Z"
+   },
+   {
+    "id": "790da079-11e7-4682-b1fe-369efb981c7e",
+    "reason": "Dividend",
+    "multiplier": 1.0208488048050164,
+    "previousMultiplier": 1.0203318226995681,
+    "activationDateTime": "2026-07-10T00:30:00.000Z"
+   },
+   {
+    "id": "65c8cb1c-a786-4f14-8c4d-7f5d5d89fad3",
+    "reason": "Dividend",
+    "multiplier": 1.0203318226995681,
+    "previousMultiplier": 1.0198097394169627,
+    "activationDateTime": "2026-07-09T00:30:00.000Z"
+   },
+   {
+    "id": "58b346a7-48d2-44c5-954d-a5827f660048",
+    "reason": "Dividend",
+    "multiplier": 1.0198097394169627,
+    "previousMultiplier": 1.0192927524551616,
+    "activationDateTime": "2026-07-08T00:30:00.000Z"
+   },
+   {
+    "id": "0f249f6f-a4fe-4072-b595-633b51fd47cc",
+    "reason": "Dividend",
+    "multiplier": 1.0192927524551616,
+    "previousMultiplier": 1.0187781442325325,
+    "activationDateTime": "2026-07-07T00:30:00.000Z"
+   },
+   {
+    "id": "1bd441a2-8a2d-4aaa-bb0f-0c6799cdf261",
+    "reason": "Dividend",
+    "multiplier": 1.0187781442325325,
+    "previousMultiplier": 1.0182614145590319,
+    "activationDateTime": "2026-07-05T23:55:00.000Z"
+   },
+   {
+    "id": "a2fb574f-d49d-45cf-95e4-2077f9d40de3",
+    "reason": "Dividend",
+    "multiplier": 1.0182614145590319,
+    "previousMultiplier": 1.017743401450436,
+    "activationDateTime": "2026-07-02T00:30:00.000Z"
+   },
+   {
+    "id": "6abc0b1c-7e6f-49e8-8927-595153d82d86",
+    "reason": "Dividend",
+    "multiplier": 1.017743401450436,
+    "previousMultiplier": 1.0171926315794872,
+    "activationDateTime": "2026-07-01T00:30:00.000Z"
+   },
+   {
+    "id": "48845079-f386-4135-92cf-84a35ea4cb44",
+    "reason": "Dividend",
+    "multiplier": 1.0171926315794872,
+    "previousMultiplier": 1.0166461787166887,
+    "activationDateTime": "2026-06-30T00:30:00.000Z"
+   },
+   {
+    "id": "fbe20e20-4159-4bff-a994-686afb228232",
+    "reason": "Dividend",
+    "multiplier": 1.0166461787166887,
+    "previousMultiplier": 1.016018620776221,
+    "activationDateTime": "2026-06-28T23:55:00.000Z"
+   },
+   {
+    "id": "91229ada-23c0-47cf-92a3-0e2d009de860",
+    "reason": "Dividend",
+    "multiplier": 1.016018620776221,
+    "previousMultiplier": 1.0153597856225525,
+    "activationDateTime": "2026-06-26T00:30:00.000Z"
+   },
+   {
+    "id": "e188bd0e-7339-4f2e-8f6f-672bf6ae95f2",
+    "reason": "Dividend",
+    "multiplier": 1.0153597856225525,
+    "previousMultiplier": 1.0147387508410186,
+    "activationDateTime": "2026-06-25T00:30:00.000Z"
+   },
+   {
+    "id": "fac2f868-e06e-40cd-88a6-8e0ff4a3990b",
+    "reason": "Dividend",
+    "multiplier": 1.0147387508410186,
+    "previousMultiplier": 1.0141570861414158,
+    "activationDateTime": "2026-06-24T00:30:00.000Z"
+   },
+   {
+    "id": "cdaadf0d-9b56-4402-b7d8-007a31e5194f",
+    "reason": "Dividend",
+    "multiplier": 1.0141570861414158,
+    "previousMultiplier": 1.0135929380904947,
+    "activationDateTime": "2026-06-23T00:30:00.000Z"
+   },
+   {
+    "id": "bb004716-4885-4e09-a926-37c468772a68",
+    "reason": "Dividend",
+    "multiplier": 1.0135929380904947,
+    "previousMultiplier": 1.013031007063797,
+    "activationDateTime": "2026-06-21T23:55:00.000Z"
+   },
+   {
+    "id": "103ebea4-b9e0-4085-83d1-c8066ac1f696",
+    "reason": "Dividend",
+    "multiplier": 1.013031007063797,
+    "previousMultiplier": 1.0124822965305553,
+    "activationDateTime": "2026-06-18T00:30:00.000Z"
+   },
+   {
+    "id": "f7387bd0-e099-4c57-84b9-259a5da76089",
+    "reason": "Dividend",
+    "multiplier": 1.0124822965305553,
+    "previousMultiplier": 1.0119337735734084,
+    "activationDateTime": "2026-06-17T00:30:00.000Z"
+   },
+   {
+    "id": "37e3d502-613c-49e2-82f6-53b4d29be465",
+    "reason": "Dividend",
+    "multiplier": 1.0119337735734084,
+    "previousMultiplier": 1.0113856573591655,
+    "activationDateTime": "2026-06-16T00:30:00.000Z"
+   },
+   {
+    "id": "939f4ab6-f5ef-46e0-93c0-5aa40b6044fd",
+    "reason": "Dividend",
+    "multiplier": 1.0113856573591655,
+    "previousMultiplier": 1.01083191681,
+    "activationDateTime": "2026-06-14T23:55:00.000Z"
+   },
+   {
+    "id": "e4167a0a-2299-4e84-9b42-3700996f953f",
+    "reason": "Dividend",
+    "multiplier": 1.01083191681,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-05-30T00:30:00.000Z"
+   }
+  ],
+  "NLRx": [],
+  "BITXx": [
+   {
+    "id": "9a33f6f0-ad93-4001-a08e-723c5de1b9a1",
+    "reason": "Dividend",
+    "multiplier": 1.0022919985525838,
+    "previousMultiplier": 1.0017958445103723,
+    "activationDateTime": "2026-08-25T00:30:00.000Z"
+   },
+   {
+    "id": "f9155a93-33a2-4a18-9781-f470313ca679",
+    "reason": "Dividend",
+    "multiplier": 1.0017958445103723,
+    "previousMultiplier": 1.0009365443425,
+    "activationDateTime": "2026-08-02T23:55:00.000Z"
+   },
+   {
+    "id": "eef90049-8932-4078-a24e-14e9f2ad7940",
+    "reason": "Dividend",
+    "multiplier": 1.0009365443425,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-06-17T00:30:00.000Z"
+   }
+  ],
+  "EWUx": [
+   {
+    "id": "06bad4e0-b307-4d53-b896-1587718bbd63",
+    "reason": "Dividend",
+    "multiplier": 1.009889236641,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-06-14T23:55:00.000Z"
+   }
+  ],
+  "VOOx": [
+   {
+    "id": "e2589d81-8295-4d47-80dc-3c35a6a67812",
+    "reason": "Dividend",
+    "multiplier": 1.002032735937,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-06-26T00:30:00.000Z"
+   }
+  ],
+  "EWGx": [
+   {
+    "id": "5fc59a1f-e633-41d5-bcae-39e8aacec17b",
+    "reason": "Dividend",
+    "multiplier": 1.01375813519,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-06-14T23:55:00.000Z"
+   }
+  ],
+  "EWQx": [
+   {
+    "id": "5b43e010-468b-48ad-923f-3c8aa4943c5e",
+    "reason": "Dividend",
+    "multiplier": 1.01632636637,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-06-14T23:55:00.000Z"
+   }
+  ],
+  "JAAAx": [
+   {
+    "id": "91e369ab-fe0c-4c14-bd8a-a8d1766503e7",
+    "reason": "Dividend",
+    "multiplier": 1.0111858841100714,
+    "previousMultiplier": 1.008294917627727,
+    "activationDateTime": "2026-08-31T00:30:00.000Z"
+   },
+   {
+    "id": "470358b1-31ce-4825-af25-aaf6e95983b8",
+    "reason": "Dividend",
+    "multiplier": 1.008294917627727,
+    "previousMultiplier": 1.0055161846027436,
+    "activationDateTime": "2026-08-02T23:55:00.000Z"
+   },
+   {
+    "id": "68de9d8a-18d3-4153-836e-651890c5f6f1",
+    "reason": "Dividend",
+    "multiplier": 1.0055161846027436,
+    "previousMultiplier": 1.002740773478,
+    "activationDateTime": "2026-06-30T00:30:00.000Z"
+   },
+   {
+    "id": "95ffacaa-7858-4fc7-a280-7008fa7e90cb",
+    "reason": "Dividend",
+    "multiplier": 1.002740773478,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-06-04T23:55:00.000Z"
+   }
+  ],
+  "FEZx": [
+   {
+    "id": "ebfc0294-5b64-4e7e-96ff-d090f6bec2d0",
+    "reason": "Dividend",
+    "multiplier": 1.01110672995,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-06-21T23:55:00.000Z"
+   }
+  ],
+  "FLQMx": [
+   {
+    "id": "b239a07e-8727-4a87-b1f1-34d63102eef6",
+    "reason": "Dividend",
+    "multiplier": 1.004295575527,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-06-26T14:35:00.000Z"
+   }
+  ],
+  "JPSTx": [
+   {
+    "id": "b38496b0-b280-4669-ae76-d2a0faf9f213",
+    "reason": "Dividend",
+    "multiplier": 1.0094580396692463,
+    "previousMultiplier": 1.0070636829957968,
+    "activationDateTime": "2026-09-02T00:30:00.000Z"
+   },
+   {
+    "id": "3d14a09f-f255-4318-9835-dfb551f0e03f",
+    "reason": "Dividend",
+    "multiplier": 1.0070636829957968,
+    "previousMultiplier": 1.0047040201058135,
+    "activationDateTime": "2026-08-04T00:30:00.000Z"
+   },
+   {
+    "id": "d28f8852-58ca-49da-952c-0e9d854d4d75",
+    "reason": "Dividend",
+    "multiplier": 1.0047040201058135,
+    "previousMultiplier": 1.002335776373,
+    "activationDateTime": "2026-07-01T00:30:00.000Z"
+   },
+   {
+    "id": "3e9491e4-7b88-4e6b-a022-6ca5f9cece86",
+    "reason": "Dividend",
+    "multiplier": 1.002335776373,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-05-31T23:55:00.000Z"
+   }
+  ],
+  "GDXx": [],
+  "USPXx": [
+   {
+    "id": "cfb8aaab-47a3-4660-9bf4-4692cd74b175",
+    "reason": "Dividend",
+    "multiplier": 1.001926961395,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-06-26T14:30:00.000Z"
+   }
+  ],
+  "IQMx": [],
+  "FAAAx": [
+   {
+    "id": "5a4f64db-ce13-4a8e-9252-85265326ad88",
+    "reason": "Dividend",
+    "multiplier": 1.009604175864922,
+    "previousMultiplier": 1.0069245220314107,
+    "activationDateTime": "2026-08-31T00:30:00.000Z"
+   },
+   {
+    "id": "281c21ba-18e5-48b9-8f2e-f41d522b0ba9",
+    "reason": "Dividend",
+    "multiplier": 1.0069245220314107,
+    "previousMultiplier": 1.0044532797488532,
+    "activationDateTime": "2026-07-31T00:30:00.000Z"
+   },
+   {
+    "id": "7f72249f-6f1f-4680-a24a-2103fac4511e",
+    "reason": "Dividend",
+    "multiplier": 1.0044532797488532,
+    "previousMultiplier": 1.001931033337,
+    "activationDateTime": "2026-06-29T13:50:00.000Z"
+   },
+   {
+    "id": "2847a1a1-f8a1-428d-9648-6714541693a4",
+    "reason": "Dividend",
+    "multiplier": 1.001931033337,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-06-02T00:30:00.000Z"
+   }
+  ],
+  "FSMLx": [
+   {
+    "id": "62aff2c7-3628-486e-84e8-a37a08d0c459",
+    "reason": "Dividend",
+    "multiplier": 1.001700362797,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-06-26T14:35:00.000Z"
+   }
+  ],
+  "FLBLx": [
+   {
+    "id": "23074652-bb3d-4f81-b938-92168a363888",
+    "reason": "Dividend",
+    "multiplier": 1.0171047698353655,
+    "previousMultiplier": 1.0131896217148004,
+    "activationDateTime": "2026-09-02T00:30:00.000Z"
+   },
+   {
+    "id": "58c705d3-ce46-41d2-9673-b6c592bc2fc3",
+    "reason": "Dividend",
+    "multiplier": 1.0131896217148004,
+    "previousMultiplier": 1.0090736688506867,
+    "activationDateTime": "2026-08-07T00:30:00.000Z"
+   },
+   {
+    "id": "468413ee-6314-445b-8d66-23c2dba37058",
+    "reason": "Dividend",
+    "multiplier": 1.0090736688506867,
+    "previousMultiplier": 1.005001300989,
+    "activationDateTime": "2026-07-07T23:55:00.000Z"
+   },
+   {
+    "id": "aae907af-7144-4e2c-bb8c-5394b9dd74d4",
+    "reason": "Dividend",
+    "multiplier": 1.005001300989,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-06-04T23:55:00.000Z"
+   }
+  ],
+  "YLDEx": [
+   {
+    "id": "f4f1fee5-b791-421f-8281-a971863d5b73",
+    "reason": "Dividend",
+    "multiplier": 1.0194749276580042,
+    "previousMultiplier": 1.0154510048255114,
+    "activationDateTime": "2026-09-04T23:55:00.000Z"
+   },
+   {
+    "id": "1940cce0-3042-49f6-9f25-8e7e6bc29fa0",
+    "reason": "Dividend",
+    "multiplier": 1.0154510048255114,
+    "previousMultiplier": 1.0079850548068894,
+    "activationDateTime": "2026-08-07T00:30:00.000Z"
+   },
+   {
+    "id": "4f7344c8-5ba8-4c97-b618-d19118d3124f",
+    "reason": "Dividend",
+    "multiplier": 1.0079850548068894,
+    "previousMultiplier": 1.003992156715,
+    "activationDateTime": "2026-07-01T14:50:00.000Z"
+   },
+   {
+    "id": "4b96e092-d5b8-4db6-b274-fdabad468241",
+    "reason": "Dividend",
+    "multiplier": 1.003992156715,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-06-04T23:55:00.000Z"
+   }
+  ],
+  "SOXLx": [],
+  "ONDSx": [],
+  "IRENx": [],
+  "NETx": [],
+  "HIMSx": [],
+  "RCATx": [],
+  "VIDAx": [],
+  "MOOx": [],
+  "FGDLx": [],
+  "VGKx": [
+   {
+    "id": "719de226-0a4f-450a-bfe9-8d85df05d851",
+    "reason": "Dividend",
+    "multiplier": 1.009406813852,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-06-18T00:30:00.000Z"
+   }
+  ],
+  "ITAx": [
+   {
+    "id": "ff2f78af-fa04-46f6-aebe-69ae7bf33b1a",
+    "reason": "Dividend",
+    "multiplier": 1.0004897814278,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-06-14T23:55:00.000Z"
+   }
+  ],
+  "LNGx": [
+   {
+    "id": "4cfce5c5-785f-42cd-ad53-3affc6c8dce9",
+    "reason": "Dividend",
+    "multiplier": 1.001516748653,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-08-08T00:30:00.000Z"
+   }
+  ],
+  "XOPx": [
+   {
+    "id": "e2ef1afd-9be8-4025-a901-244a60bc21da",
+    "reason": "Dividend",
+    "multiplier": 1.003415371022,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-06-21T23:55:00.000Z"
+   }
+  ],
+  "URAx": [],
+  "XLEx": [
+   {
+    "id": "29bbfe3f-93f5-4072-83f4-412656ab9012",
+    "reason": "Dividend",
+    "multiplier": 1.005010474242,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-06-21T23:55:00.000Z"
+   }
+  ],
+  "VUGx": [
+   {
+    "id": "1b7c9dab-8b6d-4f6c-a15e-5bea17c2164a",
+    "reason": "Dividend",
+    "multiplier": 6.004667790486,
+    "previousMultiplier": 6,
+    "activationDateTime": "2026-06-26T00:30:00.000Z"
+   },
+   {
+    "id": "d8effb36-e4a0-4880-b2a2-a292d03751ba",
+    "reason": "Split",
+    "multiplier": 6,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-04-21T08:00:00.000Z"
+   }
+  ],
+  "SGOVx": [
+   {
+    "id": "2e5d8c32-8378-4f28-94d9-88afe556489e",
+    "reason": "Dividend",
+    "multiplier": 1.012578295897736,
+    "previousMultiplier": 1.0104210925243085,
+    "activationDateTime": "2026-09-02T00:30:00.000Z"
+   },
+   {
+    "id": "1b9821b2-ba9e-40cc-805b-4c5a69955a01",
+    "reason": "Dividend",
+    "multiplier": 1.0104210925243085,
+    "previousMultiplier": 1.0082715504586892,
+    "activationDateTime": "2026-08-04T00:30:00.000Z"
+   },
+   {
+    "id": "3317627f-e915-42bb-9b22-dd1dbc4aee0e",
+    "reason": "Dividend",
+    "multiplier": 1.0082715504586892,
+    "previousMultiplier": 1.006202219182742,
+    "activationDateTime": "2026-07-01T00:30:00.000Z"
+   },
+   {
+    "id": "b4667791-0b6f-4576-b41c-50e6d9c4124a",
+    "reason": "Dividend",
+    "multiplier": 1.006202219182742,
+    "previousMultiplier": 1.0041111664064348,
+    "activationDateTime": "2026-05-31T23:55:00.000Z"
+   },
+   {
+    "id": "d451bcbc-ce32-42d2-872f-258c8a1fa7a3",
+    "reason": "Dividend",
+    "multiplier": 1.0041111664064348,
+    "previousMultiplier": 1.00203538943,
+    "activationDateTime": "2026-05-04T23:55:00.000Z"
+   },
+   {
+    "id": "c7ef2ed2-3a3d-4523-91be-3c7a17eb26a5",
+    "reason": "Dividend",
+    "multiplier": 1.00203538943,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-04-02T11:40:00.000Z"
+   }
+  ],
+  "VXUSx": [
+   {
+    "id": "21de130f-9c35-4149-8ca4-f33c4329e075",
+    "reason": "Dividend",
+    "multiplier": 1.003137202554,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-06-18T04:00:00.000Z"
+   }
+  ],
+  "SMHx": [],
+  "PWRx": [
+   {
+    "id": "08fca1a5-72aa-4098-8e45-7747ef071a71",
+    "reason": "Dividend",
+    "multiplier": 1.0002444237463104,
+    "previousMultiplier": 1.000137470542,
+    "activationDateTime": "2026-07-01T00:30:00.000Z"
+   },
+   {
+    "id": "bcd04f22-fd6f-42e5-8cf1-6539e691cb65",
+    "reason": "Dividend",
+    "multiplier": 1.000137470542,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-04-01T23:55:00.000Z"
+   }
+  ],
+  "APLDx": [],
+  "SMRx": [],
+  "LITEx": [],
+  "VCXx": [],
+  "SNDKx": [],
+  "GEVx": [
+   {
+    "id": "e5f75a1c-326a-4fc2-991c-f7be8ef03512",
+    "reason": "Dividend",
+    "multiplier": 1.0003574821,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-06-16T00:30:00.000Z"
+   }
+  ],
+  "SMCIx": [],
+  "KLACx": [
+   {
+    "id": "032af76b-c6d1-42a3-a530-ad9472808399",
+    "reason": "Dividend",
+    "multiplier": 10.01683308516363,
+    "previousMultiplier": 10.00892302917,
+    "activationDateTime": "2026-08-15T00:30:00.000Z"
+   },
+   {
+    "id": "4b4eb725-febe-4014-8772-ee4789321764",
+    "reason": "Split",
+    "multiplier": 10.00892302917,
+    "previousMultiplier": 1.000892302917,
+    "activationDateTime": "2026-06-12T13:30:00.000Z"
+   },
+   {
+    "id": "b854f100-31d0-4c73-b22f-3e0e93f16072",
+    "reason": "Dividend",
+    "multiplier": 1.000892302917,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-05-17T02:30:00.000Z"
+   }
+  ],
+  "TERx": [
+   {
+    "id": "6a5478d9-8a8b-4b7d-b747-93fa4986211f",
+    "reason": "Dividend",
+    "multiplier": 1.0005331063386256,
+    "previousMultiplier": 1.000264273683,
+    "activationDateTime": "2026-09-04T00:30:00.000Z"
+   },
+   {
+    "id": "ab073714-56aa-44e4-a5a6-95dd19d50a7a",
+    "reason": "Dividend",
+    "multiplier": 1.000264273683,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-05-21T00:30:00.000Z"
+   }
+  ],
+  "ETNx": [
+   {
+    "id": "d40f2ca8-b32a-4d96-a7ac-f9800e3bf2f8",
+    "reason": "Dividend",
+    "multiplier": 1.0038078991013277,
+    "previousMultiplier": 1.001963547539,
+    "activationDateTime": "2026-08-07T00:30:00.000Z"
+   },
+   {
+    "id": "940c5c3e-549b-4c86-a6f0-a6ee91b257c9",
+    "reason": "Dividend",
+    "multiplier": 1.001963547539,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-05-08T00:30:00.000Z"
+   }
+  ],
+  "CEGx": [
+   {
+    "id": "0dd63347-5ea1-471b-87c8-8e33629b53bd",
+    "reason": "Dividend",
+    "multiplier": 1.002158923675915,
+    "previousMultiplier": 1.001084610913,
+    "activationDateTime": "2026-08-18T00:30:00.000Z"
+   },
+   {
+    "id": "0cb9a831-2209-422c-8001-71b4982a03ed",
+    "reason": "Dividend",
+    "multiplier": 1.001084610913,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-05-15T00:30:00.000Z"
+   }
+  ],
+  "DELLx": [
+   {
+    "id": "a0e3ce87-a293-4932-885e-c817ad481de5",
+    "reason": "Dividend",
+    "multiplier": 1.0033165309725203,
+    "previousMultiplier": 1.002159224442,
+    "activationDateTime": "2026-07-21T00:30:00.000Z"
+   },
+   {
+    "id": "175cf3e8-1d03-422a-82ad-c552f06cb48a",
+    "reason": "Dividend",
+    "multiplier": 1.002159224442,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-04-21T00:30:00.000Z"
+   }
+  ],
+  "VRTx": [
+   {
+    "id": "9c689080-2826-4c5f-8266-ac4ce075c37d",
+    "reason": "Dividend",
+    "multiplier": 1.000314669728725,
+    "previousMultiplier": 1.000144451415,
+    "activationDateTime": "2026-09-12T00:30:00.000Z"
+   },
+   {
+    "id": "ceb3beea-0a12-43c6-ae4a-4b6fca92a77e",
+    "reason": "Dividend",
+    "multiplier": 1.000144451415,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-06-14T23:55:00.000Z"
+   }
+  ],
+  "AMATx": [
+   {
+    "id": "f85a657c-d66b-403a-b5c9-fd0ee30b09f8",
+    "reason": "Dividend",
+    "multiplier": 1.0016175352702579,
+    "previousMultiplier": 1.000869157784,
+    "activationDateTime": "2026-08-20T00:30:00.000Z"
+   },
+   {
+    "id": "42dd03c3-c637-4f61-af6b-798889c5c111",
+    "reason": "Dividend",
+    "multiplier": 1.000869157784,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-05-21T00:30:00.000Z"
+   }
+  ],
+  "USARx": [],
+  "LRCXx": [
+   {
+    "id": "4bd4c578-e78c-455a-9789-32992da33d24",
+    "reason": "Dividend",
+    "multiplier": 1.000492770889,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-06-17T00:30:00.000Z"
+   }
+  ],
+  "ANETx": [],
+  "SLMTx": [],
+  "COPXx": [
+   {
+    "id": "05da96c3-e449-4aff-8d47-141f905908ad",
+    "reason": "Dividend",
+    "multiplier": 1.002370480441,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-06-28T23:55:00.000Z"
+   }
+  ],
+  "UUUUx": [],
+  "PALLx": [
+   {
+    "id": "1b4f2fd4-4670-4576-9a58-88c06ae70540",
+    "reason": "Split",
+    "multiplier": 5,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-05-17T02:30:00.000Z"
+   }
+  ],
+  "PPLTx": [
+   {
+    "id": "727ea3b1-d432-41b7-9997-e1b3e46f52c4",
+    "reason": "Split",
+    "multiplier": 10,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-05-17T02:30:00.000Z"
+   }
+  ],
+  "KRAQx": [
+   {
+    "id": "d44bddfa-3462-4c73-b7dc-5525febd823f",
+    "reason": "Administrative",
+    "multiplier": 1.01375909737,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-03-26T23:55:00.000Z"
+   }
+  ],
+  "VTx": [
+   {
+    "id": "a410a8ad-622e-48ce-ad00-72ec96878ea6",
+    "reason": "Dividend",
+    "multiplier": 1.00974987730554,
+    "previousMultiplier": 1.0072133944469237,
+    "activationDateTime": "2026-06-18T00:40:00.000Z"
+   },
+   {
+    "id": "c37a07da-6671-46ac-a489-7066328e9f8c",
+    "reason": "Dividend",
+    "multiplier": 1.0072133944469237,
+    "previousMultiplier": 1.005562988522,
+    "activationDateTime": "2026-03-20T00:20:00.000Z"
+   },
+   {
+    "id": "02914211-7113-4924-9113-4cfaa47266de",
+    "reason": "Dividend",
+    "multiplier": 1.005562988522,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-12-23T23:55:00.000Z"
+   }
+  ],
+  "STRKx": [
+   {
+    "id": "43188721-862e-4c2d-bd8d-4d647843b470",
+    "reason": "Dividend",
+    "multiplier": 1.0561756999911942,
+    "previousMultiplier": 1.026663280850392,
+    "activationDateTime": "2026-06-14T23:55:00.000Z"
+   },
+   {
+    "id": "1da1f83f-380b-4d89-8812-03df8d470793",
+    "reason": "Dividend",
+    "multiplier": 1.026663280850392,
+    "previousMultiplier": 1.008887760284,
+    "activationDateTime": "2026-03-13T00:15:00.000Z"
+   },
+   {
+    "id": "b19ae8f6-d355-4833-a81f-9ad94c98a9c7",
+    "reason": "Dividend",
+    "multiplier": 1.008887760284,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-12-31T23:55:00.000Z"
+   }
+  ],
+  "BTGOx": [],
+  "SCHFx": [
+   {
+    "id": "b933fe5b-7bc5-495f-abb0-0ca3db936f96",
+    "reason": "Dividend",
+    "multiplier": 1.004215328467,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-06-24T00:30:00.000Z"
+   }
+  ],
+  "STRCx": [
+   {
+    "id": "da6522f8-466d-4066-ae77-b4f54e16b116",
+    "reason": "Dividend",
+    "multiplier": 1.0808929977256367,
+    "previousMultiplier": 1.0753686544887686,
+    "activationDateTime": "2026-08-30T23:55:00.000Z"
+   },
+   {
+    "id": "af171784-22b3-4ec2-b339-3a0cea15c767",
+    "reason": "Dividend",
+    "multiplier": 1.0753686544887686,
+    "previousMultiplier": 1.0697834843705738,
+    "activationDateTime": "2026-08-14T00:30:00.000Z"
+   },
+   {
+    "id": "7abe7bc6-740c-4c12-b6dc-4fcb5cbdc561",
+    "reason": "Dividend",
+    "multiplier": 1.0697834843705738,
+    "previousMultiplier": 1.063840242790495,
+    "activationDateTime": "2026-07-31T00:30:00.000Z"
+   },
+   {
+    "id": "0bcd0bf5-51f3-48b5-b616-955b0d410217",
+    "reason": "Dividend",
+    "multiplier": 1.063840242790495,
+    "previousMultiplier": 1.0578440741352944,
+    "activationDateTime": "2026-07-15T00:30:00.000Z"
+   },
+   {
+    "id": "f519fe0b-232c-41e2-8f94-616d8d5f594c",
+    "reason": "Dividend",
+    "multiplier": 1.0578440741352944,
+    "previousMultiplier": 1.051820450399703,
+    "activationDateTime": "2026-06-30T00:30:00.000Z"
+   },
+   {
+    "id": "9b8f2ee9-871b-4e58-8a98-af49f764e1f9",
+    "reason": "Dividend",
+    "multiplier": 1.051820450399703,
+    "previousMultiplier": 1.0412940114352347,
+    "activationDateTime": "2026-06-14T23:55:00.000Z"
+   },
+   {
+    "id": "7192895c-c3d9-4860-a835-fc28d6d48427",
+    "reason": "Dividend",
+    "multiplier": 1.0412940114352347,
+    "previousMultiplier": 1.031409668810184,
+    "activationDateTime": "2026-05-15T00:30:00.000Z"
+   },
+   {
+    "id": "ae0a5c79-f687-4cfd-ae04-d3f4a5df088d",
+    "reason": "Dividend",
+    "multiplier": 1.031409668810184,
+    "previousMultiplier": 1.0216191519711808,
+    "activationDateTime": "2026-04-15T00:30:00.000Z"
+   },
+   {
+    "id": "5fc9159f-7882-4c34-af7a-89c9eadd788f",
+    "reason": "Dividend",
+    "multiplier": 1.0216191519711808,
+    "previousMultiplier": 1.0196722741780835,
+    "activationDateTime": "2026-04-01T00:30:00.000Z"
+   },
+   {
+    "id": "8773ca5c-7a7a-4278-84a0-59b645f533b0",
+    "reason": "Dividend",
+    "multiplier": 1.0196722741780835,
+    "previousMultiplier": 1.012878229032275,
+    "activationDateTime": "2026-03-13T00:15:00.000Z"
+   },
+   {
+    "id": "d03eb983-81cd-4192-bb00-e258bf1a4107",
+    "reason": "Dividend",
+    "multiplier": 1.012878229032275,
+    "previousMultiplier": 1.0077585434982026,
+    "activationDateTime": "2026-02-28T23:55:00.000Z"
+   },
+   {
+    "id": "b99a6dfd-9f58-4a6b-8e61-5541704ad08a",
+    "reason": "Dividend",
+    "multiplier": 1.0077585434982026,
+    "previousMultiplier": 1.000000657507339,
+    "activationDateTime": "2026-02-02T21:48:00.000Z"
+   },
+   {
+    "id": "fbbb9f3b-fea2-403e-8167-f5b1b29cc753",
+    "reason": "Dividend",
+    "multiplier": 1.000000657507339,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-11-30T23:55:00.000Z"
+   }
+  ],
+  "SLVx": [],
+  "HUTx": [],
+  "TMUSx": [
+   {
+    "id": "bb3f6ab6-9aac-4315-8c20-bf1ffbe280b3",
+    "reason": "Dividend",
+    "multiplier": 1.0078096296112127,
+    "previousMultiplier": 1.003777577906,
+    "activationDateTime": "2026-08-28T00:30:00.000Z"
+   },
+   {
+    "id": "25727495-518b-4289-8c07-6757d5593f36",
+    "reason": "Dividend",
+    "multiplier": 1.003777577906,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-05-29T00:30:00.000Z"
+   }
+  ],
+  "IJRx": [
+   {
+    "id": "978720af-bbcf-4844-877f-801a1bd7cb44",
+    "reason": "Dividend",
+    "multiplier": 1.0032083550487445,
+    "previousMultiplier": 1.001095528547,
+    "activationDateTime": "2026-06-14T23:55:00.000Z"
+   },
+   {
+    "id": "97c31e41-a33b-422f-8f24-06ba0794f21e",
+    "reason": "Dividend",
+    "multiplier": 1.001095528547,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-03-17T23:55:00.000Z"
+   }
+  ],
+  "IEMGx": [
+   {
+    "id": "7715b781-b3f6-4f73-af61-97bf79ef6416",
+    "reason": "Dividend",
+    "multiplier": 1.005582018893,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-06-14T23:55:00.000Z"
+   }
+  ],
+  "IWMx": [
+   {
+    "id": "faeb163e-8183-4881-ad36-98e9b9d2e7fc",
+    "reason": "Dividend",
+    "multiplier": 1.002900481874927,
+    "previousMultiplier": 1.001237425315,
+    "activationDateTime": "2026-06-14T23:55:00.000Z"
+   },
+   {
+    "id": "4177cbac-4f54-4357-92e3-237deeec8d99",
+    "reason": "Dividend",
+    "multiplier": 1.001237425315,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-03-17T23:55:00.000Z"
+   }
+  ],
+  "BTBTx": [],
+  "WBDx": [],
+  "PLx": [],
+  "CORZx": [],
+  "RKLBx": [],
+  "SPCEx": [],
+  "MUx": [
+   {
+    "id": "ca1aaa80-3c3e-4b36-859e-d9e21ab1fb22",
+    "reason": "Dividend",
+    "multiplier": 1.0004015986353854,
+    "previousMultiplier": 1.0002939365097,
+    "activationDateTime": "2026-07-05T23:55:00.000Z"
+   },
+   {
+    "id": "4464f92a-ca1f-4483-944b-20ec78f5b898",
+    "reason": "Dividend",
+    "multiplier": 1.0002939365097,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-03-28T23:55:00.000Z"
+   }
+  ],
+  "TSMx": [
+   {
+    "id": "303986ff-9534-4054-80e1-cfb70ec35f0a",
+    "reason": "Dividend",
+    "multiplier": 1.004065035082054,
+    "previousMultiplier": 1.00221915175,
+    "activationDateTime": "2026-06-11T00:30:00.000Z"
+   },
+   {
+    "id": "0f80d53e-c777-41f8-a567-db4f57169127",
+    "reason": "Dividend",
+    "multiplier": 1.00221915175,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-03-17T00:55:00.000Z"
+   }
+  ],
+  "RBLXx": [],
+  "ASMLx": [
+   {
+    "id": "c953a4d8-d0d7-4d0a-9624-1fccd2ea4d90",
+    "reason": "Dividend",
+    "multiplier": 1.0028663344146624,
+    "previousMultiplier": 1.001759964773,
+    "activationDateTime": "2026-07-28T00:30:00.000Z"
+   },
+   {
+    "id": "40611c84-11d6-47d9-ae33-005a2988f71d",
+    "reason": "Dividend",
+    "multiplier": 1.001759964773,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-04-25T02:00:00.000Z"
+   }
+  ],
+  "WENx": [
+   {
+    "id": "a42ceeee-53d9-4454-9681-7d4cce89c41b",
+    "reason": "Dividend",
+    "multiplier": 1.005903614458,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-09-01T00:30:00.000Z"
+   }
+  ],
+  "PANWx": [],
+  "AMDx": [],
+  "ADBEx": [],
+  "CLSKx": [],
+  "ASTSx": [],
+  "SBETx": [],
+  "UBERx": [],
+  "PYPLx": [
+   {
+    "id": "74880964-92aa-4e59-a2d2-121221087ffd",
+    "reason": "Dividend",
+    "multiplier": 1.0040286411936261,
+    "previousMultiplier": 1.002299929594,
+    "activationDateTime": "2026-09-04T00:30:00.000Z"
+   },
+   {
+    "id": "84c1a55f-88c5-4c6f-ae3e-4c16c19c7854",
+    "reason": "Dividend",
+    "multiplier": 1.002299929594,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-06-04T00:30:00.000Z"
+   }
+  ],
+  "OKLOx": [],
+  "GLXYx": [],
+  "TONXx": [],
+  "MARAx": [],
+  "RIOTx": [],
+  "WULFx": [],
+  "CRCLx": [],
+  "DFDVx": [
+   {
+    "id": "8a9f552b-aaca-4457-a5fb-64f66822c99c",
+    "reason": "Dividend",
+    "multiplier": 1.01472895118,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-11-07T23:55:00.000Z"
+   }
+  ],
+  "OPENx": [
+   {
+    "id": "1634557d-c309-4883-a58c-2329bd0d8192",
+    "reason": "Dividend",
+    "multiplier": 1.02081561906,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-11-24T23:55:00.000Z"
+   }
+  ],
+  "BMNRx": [],
+  "TBLLx": [
+   {
+    "id": "84719550-52f5-4cf1-8885-10970363c68b",
+    "reason": "Dividend",
+    "multiplier": 1.0187608513830024,
+    "previousMultiplier": 1.0167713949402104,
+    "activationDateTime": "2026-08-24T00:00:00.000Z"
+   },
+   {
+    "id": "448e7cf7-2b1c-4dab-af3f-1c958413b8f0",
+    "reason": "Dividend",
+    "multiplier": 1.0167713949402104,
+    "previousMultiplier": 1.0147069871005439,
+    "activationDateTime": "2026-07-21T00:30:00.000Z"
+   },
+   {
+    "id": "7401e946-8f5a-41a0-a30b-5b5769da3dd7",
+    "reason": "Dividend",
+    "multiplier": 1.0147069871005439,
+    "previousMultiplier": 1.0125906649525698,
+    "activationDateTime": "2026-06-21T23:55:00.000Z"
+   },
+   {
+    "id": "5f35efbf-048b-49f2-929e-977a3b591b81",
+    "reason": "Dividend",
+    "multiplier": 1.0125906649525698,
+    "previousMultiplier": 1.0104744543548667,
+    "activationDateTime": "2026-05-23T22:00:00.000Z"
+   },
+   {
+    "id": "c0387a4d-f14c-4fe1-84fc-ae504c82554e",
+    "reason": "Dividend",
+    "multiplier": 1.0104744543548667,
+    "previousMultiplier": 1.0086768236336383,
+    "activationDateTime": "2026-04-19T15:00:00.000Z"
+   },
+   {
+    "id": "ba6752ed-06d1-4217-8d2e-ca16cd1f2c86",
+    "reason": "Dividend",
+    "multiplier": 1.0086768236336383,
+    "previousMultiplier": 1.0067041499631253,
+    "activationDateTime": "2026-03-22T13:30:00.000Z"
+   },
+   {
+    "id": "6279fbed-8983-42ab-94c0-8cb3ecba1efc",
+    "reason": "Dividend",
+    "multiplier": 1.0067041499631253,
+    "previousMultiplier": 1.0045570999033657,
+    "activationDateTime": "2026-02-27T23:55:00.000Z"
+   },
+   {
+    "id": "c6d640fe-214a-4c0c-b811-128a2494083b",
+    "reason": "Dividend",
+    "multiplier": 1.0045570999033657,
+    "previousMultiplier": 1.002366975952,
+    "activationDateTime": "2026-01-23T23:55:00.000Z"
+   },
+   {
+    "id": "d5c87f31-964d-462d-8e1f-2b8bd09b2eed",
+    "reason": "Dividend",
+    "multiplier": 1.002366975952,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-12-26T23:55:00.000Z"
+   }
+  ],
+  "MSTRx": [],
+  "AMBRx": [],
+  "SPYx": [
+   {
+    "id": "edb40e5f-97c1-49a3-a26e-ea03f5475537",
+    "reason": "Dividend",
+    "multiplier": 1.005714560286254,
+    "previousMultiplier": 1.003909240011759,
+    "activationDateTime": "2026-06-18T04:00:00.000Z"
+   },
+   {
+    "id": "18c60b9f-b584-4396-a86f-8904ce394d26",
+    "reason": "Dividend",
+    "multiplier": 1.003909240011759,
+    "previousMultiplier": 1.0025607582229898,
+    "activationDateTime": "2026-05-01T00:15:00.000Z"
+   },
+   {
+    "id": "bcede013-57cb-4fb7-b7dc-b1996aea584f",
+    "reason": "Dividend",
+    "multiplier": 1.0025607582229898,
+    "previousMultiplier": 1.00099942056,
+    "activationDateTime": "2026-01-30T23:55:00.000Z"
+   },
+   {
+    "id": "18b849a1-631b-4627-9d7e-fe6f4a9f753a",
+    "reason": "Dividend",
+    "multiplier": 1.00099942056,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-10-31T23:55:00.000Z"
+   }
+  ],
+  "TQQQx": [
+   {
+    "id": "72994cdb-2cd1-432f-bdb7-2508b4331ca8",
+    "reason": "Dividend",
+    "multiplier": 2.008976295242212,
+    "previousMultiplier": 2.0057467223799277,
+    "activationDateTime": "2026-06-24T00:30:00.000Z"
+   },
+   {
+    "id": "3be7b319-0c73-4bad-b08a-1d1175036949",
+    "reason": "Dividend",
+    "multiplier": 2.0057467223799277,
+    "previousMultiplier": 2.003444222081451,
+    "activationDateTime": "2026-03-25T11:20:00.000Z"
+   },
+   {
+    "id": "0d868739-727a-4f33-87d9-20091a772420",
+    "reason": "Dividend",
+    "multiplier": 2.003444222081451,
+    "previousMultiplier": 2.0012076007036,
+    "activationDateTime": "2025-12-31T23:55:00.000Z"
+   },
+   {
+    "id": "cb13e1c9-5049-464d-9a8d-3389875e7ad5",
+    "reason": "Split",
+    "multiplier": 2.0012076007036,
+    "previousMultiplier": 1.0006038003518,
+    "activationDateTime": "2025-11-20T09:00:00.000Z"
+   },
+   {
+    "id": "2d2364ea-5815-49c7-8ed7-f012ab6078d3",
+    "reason": "Dividend",
+    "multiplier": 1.0006038003518,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-09-30T23:55:00.000Z"
+   }
+  ],
+  "VTIx": [
+   {
+    "id": "30a1a51b-61fc-4bd0-8335-8e60c6c814bf",
+    "reason": "Dividend",
+    "multiplier": 1.0100563088016958,
+    "previousMultiplier": 1.008032959167832,
+    "activationDateTime": "2026-06-26T00:30:00.000Z"
+   },
+   {
+    "id": "0573f7e0-a4b1-4815-a215-ccfade4fff8c",
+    "reason": "Dividend",
+    "multiplier": 1.008032959167832,
+    "previousMultiplier": 1.0058335658153008,
+    "activationDateTime": "2026-03-26T23:55:00.000Z"
+   },
+   {
+    "id": "e9f7f964-a83a-4099-b9ee-ad36512c73a0",
+    "reason": "Dividend",
+    "multiplier": 1.0058335658153008,
+    "previousMultiplier": 1.0038712198786848,
+    "activationDateTime": "2025-12-24T23:55:00.000Z"
+   },
+   {
+    "id": "8bba6864-e532-4ab2-89ca-1cd1d50a24b6",
+    "reason": "Dividend",
+    "multiplier": 1.0038712198786848,
+    "previousMultiplier": 1.00209229376,
+    "activationDateTime": "2025-10-01T23:55:00.000Z"
+   },
+   {
+    "id": "c41af015-ace4-4499-ae93-1919dde9a6ff",
+    "reason": "Dividend",
+    "multiplier": 1.00209229376,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-07-18T23:55:00.000Z"
+   }
+  ],
+  "QQQx": [
+   {
+    "id": "3a997bdf-63b6-4cc2-8bca-288c9194cf01",
+    "reason": "Dividend",
+    "multiplier": 1.0027250296551051,
+    "previousMultiplier": 1.0019546533977475,
+    "activationDateTime": "2026-06-21T23:55:00.000Z"
+   },
+   {
+    "id": "769407df-b776-40ab-bd39-6efedc2db8ab",
+    "reason": "Dividend",
+    "multiplier": 1.0019546533977475,
+    "previousMultiplier": 1.0011045482302958,
+    "activationDateTime": "2026-03-28T23:55:00.000Z"
+   },
+   {
+    "id": "33427b2b-eb9c-4623-aa5c-b79c32dc8252",
+    "reason": "Dividend",
+    "multiplier": 1.0011045482302958,
+    "previousMultiplier": 1.0002078861658,
+    "activationDateTime": "2025-12-31T23:55:00.000Z"
+   },
+   {
+    "id": "a5e4393a-0b3c-4ff0-8ea4-da6133cf0046",
+    "reason": "Dividend",
+    "multiplier": 1.0002078861658,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-10-31T23:55:00.000Z"
+   }
+  ],
+  "GLDx": [],
+  "MRVLx": [
+   {
+    "id": "d4089599-4f96-4991-a0ff-21c61e2d5904",
+    "reason": "Dividend",
+    "multiplier": 1.0016650410248724,
+    "previousMultiplier": 1.0014921357356839,
+    "activationDateTime": "2026-07-10T00:30:00.000Z"
+   },
+   {
+    "id": "eb83a8d2-9d87-45f6-8a80-7710b408db0a",
+    "reason": "Dividend",
+    "multiplier": 1.0014921357356839,
+    "previousMultiplier": 1.0011414732231942,
+    "activationDateTime": "2026-04-10T00:15:00.000Z"
+   },
+   {
+    "id": "c9883ab9-fb85-4abe-80e5-b413c2c5e7d0",
+    "reason": "Dividend",
+    "multiplier": 1.0011414732231942,
+    "previousMultiplier": 1.000704939809691,
+    "activationDateTime": "2026-01-29T23:55:00.000Z"
+   },
+   {
+    "id": "e5f8e4bd-c5c0-4e7d-95c1-6c2bfec2ce15",
+    "reason": "Dividend",
+    "multiplier": 1.000704939809691,
+    "previousMultiplier": 1.0001796732352,
+    "activationDateTime": "2025-10-30T23:55:00.000Z"
+   },
+   {
+    "id": "a1635253-0a61-4615-9d0f-229bc83ad889",
+    "reason": "Dividend",
+    "multiplier": 1.0001796732352,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-08-01T23:55:00.000Z"
+   }
+  ],
+  "GSx": [
+   {
+    "id": "b6a9a684-3256-414a-a3ee-f4fb73dadc55",
+    "reason": "Dividend",
+    "multiplier": 1.0157573238042787,
+    "previousMultiplier": 1.0123037094337313,
+    "activationDateTime": "2026-09-01T00:30:00.000Z"
+   },
+   {
+    "id": "6d9bbfb0-5338-472b-ba33-30399999348c",
+    "reason": "Dividend",
+    "multiplier": 1.0123037094337313,
+    "previousMultiplier": 1.009203946930402,
+    "activationDateTime": "2026-05-30T00:30:00.000Z"
+   },
+   {
+    "id": "3151f5ce-36c1-41ef-8d7f-9d0b7d69937e",
+    "reason": "Dividend",
+    "multiplier": 1.009203946930402,
+    "previousMultiplier": 1.0055190985060278,
+    "activationDateTime": "2026-02-28T01:15:00.000Z"
+   },
+   {
+    "id": "04d30fdc-1674-415a-aea4-27926904a00f",
+    "reason": "Dividend",
+    "multiplier": 1.0055190985060278,
+    "previousMultiplier": 1.002463240239,
+    "activationDateTime": "2025-12-30T23:55:00.000Z"
+   },
+   {
+    "id": "76517141-40d7-44fe-a464-49314f03238c",
+    "reason": "Dividend",
+    "multiplier": 1.002463240239,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-09-29T23:55:00.000Z"
+   }
+  ],
+  "GMEx": [
+   {
+    "id": "44792c9e-e0cd-4c67-be7f-4ddaaa4c7413",
+    "reason": "Dividend",
+    "multiplier": 1.005309167384,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-10-08T23:55:00.000Z"
+   }
+  ],
+  "COINx": [],
+  "CRWDx": [
+   {
+    "id": "9844a5e1-e545-4e5e-9afe-29365cbb6544",
+    "reason": "Split",
+    "multiplier": 4,
+    "previousMultiplier": 1,
+    "activationDateTime": "2026-07-02T13:30:00.000Z"
+   }
+  ],
+  "HOODx": [],
+  "INTCx": [],
+  "APPx": [],
+  "ACNx": [
+   {
+    "id": "f5c31279-1e56-465e-b5f3-a079cd61a0f3",
+    "reason": "Dividend",
+    "multiplier": 1.0282231285426122,
+    "previousMultiplier": 1.0191415587808974,
+    "activationDateTime": "2026-07-09T00:30:00.000Z"
+   },
+   {
+    "id": "7576e46b-997e-4310-8356-e32a3486abb4",
+    "reason": "Dividend",
+    "multiplier": 1.0191415587808974,
+    "previousMultiplier": 1.0127543723377948,
+    "activationDateTime": "2026-04-08T23:55:00.000Z"
+   },
+   {
+    "id": "ac8ef94b-35ba-432a-ac32-87abc59df5b5",
+    "reason": "Dividend",
+    "multiplier": 1.0127543723377948,
+    "previousMultiplier": 1.0064021238068017,
+    "activationDateTime": "2026-02-13T23:55:00.000Z"
+   },
+   {
+    "id": "ba29c743-1ef2-4189-9da9-53c1e98a7e1b",
+    "reason": "Dividend",
+    "multiplier": 1.0064021238068017,
+    "previousMultiplier": 1.001771150385,
+    "activationDateTime": "2025-11-14T23:55:00.000Z"
+   },
+   {
+    "id": "f5d187fc-2a2a-4ced-bdb0-6c4face4c64d",
+    "reason": "Dividend",
+    "multiplier": 1.001771150385,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-08-15T23:55:00.000Z"
+   }
+  ],
+  "HONx": [
+   {
+    "id": "56d90e2f-bc6d-44d5-a685-52ffbc0629b1",
+    "reason": "Dividend",
+    "multiplier": 1.0011576563945983,
+    "previousMultiplier": 0.9990655067370947,
+    "activationDateTime": "2026-08-14T00:30:00.000Z"
+   },
+   {
+    "id": "beace0ca-ccee-4e44-ad26-7afcf97386cf",
+    "reason": "Administrative",
+    "multiplier": 0.9990655067370947,
+    "previousMultiplier": 0.5120473566533945,
+    "activationDateTime": "2026-06-29T23:55:00.000Z"
+   },
+   {
+    "id": "27bc8841-13ac-4963-aa40-7b859da088ad",
+    "reason": "ReverseSplit",
+    "multiplier": 0.5120473566533945,
+    "previousMultiplier": 1.024094713306789,
+    "activationDateTime": "2026-06-29T15:30:00.000Z"
+   },
+   {
+    "id": "6f8bc507-7356-4c21-b9ac-fdb203864656",
+    "reason": "Dividend",
+    "multiplier": 1.024094713306789,
+    "previousMultiplier": 1.020191445467247,
+    "activationDateTime": "2026-05-15T00:30:00.000Z"
+   },
+   {
+    "id": "d7c7ea13-4323-4445-87fe-b887f59f9532",
+    "reason": "Dividend",
+    "multiplier": 1.020191445467247,
+    "previousMultiplier": 1.0166756251597866,
+    "activationDateTime": "2026-02-27T01:30:00.000Z"
+   },
+   {
+    "id": "21e669f3-08d0-4575-8095-d423a02571f0",
+    "reason": "Dividend",
+    "multiplier": 1.0166756251597866,
+    "previousMultiplier": 1.0126918396698434,
+    "activationDateTime": "2025-12-05T23:55:00.000Z"
+   },
+   {
+    "id": "b8e203a0-c3c0-4365-ade0-8ce6fdfe684f",
+    "reason": "Dividend",
+    "multiplier": 1.0126918396698434,
+    "previousMultiplier": 1.00165535414,
+    "activationDateTime": "2025-10-30T23:55:00.000Z"
+   },
+   {
+    "id": "c6223e2d-7550-40de-a2bd-d03af9c0fdaa",
+    "reason": "Dividend",
+    "multiplier": 1.00165535414,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-09-05T23:55:00.000Z"
+   }
+  ],
+  "PLTRx": [],
+  "PMx": [
+   {
+    "id": "fd300960-6a51-4746-a2a8-70a138d6e379",
+    "reason": "Dividend",
+    "multiplier": 1.0323117557839803,
+    "previousMultiplier": 1.0264041049059245,
+    "activationDateTime": "2026-06-25T00:30:00.000Z"
+   },
+   {
+    "id": "9b4b0185-1be6-4780-a263-936b78fc7172",
+    "reason": "Dividend",
+    "multiplier": 1.0264041049059245,
+    "previousMultiplier": 1.020086128343117,
+    "activationDateTime": "2026-03-19T00:15:00.000Z"
+   },
+   {
+    "id": "ac209178-00b1-4ec2-ba9d-64ffd410af63",
+    "reason": "Dividend",
+    "multiplier": 1.020086128343117,
+    "previousMultiplier": 1.0140231421821122,
+    "activationDateTime": "2026-01-14T23:55:00.000Z"
+   },
+   {
+    "id": "2cfcd943-9c59-4758-83a7-b8a940221212",
+    "reason": "Dividend",
+    "multiplier": 1.0140231421821122,
+    "previousMultiplier": 1.007464337056,
+    "activationDateTime": "2025-10-20T23:55:00.000Z"
+   },
+   {
+    "id": "50073b84-f15d-41ca-8b1a-393f51699077",
+    "reason": "Dividend",
+    "multiplier": 1.007464337056,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-07-15T23:55:00.000Z"
+   }
+  ],
+  "MCDx": [
+   {
+    "id": "11992cbf-d26e-411c-93f5-bab97eab89a8",
+    "reason": "Dividend",
+    "multiplier": 1.0211807004882871,
+    "previousMultiplier": 1.0161604345481776,
+    "activationDateTime": "2026-09-01T00:30:00.000Z"
+   },
+   {
+    "id": "6a939b61-6fb2-4d7e-8ebd-0e5e345646e8",
+    "reason": "Dividend",
+    "multiplier": 1.0161604345481776,
+    "previousMultiplier": 1.0113912072404925,
+    "activationDateTime": "2026-06-02T00:30:00.000Z"
+   },
+   {
+    "id": "c5491a4b-d4ce-41f4-9dee-50672d61e0c1",
+    "reason": "Dividend",
+    "multiplier": 1.0113912072404925,
+    "previousMultiplier": 1.0074734888169392,
+    "activationDateTime": "2026-03-03T01:15:00.000Z"
+   },
+   {
+    "id": "173b8540-ee8b-4a87-a1be-6ce8663eefdc",
+    "reason": "Dividend",
+    "multiplier": 1.0074734888169392,
+    "previousMultiplier": 1.003832455173,
+    "activationDateTime": "2025-12-15T23:55:00.000Z"
+   },
+   {
+    "id": "69fadc37-a951-44c0-a18a-c9d312cff900",
+    "reason": "Dividend",
+    "multiplier": 1.003832455173,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-09-16T23:55:00.000Z"
+   }
+  ],
+  "NFLXx": [
+   {
+    "id": "1f11136b-c16e-4b18-802e-6244326e1144",
+    "reason": "Split",
+    "multiplier": 10,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-11-16T23:55:00.000Z"
+   }
+  ],
+  "IBMx": [
+   {
+    "id": "4be289b6-1a53-4c6a-ba4e-4bb7bd691e70",
+    "reason": "Dividend",
+    "multiplier": 1.0204029187943977,
+    "previousMultiplier": 1.015340763856885,
+    "activationDateTime": "2026-08-08T00:30:00.000Z"
+   },
+   {
+    "id": "a673ae81-9b97-48a9-ba7c-4f29b1f49dbd",
+    "reason": "Dividend",
+    "multiplier": 1.015340763856885,
+    "previousMultiplier": 1.0101743798205745,
+    "activationDateTime": "2026-05-08T00:30:00.000Z"
+   },
+   {
+    "id": "c14bc8fb-00d8-4123-981c-204c0e9c4822",
+    "reason": "Dividend",
+    "multiplier": 1.0101743798205745,
+    "previousMultiplier": 1.0062529272825014,
+    "activationDateTime": "2026-03-10T23:55:00.000Z"
+   },
+   {
+    "id": "30b4bb2b-19ea-4604-add0-b2d41a7b7c96",
+    "reason": "Dividend",
+    "multiplier": 1.0062529272825014,
+    "previousMultiplier": 1.002307030214,
+    "activationDateTime": "2025-12-10T23:55:00.000Z"
+   },
+   {
+    "id": "e117f345-6130-4a69-ab8f-eb80c2edce1b",
+    "reason": "Dividend",
+    "multiplier": 1.002307030214,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-09-10T23:55:00.000Z"
+   }
+  ],
+  "MDTx": [
+   {
+    "id": "de3eb42e-fdb6-460d-8176-574e2008f136",
+    "reason": "Dividend",
+    "multiplier": 1.0294400153167536,
+    "previousMultiplier": 1.022582161772571,
+    "activationDateTime": "2026-06-26T00:30:00.000Z"
+   },
+   {
+    "id": "eafec05c-fc19-41c1-ba10-e06f95558ade",
+    "reason": "Dividend",
+    "multiplier": 1.022582161772571,
+    "previousMultiplier": 1.0143672564221604,
+    "activationDateTime": "2026-03-26T23:55:00.000Z"
+   },
+   {
+    "id": "c013a7cc-0c64-4320-9a05-9b6714771488",
+    "reason": "Dividend",
+    "multiplier": 1.0143672564221604,
+    "previousMultiplier": 1.0088509607652794,
+    "activationDateTime": "2026-01-16T23:55:00.000Z"
+   },
+   {
+    "id": "1b547950-f3a3-4017-b7b5-88afb5a90586",
+    "reason": "Dividend",
+    "multiplier": 1.0088509607652794,
+    "previousMultiplier": 1.005922066227,
+    "activationDateTime": "2025-10-17T23:55:00.000Z"
+   },
+   {
+    "id": "a5a23565-ef35-4661-9fd2-f156ce23ef1a",
+    "reason": "Dividend",
+    "multiplier": 1.005922066227,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-07-13T12:00:00.000Z"
+   }
+  ],
+  "DHRx": [
+   {
+    "id": "1a248287-590a-44df-b0c2-e1adbb192d28",
+    "reason": "Dividend",
+    "multiplier": 1.0058105996481104,
+    "previousMultiplier": 1.004355087901191,
+    "activationDateTime": "2026-06-26T00:30:00.000Z"
+   },
+   {
+    "id": "ade6540d-b9f7-4ef1-905f-c86da7f8e17e",
+    "reason": "Dividend",
+    "multiplier": 1.004355087901191,
+    "previousMultiplier": 1.00286186098734,
+    "activationDateTime": "2026-03-26T23:55:00.000Z"
+   },
+   {
+    "id": "0a9b7459-4980-444a-b406-d25f0ba75aba",
+    "reason": "Dividend",
+    "multiplier": 1.00286186098734,
+    "previousMultiplier": 1.001838482084251,
+    "activationDateTime": "2026-01-30T23:55:00.000Z"
+   },
+   {
+    "id": "7b022188-a83a-4e9a-a683-c4183307ed40",
+    "reason": "Dividend",
+    "multiplier": 1.001838482084251,
+    "previousMultiplier": 1.001090130426,
+    "activationDateTime": "2025-10-31T23:55:00.000Z"
+   },
+   {
+    "id": "3d4bb6f5-0034-4147-af11-5d155b4eb9a2",
+    "reason": "Dividend",
+    "multiplier": 1.001090130426,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-07-25T23:55:00.000Z"
+   }
+  ],
+  "CMCSAx": [
+   {
+    "id": "33b64ec8-03ea-4c0a-992c-f19a2ba12675",
+    "reason": "Dividend",
+    "multiplier": 1.0876797409606038,
+    "previousMultiplier": 1.0775407627046052,
+    "activationDateTime": "2026-07-01T00:30:00.000Z"
+   },
+   {
+    "id": "d2455cb2-1acb-4e88-a27d-0e107dbd1ff6",
+    "reason": "Dividend",
+    "multiplier": 1.0775407627046052,
+    "previousMultiplier": 1.0689400952719113,
+    "activationDateTime": "2026-04-01T00:30:00.000Z"
+   },
+   {
+    "id": "ea13fb25-cc02-42b1-8723-e3ce2a894909",
+    "reason": "Dividend",
+    "multiplier": 1.0689400952719113,
+    "previousMultiplier": 1.061666861399452,
+    "activationDateTime": "2026-02-05T23:55:00.000Z"
+   },
+   {
+    "id": "f26d6420-7f34-485a-a7b5-15cddbfabe60",
+    "reason": "Administrative",
+    "multiplier": 1.061666861399452,
+    "previousMultiplier": 1.0138399325620542,
+    "activationDateTime": "2026-01-07T23:55:00.000Z"
+   },
+   {
+    "id": "929352e3-9231-47a9-b297-a07c1d5990e0",
+    "reason": "Dividend",
+    "multiplier": 1.0138399325620542,
+    "previousMultiplier": 1.006454341379,
+    "activationDateTime": "2025-10-22T23:55:00.000Z"
+   },
+   {
+    "id": "6a1fa7f5-cbbf-45e0-9871-17ff4dd7574b",
+    "reason": "Dividend",
+    "multiplier": 1.006454341379,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-07-23T23:55:00.000Z"
+   }
+  ],
+  "AZNx": [
+   {
+    "id": "56f769d8-5311-4750-86d3-117cd2b6d4fa",
+    "reason": "Dividend",
+    "multiplier": 0.5111362527152737,
+    "previousMultiplier": 0.5077944626216563,
+    "activationDateTime": "2026-08-07T00:30:00.000Z"
+   },
+   {
+    "id": "15c4d825-bd03-4355-9db2-a7e940bb378f",
+    "reason": "Dividend",
+    "multiplier": 0.5077944626216563,
+    "previousMultiplier": 0.501935561411,
+    "activationDateTime": "2026-03-23T23:55:00.000Z"
+   },
+   {
+    "id": "dd530b53-2276-442d-8324-357da4040c5c",
+    "reason": "ReverseSplit",
+    "multiplier": 0.501935561411,
+    "previousMultiplier": 1.003871122822,
+    "activationDateTime": "2026-02-02T22:00:00.000Z"
+   },
+   {
+    "id": "227b596c-9e4d-4be5-bee9-5237058860e4",
+    "reason": "Dividend",
+    "multiplier": 1.003871122822,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-09-08T23:55:00.000Z"
+   }
+  ],
+  "TMOx": [
+   {
+    "id": "45142636-7f9a-4556-a8d0-0aecdce92ad4",
+    "reason": "Dividend",
+    "multiplier": 1.0024522181978437,
+    "previousMultiplier": 1.0017500071092285,
+    "activationDateTime": "2026-06-14T23:55:00.000Z"
+   },
+   {
+    "id": "840e1e99-ed8d-4c1a-a5a2-af0dcf19af5f",
+    "reason": "Dividend",
+    "multiplier": 1.0017500071092285,
+    "previousMultiplier": 1.0010579394841306,
+    "activationDateTime": "2026-03-13T00:20:00.000Z"
+   },
+   {
+    "id": "b4f5f472-64bf-4c64-9e4d-ac4bb4592646",
+    "reason": "Dividend",
+    "multiplier": 1.0010579394841306,
+    "previousMultiplier": 1.0005702161517,
+    "activationDateTime": "2026-01-15T23:55:00.000Z"
+   },
+   {
+    "id": "70cf8ae5-7ca5-407a-825d-f321458e48e8",
+    "reason": "Dividend",
+    "multiplier": 1.0005702161517,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-10-15T23:55:00.000Z"
+   }
+  ],
+  "BACx": [
+   {
+    "id": "09d658ae-4315-4a35-9680-d8506e13a3da",
+    "reason": "Dividend",
+    "multiplier": 1.0179352667683526,
+    "previousMultiplier": 1.014331044782208,
+    "activationDateTime": "2026-09-04T00:30:00.000Z"
+   },
+   {
+    "id": "5f675ec1-538a-4828-89a3-aa65781ae759",
+    "reason": "Dividend",
+    "multiplier": 1.014331044782208,
+    "previousMultiplier": 1.0106741841561035,
+    "activationDateTime": "2026-06-05T00:30:00.000Z"
+   },
+   {
+    "id": "9df5c5f8-1af7-44db-b1c3-c0941dedb6f8",
+    "reason": "Dividend",
+    "multiplier": 1.0106741841561035,
+    "previousMultiplier": 1.0067128167180222,
+    "activationDateTime": "2026-03-06T01:15:00.000Z"
+   },
+   {
+    "id": "f53289ff-8bdb-4a46-b743-311e41bd69c3",
+    "reason": "Dividend",
+    "multiplier": 1.0067128167180222,
+    "previousMultiplier": 1.003214615046,
+    "activationDateTime": "2025-12-26T23:55:00.000Z"
+   },
+   {
+    "id": "ab156ac6-ac73-4119-aeba-f4c2aacb4b30",
+    "reason": "Dividend",
+    "multiplier": 1.003214615046,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-09-26T23:55:00.000Z"
+   }
+  ],
+  "CRMx": [
+   {
+    "id": "8daa6fd8-9e61-4fbe-87de-a372c4bf6a07",
+    "reason": "Dividend",
+    "multiplier": 1.0054716788543585,
+    "previousMultiplier": 1.0036630653273484,
+    "activationDateTime": "2026-06-11T00:30:00.000Z"
+   },
+   {
+    "id": "691dd7e9-0c30-4c9a-8aab-8e0a354d09b9",
+    "reason": "Dividend",
+    "multiplier": 1.0036630653273484,
+    "previousMultiplier": 1.0019133951693713,
+    "activationDateTime": "2026-04-08T23:55:00.000Z"
+   },
+   {
+    "id": "005a62d7-95c1-4d0c-afa0-6fd988e71744",
+    "reason": "Dividend",
+    "multiplier": 1.0019133951693713,
+    "previousMultiplier": 1.0007966770019,
+    "activationDateTime": "2026-01-08T23:55:00.000Z"
+   },
+   {
+    "id": "397ea548-3331-406e-a9b9-d45c9eb03f1e",
+    "reason": "Dividend",
+    "multiplier": 1.0007966770019,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-10-09T23:55:00.000Z"
+   }
+  ],
+  "LINx": [
+   {
+    "id": "a21dddff-27b6-4d08-9348-af3d943874aa",
+    "reason": "Dividend",
+    "multiplier": 1.0148730104315449,
+    "previousMultiplier": 1.0115527020444874,
+    "activationDateTime": "2026-09-03T00:30:00.000Z"
+   },
+   {
+    "id": "c9a20c89-be70-40bc-bb93-5cecf7afa7fc",
+    "reason": "Dividend",
+    "multiplier": 1.0115527020444874,
+    "previousMultiplier": 1.0085324892979617,
+    "activationDateTime": "2026-06-04T00:30:00.000Z"
+   },
+   {
+    "id": "096f1642-79c2-4a50-b30b-b3e987e431dd",
+    "reason": "Dividend",
+    "multiplier": 1.0085324892979617,
+    "previousMultiplier": 1.0075564310790033,
+    "activationDateTime": "2026-03-26T23:55:00.000Z"
+   },
+   {
+    "id": "96c2187b-6c30-4745-9dab-6031b4ee36e7",
+    "reason": "Dividend",
+    "multiplier": 1.0075564310790033,
+    "previousMultiplier": 1.00520085306594,
+    "activationDateTime": "2026-03-11T00:15:00.000Z"
+   },
+   {
+    "id": "5af59132-0763-4ab1-89f0-95f770afe16f",
+    "reason": "Dividend",
+    "multiplier": 1.00520085306594,
+    "previousMultiplier": 1.00281362545,
+    "activationDateTime": "2025-12-17T23:55:00.000Z"
+   },
+   {
+    "id": "f4ef2685-2653-41dd-b7b8-5f6c68aad32d",
+    "reason": "Dividend",
+    "multiplier": 1.00281362545,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-09-18T23:55:00.000Z"
+   }
+  ],
+  "ABTx": [
+   {
+    "id": "2648346c-358a-45ec-9243-eaf12ae049e9",
+    "reason": "Dividend",
+    "multiplier": 1.0174717786699443,
+    "previousMultiplier": 1.0124527626139281,
+    "activationDateTime": "2026-07-15T00:30:00.000Z"
+   },
+   {
+    "id": "642ec2e1-e0fc-4588-9704-62e8ab06ae93",
+    "reason": "Dividend",
+    "multiplier": 1.0124527626139281,
+    "previousMultiplier": 1.008053439783696,
+    "activationDateTime": "2026-04-15T00:30:00.000Z"
+   },
+   {
+    "id": "534f80fa-8b02-459d-82a4-2314c7ff2526",
+    "reason": "Dividend",
+    "multiplier": 1.008053439783696,
+    "previousMultiplier": 1.0042450338781708,
+    "activationDateTime": "2026-02-13T23:55:00.000Z"
+   },
+   {
+    "id": "f552d922-a255-4fa9-89a9-6f8e573b0651",
+    "reason": "Dividend",
+    "multiplier": 1.0042450338781708,
+    "previousMultiplier": 1.001265486366,
+    "activationDateTime": "2025-11-17T23:55:00.000Z"
+   },
+   {
+    "id": "12df7b69-4d18-43d4-a963-785915863732",
+    "reason": "Dividend",
+    "multiplier": 1.001265486366,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-08-15T23:55:00.000Z"
+   }
+  ],
+  "KOx": [
+   {
+    "id": "ee3e95e7-4509-499c-a090-4f5c91438ea5",
+    "reason": "Dividend",
+    "multiplier": 1.0183317967386898,
+    "previousMultiplier": 1.013779482672994,
+    "activationDateTime": "2026-06-14T23:55:00.000Z"
+   },
+   {
+    "id": "ef9f0426-c5fc-4e47-9bc1-c35fd76f7867",
+    "reason": "Dividend",
+    "multiplier": 1.013779482672994,
+    "previousMultiplier": 1.0089563566803357,
+    "activationDateTime": "2026-03-13T00:15:00.000Z"
+   },
+   {
+    "id": "06ff9033-71b7-4f72-805f-19be7e82529a",
+    "reason": "Dividend",
+    "multiplier": 1.0089563566803357,
+    "previousMultiplier": 1.0053372508,
+    "activationDateTime": "2025-12-15T23:55:00.000Z"
+   },
+   {
+    "id": "2e4dc192-f501-4b8f-87b4-0de4a4a7dbea",
+    "reason": "Dividend",
+    "multiplier": 1.0053372508,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-10-01T23:55:00.000Z"
+   }
+  ],
+  "CSCOx": [
+   {
+    "id": "df434dd1-56bf-4953-bb5c-9c181d3b5406",
+    "reason": "Dividend",
+    "multiplier": 1.0180864518101183,
+    "previousMultiplier": 1.015437250004268,
+    "activationDateTime": "2026-07-05T23:55:00.000Z"
+   },
+   {
+    "id": "4efe3fff-3ac1-40cc-ad61-44212d85c0f9",
+    "reason": "Dividend",
+    "multiplier": 1.015437250004268,
+    "previousMultiplier": 1.0116207927593304,
+    "activationDateTime": "2026-04-01T23:55:00.000Z"
+   },
+   {
+    "id": "5b2758a2-8ee0-4632-8bf4-ae491ab792ff",
+    "reason": "Dividend",
+    "multiplier": 1.0116207927593304,
+    "previousMultiplier": 1.0077075257393313,
+    "activationDateTime": "2026-01-21T23:55:00.000Z"
+   },
+   {
+    "id": "6a3ae7d8-70c2-434b-9eda-2d138ea06f84",
+    "reason": "Dividend",
+    "multiplier": 1.0077075257393313,
+    "previousMultiplier": 1.004182513902,
+    "activationDateTime": "2025-10-22T23:55:00.000Z"
+   },
+   {
+    "id": "a7116cfa-8adc-4795-8b10-755613c5af3d",
+    "reason": "Dividend",
+    "multiplier": 1.004182513902,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-07-23T23:55:00.000Z"
+   }
+  ],
+  "NVOx": [
+   {
+    "id": "8d29ef5a-3a07-4fea-b595-fa3d854878b7",
+    "reason": "Dividend",
+    "multiplier": 1.0370549907437874,
+    "previousMultiplier": 1.0306506859428242,
+    "activationDateTime": "2026-08-15T00:30:00.000Z"
+   },
+   {
+    "id": "87e09529-f711-4de7-bb7c-789406ef1244",
+    "reason": "Dividend",
+    "multiplier": 1.0306506859428242,
+    "previousMultiplier": 1.0051095254039053,
+    "activationDateTime": "2026-03-28T23:55:00.000Z"
+   },
+   {
+    "id": "0d66a6e0-8985-4dfb-aa7a-32e3dfc634f9",
+    "reason": "Dividend",
+    "multiplier": 1.0051095254039053,
+    "previousMultiplier": 1.003841218823,
+    "activationDateTime": "2025-09-05T23:55:00.000Z"
+   },
+   {
+    "id": "26f27464-176c-44a4-9609-9bcd60654b45",
+    "reason": "Dividend",
+    "multiplier": 1.003841218823,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-08-26T23:55:00.000Z"
+   }
+  ],
+  "ORCLx": [
+   {
+    "id": "85de9ce7-7380-47bb-a983-f56740901a49",
+    "reason": "Dividend",
+    "multiplier": 1.009318667481834,
+    "previousMultiplier": 1.0068751347045037,
+    "activationDateTime": "2026-07-10T00:30:00.000Z"
+   },
+   {
+    "id": "4d784900-0c3f-482d-8bb3-75dc45866c32",
+    "reason": "Dividend",
+    "multiplier": 1.0068751347045037,
+    "previousMultiplier": 1.0044280386896456,
+    "activationDateTime": "2026-04-08T23:55:00.000Z"
+   },
+   {
+    "id": "f7758d8b-d88a-47d5-8263-d8c93c3ce06a",
+    "reason": "Dividend",
+    "multiplier": 1.0044280386896456,
+    "previousMultiplier": 1.0023450646710221,
+    "activationDateTime": "2026-01-23T23:55:00.000Z"
+   },
+   {
+    "id": "cf8f4599-1277-437b-936c-3db92d6c1f2d",
+    "reason": "Dividend",
+    "multiplier": 1.0023450646710221,
+    "previousMultiplier": 1.001443001443,
+    "activationDateTime": "2025-10-23T23:55:00.000Z"
+   },
+   {
+    "id": "90d1d30f-2d5d-49b5-9bb0-056a407d43d5",
+    "reason": "Dividend",
+    "multiplier": 1.001443001443,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-07-24T23:55:00.000Z"
+   }
+  ],
+  "PEPx": [
+   {
+    "id": "1bc96877-e95a-4b59-b0b6-dae6114fbf33",
+    "reason": "Dividend",
+    "multiplier": 1.0344000941634355,
+    "previousMultiplier": 1.0268028384810615,
+    "activationDateTime": "2026-09-04T00:30:00.000Z"
+   },
+   {
+    "id": "52bff53b-7877-4312-9e62-59e6f5bc3e2e",
+    "reason": "Dividend",
+    "multiplier": 1.0268028384810615,
+    "previousMultiplier": 1.0193735664806245,
+    "activationDateTime": "2026-06-05T00:30:00.000Z"
+   },
+   {
+    "id": "2224780a-28ec-442d-aa7f-eca7113adaeb",
+    "reason": "Dividend",
+    "multiplier": 1.0193735664806245,
+    "previousMultiplier": 1.0130960902396091,
+    "activationDateTime": "2026-03-06T01:15:00.000Z"
+   },
+   {
+    "id": "45f9bc3c-688a-4c75-ae94-d544b64ac138",
+    "reason": "Dividend",
+    "multiplier": 1.0130960902396091,
+    "previousMultiplier": 1.005916894891,
+    "activationDateTime": "2026-01-06T23:55:00.000Z"
+   },
+   {
+    "id": "7c63c8bf-0e4a-464e-b247-9e061f6c4a55",
+    "reason": "Dividend",
+    "multiplier": 1.005916894891,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-09-30T23:55:00.000Z"
+   }
+  ],
+  "WMTx": [
+   {
+    "id": "d8fc62fb-8cc4-4eff-8456-b31ef42e4887",
+    "reason": "Dividend",
+    "multiplier": 1.0071845610241497,
+    "previousMultiplier": 1.0055069408636728,
+    "activationDateTime": "2026-08-21T00:30:00.000Z"
+   },
+   {
+    "id": "5c37ad29-022a-4ea6-b612-eef767797b6f",
+    "reason": "Dividend",
+    "multiplier": 1.0055069408636728,
+    "previousMultiplier": 1.0041707459197968,
+    "activationDateTime": "2026-05-08T00:30:00.000Z"
+   },
+   {
+    "id": "7a8107fc-2bf3-4bfb-b414-bb63962931da",
+    "reason": "Dividend",
+    "multiplier": 1.0041707459197968,
+    "previousMultiplier": 1.0027360772813234,
+    "activationDateTime": "2026-03-20T00:20:00.000Z"
+   },
+   {
+    "id": "3cac7e65-0eaa-47a5-a2fc-32a99de04907",
+    "reason": "Dividend",
+    "multiplier": 1.0027360772813234,
+    "previousMultiplier": 1.001274701157,
+    "activationDateTime": "2026-01-05T23:55:00.000Z"
+   },
+   {
+    "id": "8ec6f8a5-231b-4420-b0f7-effb5ac09c19",
+    "reason": "Dividend",
+    "multiplier": 1.001274701157,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-09-02T23:55:00.000Z"
+   }
+  ],
+  "HDx": [
+   {
+    "id": "3afd8dff-e9bd-4289-81d4-cdac1203962f",
+    "reason": "Dividend",
+    "multiplier": 1.023299345701813,
+    "previousMultiplier": 1.0180860139732721,
+    "activationDateTime": "2026-09-03T00:30:00.000Z"
+   },
+   {
+    "id": "bc2bb1fa-d420-4927-9339-96da5f73819a",
+    "reason": "Dividend",
+    "multiplier": 1.0180860139732721,
+    "previousMultiplier": 1.012807905230234,
+    "activationDateTime": "2026-06-04T00:30:00.000Z"
+   },
+   {
+    "id": "0d7eb0ee-2264-4e4c-85f3-60cd959aeb24",
+    "reason": "Dividend",
+    "multiplier": 1.012807905230234,
+    "previousMultiplier": 1.0081213077702664,
+    "activationDateTime": "2026-03-12T00:15:00.000Z"
+   },
+   {
+    "id": "390010f7-0571-48a1-a114-2449c5bc9a75",
+    "reason": "Dividend",
+    "multiplier": 1.0081213077702664,
+    "previousMultiplier": 1.003515191444,
+    "activationDateTime": "2025-12-18T23:55:00.000Z"
+   },
+   {
+    "id": "b7e1bff3-c7b0-4645-9ad4-927f3078450d",
+    "reason": "Dividend",
+    "multiplier": 1.003515191444,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-09-18T23:55:00.000Z"
+   }
+  ],
+  "PGx": [
+   {
+    "id": "8d31ba14-1250-4445-8ef3-09c76eac3213",
+    "reason": "Dividend",
+    "multiplier": 1.021558909374661,
+    "previousMultiplier": 1.0162900639357433,
+    "activationDateTime": "2026-07-24T00:30:00.000Z"
+   },
+   {
+    "id": "6f9327ac-9236-4ac6-be14-9ad57ab05565",
+    "reason": "Dividend",
+    "multiplier": 1.0162900639357433,
+    "previousMultiplier": 1.0110033027900116,
+    "activationDateTime": "2026-04-24T00:30:00.000Z"
+   },
+   {
+    "id": "b51ec62d-5a13-4d1d-979e-beea9565c046",
+    "reason": "Dividend",
+    "multiplier": 1.0110033027900116,
+    "previousMultiplier": 1.0062027775127613,
+    "activationDateTime": "2026-02-17T23:55:00.000Z"
+   },
+   {
+    "id": "37276214-34d9-4067-b760-cb60178d7898",
+    "reason": "Dividend",
+    "multiplier": 1.0062027775127613,
+    "previousMultiplier": 1.001929125314,
+    "activationDateTime": "2025-11-17T23:55:00.000Z"
+   },
+   {
+    "id": "680e30ae-aed1-418b-ae48-6c56192e05a7",
+    "reason": "Dividend",
+    "multiplier": 1.001929125314,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-08-17T23:55:00.000Z"
+   }
+  ],
+  "MRKx": [
+   {
+    "id": "de432e6c-cadf-495c-8d06-959e6c6d60b8",
+    "reason": "Dividend",
+    "multiplier": 1.0216625054701978,
+    "previousMultiplier": 1.0165817315911818,
+    "activationDateTime": "2026-06-14T23:55:00.000Z"
+   },
+   {
+    "id": "c4724317-d80b-4ffd-a1c8-206928c95398",
+    "reason": "Dividend",
+    "multiplier": 1.0165817315911818,
+    "previousMultiplier": 1.011376567180638,
+    "activationDateTime": "2026-03-14T00:15:00.000Z"
+   },
+   {
+    "id": "e19cf98a-8607-4ecd-a71e-66c85d9440b8",
+    "reason": "Dividend",
+    "multiplier": 1.011376567180638,
+    "previousMultiplier": 1.006441479605,
+    "activationDateTime": "2026-01-08T23:55:00.000Z"
+   },
+   {
+    "id": "38128b3f-2ace-4702-814b-3920ce68a014",
+    "reason": "Dividend",
+    "multiplier": 1.006441479605,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-10-07T23:55:00.000Z"
+   }
+  ],
+  "CVXx": [
+   {
+    "id": "908cc337-3605-41c5-8202-b17aca22ae03",
+    "reason": "Dividend",
+    "multiplier": 1.0295541831890767,
+    "previousMultiplier": 1.023356544159142,
+    "activationDateTime": "2026-08-19T00:30:00.000Z"
+   },
+   {
+    "id": "b721f6e2-edd4-40c0-9c7b-0bd41f0171dd",
+    "reason": "Dividend",
+    "multiplier": 1.023356544159142,
+    "previousMultiplier": 1.0168959468224459,
+    "activationDateTime": "2026-05-19T00:30:00.000Z"
+   },
+   {
+    "id": "566594ce-8125-48df-b015-f8a62f721bee",
+    "reason": "Dividend",
+    "multiplier": 1.0168959468224459,
+    "previousMultiplier": 1.0106493206201208,
+    "activationDateTime": "2026-03-10T23:55:00.000Z"
+   },
+   {
+    "id": "30ef172b-2d66-4577-bdfa-cd92916a2928",
+    "reason": "Dividend",
+    "multiplier": 1.0106493206201208,
+    "previousMultiplier": 1.004783767039,
+    "activationDateTime": "2025-12-10T23:55:00.000Z"
+   },
+   {
+    "id": "f1016385-0673-4a15-8adb-9145b0ce0769",
+    "reason": "Dividend",
+    "multiplier": 1.004783767039,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-09-10T23:55:00.000Z"
+   }
+  ],
+  "PFEx": [
+   {
+    "id": "2d5a31e8-6fd3-44d7-95b6-f5a1cb1ae38a",
+    "reason": "Dividend",
+    "multiplier": 1.0537129709103943,
+    "previousMultiplier": 1.0411821501505005,
+    "activationDateTime": "2026-07-24T00:30:00.000Z"
+   },
+   {
+    "id": "9704dcb7-7b3e-4974-ab13-b2365cde5cb4",
+    "reason": "Dividend",
+    "multiplier": 1.0411821501505005,
+    "previousMultiplier": 1.029479979686953,
+    "activationDateTime": "2026-05-08T00:30:00.000Z"
+   },
+   {
+    "id": "d8c3580b-a984-4cf0-ac9b-8b6e2c46cea1",
+    "reason": "Dividend",
+    "multiplier": 1.029479979686953,
+    "previousMultiplier": 1.0175685198090234,
+    "activationDateTime": "2026-03-06T23:55:00.000Z"
+   },
+   {
+    "id": "d08e950d-4d1c-4fd5-b4cb-e2de34fab4ed",
+    "reason": "Dividend",
+    "multiplier": 1.0175685198090234,
+    "previousMultiplier": 1.004650623337,
+    "activationDateTime": "2025-12-01T23:55:00.000Z"
+   },
+   {
+    "id": "10981b52-7df5-4904-a0db-4a5de8c842a6",
+    "reason": "Dividend",
+    "multiplier": 1.004650623337,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-09-02T23:55:00.000Z"
+   }
+  ],
+  "ABBVx": [
+   {
+    "id": "4af08492-c37a-480a-af22-ad7be5aa1e65",
+    "reason": "Dividend",
+    "multiplier": 1.0217299849561985,
+    "previousMultiplier": 1.0167000651144704,
+    "activationDateTime": "2026-07-15T00:30:00.000Z"
+   },
+   {
+    "id": "49139de9-4433-4fc2-8258-213450b6b033",
+    "reason": "Dividend",
+    "multiplier": 1.0167000651144704,
+    "previousMultiplier": 1.0108778777879228,
+    "activationDateTime": "2026-04-15T00:30:00.000Z"
+   },
+   {
+    "id": "e819050f-5cba-42fb-ba8d-ddfd8c27b758",
+    "reason": "Dividend",
+    "multiplier": 1.0108778777879228,
+    "previousMultiplier": 1.0056712617096422,
+    "activationDateTime": "2026-02-17T23:55:00.000Z"
+   },
+   {
+    "id": "a2812de7-26f6-4738-b57e-bb688f91fdcf",
+    "reason": "Dividend",
+    "multiplier": 1.0056712617096422,
+    "previousMultiplier": 1.00151199327,
+    "activationDateTime": "2025-11-14T23:55:00.000Z"
+   },
+   {
+    "id": "afe17fda-0eb7-4d52-a8dc-5f805268e43c",
+    "reason": "Dividend",
+    "multiplier": 1.00151199327,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-08-15T23:55:00.000Z"
+   }
+  ],
+  "JPMx": [
+   {
+    "id": "da50b017-82d9-4b4b-a108-3518d6bf5e87",
+    "reason": "Dividend",
+    "multiplier": 1.0139174713894084,
+    "previousMultiplier": 1.0107444463984723,
+    "activationDateTime": "2026-07-05T23:55:00.000Z"
+   },
+   {
+    "id": "604caa9f-b1ad-4dda-8410-41cc75a3387a",
+    "reason": "Dividend",
+    "multiplier": 1.0107444463984723,
+    "previousMultiplier": 1.007154790830491,
+    "activationDateTime": "2026-04-03T13:00:00.000Z"
+   },
+   {
+    "id": "5f6dfeae-dbd6-4130-a3dc-65273b67a307",
+    "reason": "Dividend",
+    "multiplier": 1.007154790830491,
+    "previousMultiplier": 1.0040015369331659,
+    "activationDateTime": "2026-02-02T21:47:00.000Z"
+   },
+   {
+    "id": "fee5995a-4052-4a3d-9c88-8f32d06c8885",
+    "reason": "Dividend",
+    "multiplier": 1.0040015369331659,
+    "previousMultiplier": 1.0008887509522,
+    "activationDateTime": "2025-10-31T23:55:00.000Z"
+   },
+   {
+    "id": "7ea04519-53db-457d-b858-cec376bd8a24",
+    "reason": "Dividend",
+    "multiplier": 1.0008887509522,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-08-01T23:55:00.000Z"
+   }
+  ],
+  "JNJx": [
+   {
+    "id": "8058e545-4567-458e-a45b-1db64cb87c99",
+    "reason": "Dividend",
+    "multiplier": 1.0195885202077413,
+    "previousMultiplier": 1.0160617811948927,
+    "activationDateTime": "2026-08-25T00:30:00.000Z"
+   },
+   {
+    "id": "ca7837c0-66aa-4348-aeec-054f60b6cefd",
+    "reason": "Dividend",
+    "multiplier": 1.0160617811948927,
+    "previousMultiplier": 1.0120109734233302,
+    "activationDateTime": "2026-05-23T22:00:00.000Z"
+   },
+   {
+    "id": "a0df3156-aaca-4a17-85aa-065f7dc51d68",
+    "reason": "Dividend",
+    "multiplier": 1.0120109734233302,
+    "previousMultiplier": 1.008278734372437,
+    "activationDateTime": "2026-02-24T01:15:00.000Z"
+   },
+   {
+    "id": "5ffd8542-f783-49cc-a321-6fa1d39d58a5",
+    "reason": "Dividend",
+    "multiplier": 1.008278734372437,
+    "previousMultiplier": 1.004605920057,
+    "activationDateTime": "2025-12-09T23:55:00.000Z"
+   },
+   {
+    "id": "8421cf02-643f-4f8c-ba02-4d5196d7aae9",
+    "reason": "Dividend",
+    "multiplier": 1.004605920057,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-09-09T23:55:00.000Z"
+   }
+  ],
+  "MAx": [
+   {
+    "id": "2d6deec6-545c-4ef3-b63d-e7c0b4a3501b",
+    "reason": "Dividend",
+    "multiplier": 1.0047223563218923,
+    "previousMultiplier": 1.0035467321925013,
+    "activationDateTime": "2026-07-09T00:30:00.000Z"
+   },
+   {
+    "id": "37baa310-5634-4254-8a5c-dcfc86db43f9",
+    "reason": "Dividend",
+    "multiplier": 1.0035467321925013,
+    "previousMultiplier": 1.002343019267549,
+    "activationDateTime": "2026-04-08T23:55:00.000Z"
+   },
+   {
+    "id": "34e40cf2-e662-44a7-af26-168bf8177edb",
+    "reason": "Dividend",
+    "multiplier": 1.002343019267549,
+    "previousMultiplier": 1.0013150400911002,
+    "activationDateTime": "2026-02-09T23:55:00.000Z"
+   },
+   {
+    "id": "972b91d5-6107-4e8a-ab42-5210dae3a11a",
+    "reason": "Dividend",
+    "multiplier": 1.0013150400911002,
+    "previousMultiplier": 1.0004090664872,
+    "activationDateTime": "2025-11-07T23:55:00.000Z"
+   },
+   {
+    "id": "2afaec6d-7a3f-49bd-b0cd-15af8f75f7e9",
+    "reason": "Dividend",
+    "multiplier": 1.0004090664872,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-08-08T23:55:00.000Z"
+   }
+  ],
+  "XOMx": [
+   {
+    "id": "39cb600d-8724-4237-bf22-998236f5ac88",
+    "reason": "Dividend",
+    "multiplier": 1.017648970535191,
+    "previousMultiplier": 1.0130866005227463,
+    "activationDateTime": "2026-08-15T00:30:00.000Z"
+   },
+   {
+    "id": "7f020569-b84b-4da1-b5cd-9a8eb498b161",
+    "reason": "Dividend",
+    "multiplier": 1.0130866005227463,
+    "previousMultiplier": 1.0083280944613524,
+    "activationDateTime": "2026-05-15T00:30:00.000Z"
+   },
+   {
+    "id": "05d39347-e7b7-4596-bd0d-532efedbd411",
+    "reason": "Dividend",
+    "multiplier": 1.0083280944613524,
+    "previousMultiplier": 1.0051306383418332,
+    "activationDateTime": "2026-03-10T23:55:00.000Z"
+   },
+   {
+    "id": "d75fc63e-1998-44f6-96d6-6a11c1536523",
+    "reason": "Dividend",
+    "multiplier": 1.0051306383418332,
+    "previousMultiplier": 1.001164263709,
+    "activationDateTime": "2025-12-10T23:55:00.000Z"
+   },
+   {
+    "id": "05d42c09-e1e1-421a-bf56-b4b3818511d2",
+    "reason": "Dividend",
+    "multiplier": 1.001164263709,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-09-10T23:55:00.000Z"
+   }
+  ],
+  "Vx": [
+   {
+    "id": "8fbd9519-5da7-4984-85ab-c45a6ab1f7b0",
+    "reason": "Dividend",
+    "multiplier": 1.0066699189441244,
+    "previousMultiplier": 1.0053649367805917,
+    "activationDateTime": "2026-08-11T00:30:00.000Z"
+   },
+   {
+    "id": "48bab858-8902-40dd-a62e-47f80d4a99dc",
+    "reason": "Dividend",
+    "multiplier": 1.0053649367805917,
+    "previousMultiplier": 1.0039111162607224,
+    "activationDateTime": "2026-05-12T00:30:00.000Z"
+   },
+   {
+    "id": "67fb041a-6336-4d18-92e0-2eb3e86cc3c3",
+    "reason": "Dividend",
+    "multiplier": 1.0039111162607224,
+    "previousMultiplier": 1.0025644455375622,
+    "activationDateTime": "2026-03-02T23:55:00.000Z"
+   },
+   {
+    "id": "bb54faae-b069-4f90-b336-bbaa990f4ea6",
+    "reason": "Dividend",
+    "multiplier": 1.0025644455375622,
+    "previousMultiplier": 1.0008717205266,
+    "activationDateTime": "2025-12-02T23:55:00.000Z"
+   },
+   {
+    "id": "f1abf76f-4770-4483-befb-3120f11bcac9",
+    "reason": "Dividend",
+    "multiplier": 1.0008717205266,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-09-02T23:55:00.000Z"
+   }
+  ],
+  "LLYx": [
+   {
+    "id": "6b39e6d5-1d19-4604-93e3-622aefffd2d7",
+    "reason": "Dividend",
+    "multiplier": 1.0052945747745534,
+    "previousMultiplier": 1.0042886247952578,
+    "activationDateTime": "2026-08-14T00:30:00.000Z"
+   },
+   {
+    "id": "d7a75879-3153-4493-ac88-9fa5dd74c1d7",
+    "reason": "Dividend",
+    "multiplier": 1.0042886247952578,
+    "previousMultiplier": 1.0030819770608477,
+    "activationDateTime": "2026-05-15T00:30:00.000Z"
+   },
+   {
+    "id": "83df38b7-6100-4ae5-afb6-b9032fc7a7fe",
+    "reason": "Dividend",
+    "multiplier": 1.0030819770608477,
+    "previousMultiplier": 1.0019634290077664,
+    "activationDateTime": "2026-03-10T23:55:00.000Z"
+   },
+   {
+    "id": "07110fb6-3386-49d8-9369-9a8eee54d9b7",
+    "reason": "Dividend",
+    "multiplier": 1.0019634290077664,
+    "previousMultiplier": 1.0007962748877,
+    "activationDateTime": "2025-12-10T23:55:00.000Z"
+   },
+   {
+    "id": "9a3805a4-60e6-48d1-a9b7-ba6ca6898a64",
+    "reason": "Dividend",
+    "multiplier": 1.0007962748877,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-09-10T23:55:00.000Z"
+   }
+  ],
+  "METAx": [
+   {
+    "id": "bef8cff0-05c2-466d-8ee0-1c40bed1978c",
+    "reason": "Dividend",
+    "multiplier": 1.002298265651938,
+    "previousMultiplier": 1.0016490257902244,
+    "activationDateTime": "2026-06-14T23:55:00.000Z"
+   },
+   {
+    "id": "8ec9729f-c18a-41be-897a-5dc1957332dc",
+    "reason": "Dividend",
+    "multiplier": 1.0016490257902244,
+    "previousMultiplier": 1.0010495802528938,
+    "activationDateTime": "2026-03-14T00:15:00.000Z"
+   },
+   {
+    "id": "b0d03073-b201-4f0d-8509-b579395a60b0",
+    "reason": "Dividend",
+    "multiplier": 1.0010495802528938,
+    "previousMultiplier": 1.0004821422735,
+    "activationDateTime": "2025-12-23T23:55:00.000Z"
+   },
+   {
+    "id": "811e4608-b7f5-4f98-8a99-ec001fcf3e00",
+    "reason": "Dividend",
+    "multiplier": 1.0004821422735,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-09-29T23:55:00.000Z"
+   }
+  ],
+  "GOOGLx": [
+   {
+    "id": "92bd99fc-ec03-4e4f-b706-e94a27e1fec5",
+    "reason": "Dividend",
+    "multiplier": 1.0023772500603487,
+    "previousMultiplier": 1.001926722393864,
+    "activationDateTime": "2026-09-04T00:30:00.000Z"
+   },
+   {
+    "id": "541a704e-4a7d-400e-a440-67af0017466f",
+    "reason": "Dividend",
+    "multiplier": 1.001926722393864,
+    "previousMultiplier": 1.001508215718067,
+    "activationDateTime": "2026-06-07T23:55:00.000Z"
+   },
+   {
+    "id": "68b597e8-2ce4-41ab-821f-4f2146236fb2",
+    "reason": "Dividend",
+    "multiplier": 1.001508215718067,
+    "previousMultiplier": 1.0010152204171734,
+    "activationDateTime": "2026-03-07T23:55:00.000Z"
+   },
+   {
+    "id": "8c209ba8-ac02-4d61-a11e-e24f3ff26ae4",
+    "reason": "Dividend",
+    "multiplier": 1.0010152204171734,
+    "previousMultiplier": 1.0005600702837,
+    "activationDateTime": "2025-12-15T23:55:00.000Z"
+   },
+   {
+    "id": "5b23981d-07d6-4c6d-8d63-2481b3461c65",
+    "reason": "Dividend",
+    "multiplier": 1.0005600702837,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-09-16T13:30:00.000Z"
+   }
+  ],
+  "BRK.Bx": [],
+  "TSLAx": [],
+  "AVGOx": [
+   {
+    "id": "7e614f7b-0ba9-46e8-8c9c-6054bccde522",
+    "reason": "Dividend",
+    "multiplier": 1.0048837684862768,
+    "previousMultiplier": 1.0037734805715313,
+    "activationDateTime": "2026-06-21T23:55:00.000Z"
+   },
+   {
+    "id": "88cd9bd8-0b47-423a-8e47-407409bbbe70",
+    "reason": "Dividend",
+    "multiplier": 1.0037734805715313,
+    "previousMultiplier": 1.002304772088015,
+    "activationDateTime": "2026-03-20T23:55:00.000Z"
+   },
+   {
+    "id": "2d83777a-218c-46ea-9bd0-e1b6b1ebc18a",
+    "reason": "Dividend",
+    "multiplier": 1.002304772088015,
+    "previousMultiplier": 1.001089564754,
+    "activationDateTime": "2025-12-31T23:55:00.000Z"
+   },
+   {
+    "id": "5bd38ef0-23d1-4b04-abfc-9e9b17624381",
+    "reason": "Dividend",
+    "multiplier": 1.001089564754,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-09-30T23:55:00.000Z"
+   }
+  ],
+  "UNHx": [
+   {
+    "id": "1ec731ed-2dc8-4648-8df2-453b81949614",
+    "reason": "Dividend",
+    "multiplier": 1.0273478685368111,
+    "previousMultiplier": 1.0229655423325776,
+    "activationDateTime": "2026-09-12T00:30:00.000Z"
+   },
+   {
+    "id": "b920485e-531d-4d32-aea5-88e49c8aca3a",
+    "reason": "Dividend",
+    "multiplier": 1.0229655423325776,
+    "previousMultiplier": 1.0189150233915267,
+    "activationDateTime": "2026-06-14T23:55:00.000Z"
+   },
+   {
+    "id": "83d1a574-c1eb-4056-b842-994852e50979",
+    "reason": "Dividend",
+    "multiplier": 1.0189150233915267,
+    "previousMultiplier": 1.0134424060982172,
+    "activationDateTime": "2026-03-07T23:55:00.000Z"
+   },
+   {
+    "id": "90389341-f6b1-4cae-8f1a-f84e0912291b",
+    "reason": "Dividend",
+    "multiplier": 1.0134424060982172,
+    "previousMultiplier": 1.0087728268812075,
+    "activationDateTime": "2025-12-16T23:55:00.000Z"
+   },
+   {
+    "id": "99515273-c3eb-4bab-b9f7-167cb6e63076",
+    "reason": "Dividend",
+    "multiplier": 1.0087728268812075,
+    "previousMultiplier": 1.005154982041,
+    "activationDateTime": "2025-09-23T23:55:00.000Z"
+   },
+   {
+    "id": "ea464e90-3536-4c19-93ff-ef3d005bc218",
+    "reason": "Dividend",
+    "multiplier": 1.005154982041,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-06-24T14:00:00.000Z"
+   }
+  ],
+  "AAPLx": [
+   {
+    "id": "6dc1be62-53f9-4402-8923-a259c371c30c",
+    "reason": "Dividend",
+    "multiplier": 1.0032690125398187,
+    "previousMultiplier": 1.0026642075893797,
+    "activationDateTime": "2026-08-08T00:30:00.000Z"
+   },
+   {
+    "id": "57d8aba2-7d78-4546-828c-eef309e677d6",
+    "reason": "Dividend",
+    "multiplier": 1.0026642075893797,
+    "previousMultiplier": 1.002018559465695,
+    "activationDateTime": "2026-05-09T02:30:00.000Z"
+   },
+   {
+    "id": "0ac298b8-48a5-4033-9a38-4a7ee6a07dfb",
+    "reason": "Dividend",
+    "multiplier": 1.002018559465695,
+    "previousMultiplier": 1.0013934869619912,
+    "activationDateTime": "2026-02-12T23:55:00.000Z"
+   },
+   {
+    "id": "b8cf1402-de9b-477c-a960-230f4dadeaa1",
+    "reason": "Dividend",
+    "multiplier": 1.0013934869619912,
+    "previousMultiplier": 1.000781855115,
+    "activationDateTime": "2025-11-13T23:55:00.000Z"
+   },
+   {
+    "id": "661b450b-2f03-426f-9131-fcc5ecba3f34",
+    "reason": "Dividend",
+    "multiplier": 1.000781855115,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-08-14T23:55:00.000Z"
+   }
+  ],
+  "NVDAx": [
+   {
+    "id": "ec0d4ce6-2543-4105-a968-eb43a0712126",
+    "reason": "Dividend",
+    "multiplier": 1.001701196801074,
+    "previousMultiplier": 1.0009180758490996,
+    "activationDateTime": "2026-09-10T00:30:00.000Z"
+   },
+   {
+    "id": "8b11ea6b-8da1-4c09-9701-25c2d00f55fa",
+    "reason": "Dividend",
+    "multiplier": 1.0009180758490996,
+    "previousMultiplier": 1.000103090792305,
+    "activationDateTime": "2026-06-04T00:30:00.000Z"
+   },
+   {
+    "id": "2207e845-094f-4ba7-a701-c05eed26dff9",
+    "reason": "Dividend",
+    "multiplier": 1.000103090792305,
+    "previousMultiplier": 1.0000658218334353,
+    "activationDateTime": "2026-04-02T11:20:00.000Z"
+   },
+   {
+    "id": "cea001a8-85d0-4f07-93ca-c09c2095cf81",
+    "reason": "Dividend",
+    "multiplier": 1.0000658218334353,
+    "previousMultiplier": 1.00003086642674,
+    "activationDateTime": "2025-12-26T23:55:00.000Z"
+   },
+   {
+    "id": "42cfd77c-2e01-49f6-ad8d-c6cc8b37e00b",
+    "reason": "Dividend",
+    "multiplier": 1.00003086642674,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-10-02T23:55:00.000Z"
+   }
+  ],
+  "MSFTx": [
+   {
+    "id": "bb7628b3-3fbe-4b22-8eff-67487b53955c",
+    "reason": "Dividend",
+    "multiplier": 1.0059033904787456,
+    "previousMultiplier": 1.0045820905025638,
+    "activationDateTime": "2026-08-20T00:30:00.000Z"
+   },
+   {
+    "id": "5c5e26a9-4bd5-4f29-b184-a5fe69e134a4",
+    "reason": "Dividend",
+    "multiplier": 1.0045820905025638,
+    "previousMultiplier": 1.0030646056933608,
+    "activationDateTime": "2026-05-21T00:30:00.000Z"
+   },
+   {
+    "id": "2045b0fb-7edc-4366-b41b-944ee01b35b4",
+    "reason": "Dividend",
+    "multiplier": 1.0030646056933608,
+    "previousMultiplier": 1.0021570287825023,
+    "activationDateTime": "2026-03-12T23:55:00.000Z"
+   },
+   {
+    "id": "e05e8db9-2056-4977-ac85-ade6662d7f5e",
+    "reason": "Dividend",
+    "multiplier": 1.0021570287825023,
+    "previousMultiplier": 1.0009778552409,
+    "activationDateTime": "2025-12-11T23:55:00.000Z"
+   },
+   {
+    "id": "b0a80688-dbf4-4be8-aa68-e93c6e60727f",
+    "reason": "Dividend",
+    "multiplier": 1.0009778552409,
+    "previousMultiplier": 1,
+    "activationDateTime": "2025-09-11T23:55:00.000Z"
+   }
+  ],
+  "AMZNx": []
+ }
+}

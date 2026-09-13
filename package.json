@@ -1,0 +1,17 @@
+{
+  "name": "corpact",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.17.0",
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "pnpm -r typecheck",
+    "fixtures:record": "node tools/record-fixtures.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "26.5.1",
+    "fast-check": "4.10.0",
+    "typescript": "7.0.2",
+    "vitest": "5.0.0"
+  }
+}

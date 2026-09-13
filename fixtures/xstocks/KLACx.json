@@ -1,0 +1,93 @@
+{
+ "_source": "api.xstocks.fi/api/v2/public — recorded 2026-09-13T16:14:12.445Z (multiplier history) and 2026-09-13 (corporate actions history, all versions)",
+ "symbol": "KLACx",
+ "mint": "Xsw2uU1i8tHjbgstUbtt3m6kg7BS7AgG5aj8z7ddmmN",
+ "multiplierHistory": [
+  {
+   "id": "032af76b-c6d1-42a3-a530-ad9472808399",
+   "reason": "Dividend",
+   "multiplier": 10.01683308516363,
+   "previousMultiplier": 10.00892302917,
+   "activationDateTime": "2026-08-15T00:30:00.000Z"
+  },
+  {
+   "id": "4b4eb725-febe-4014-8772-ee4789321764",
+   "reason": "Split",
+   "multiplier": 10.00892302917,
+   "previousMultiplier": 1.000892302917,
+   "activationDateTime": "2026-06-12T13:30:00.000Z"
+  },
+  {
+   "id": "b854f100-31d0-4c73-b22f-3e0e93f16072",
+   "reason": "Dividend",
+   "multiplier": 1.000892302917,
+   "previousMultiplier": 1,
+   "activationDateTime": "2026-05-17T02:30:00.000Z"
+  }
+ ],
+ "corporateActions": [
+  {
+   "eventId": "c3cf5064-be3a-4b9d-a22f-c6bf5e106cb9",
+   "version": 2,
+   "xstockSymbol": "KLACx",
+   "spvSymbol": "KLAC",
+   "caType": "CashDividend",
+   "effectiveTimeUtc": "2026-08-15T00:30:00.000Z",
+   "multiplierOld": "10.00892302917",
+   "multiplierNew": "10.01683308516363",
+   "grossCashflowUsd": "0.23",
+   "netCashflowUsd": "0.161",
+   "withholdingTaxRate": "0.3",
+   "fromUnits": null,
+   "toUnits": null,
+   "redemptionPriceUsd": null,
+   "notes": null,
+   "createdTimeUtc": "2026-08-14T20:23:37.792Z",
+   "status": "Initial",
+   "xstockIsin": "CH1500008672",
+   "spvIsin": "US4824801009"
+  },
+  {
+   "eventId": "0f8bd035-de10-47fe-ac90-e21eb8d11527",
+   "version": 2,
+   "xstockSymbol": "KLACx",
+   "spvSymbol": "KLAC",
+   "caType": "ForwardSplit",
+   "effectiveTimeUtc": "2026-06-12T13:30:00.000Z",
+   "multiplierOld": "1.000892302917",
+   "multiplierNew": "10.00892302917",
+   "grossCashflowUsd": null,
+   "netCashflowUsd": null,
+   "withholdingTaxRate": null,
+   "fromUnits": "1",
+   "toUnits": "10",
+   "redemptionPriceUsd": null,
+   "notes": null,
+   "createdTimeUtc": "2026-06-12T12:36:50.011Z",
+   "status": "Initial",
+   "xstockIsin": "CH1500008672",
+   "spvIsin": "US4824801009"
+  },
+  {
+   "eventId": "514a505f-3570-4463-b5d1-411378b34fdb",
+   "version": 1,
+   "xstockSymbol": "KLACx",
+   "spvSymbol": "KLAC",
+   "caType": "CashDividend",
+   "effectiveTimeUtc": "2026-05-17T02:30:00.000Z",
+   "multiplierOld": "1",
+   "multiplierNew": "1.000892302917",
+   "grossCashflowUsd": "2.3",
+   "netCashflowUsd": "1.61",
+   "withholdingTaxRate": "0.3",
+   "fromUnits": null,
+   "toUnits": null,
+   "redemptionPriceUsd": null,
+   "notes": null,
+   "createdTimeUtc": "2026-05-17T01:55:08.089Z",
+   "status": "Initial",
+   "xstockIsin": "CH1500008672",
+   "spvIsin": "US4824801009"
+  }
+ ]
+}
