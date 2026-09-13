@@ -1,67 +1,64 @@
-# Parity
+# Corpact
 
-Unified liquidity and execution layer for tokenized equities on Solana.
+**Corporate-action accounting for tokenized equities on Solana.**
 
-The engineering specification is [`PLAN.md`](PLAN.md). It is the source of truth for scope and design. This README covers repository state and how to work in it.
+Tokenized stocks such as xStocks pay dividends, split and spin off by rewriting a balance multiplier on the mint. No cash and no transfer is involved. Read naively, that data gives confidently wrong numbers. A spin-off books as ~95% income, a split looks like a windfall, and an issuer cash figure that doesn't reconcile becomes revenue.
 
-## Status: Phase 0 complete, Phase 1 not started
+Corpact turns those multiplier changes into evidence-backed accounting, which exchanges, collateral protocols, portfolio trackers and tax tools can build on:
 
-No program code has been written. Spec §3 gates implementation behind investigation, and §13 says to start there.
+- **Timeline:** every multiplier change for a mint, rebuilt from chain data and verified against live mint state.
+- **Classification:** dividend, split or unclassified, matched to the issuer's corporate-action record, with the reason kept for every result.
+- **Ledger:** dividend quantity and USD value per position, a protected-principal floor, the amount convertible now, and exact reconciliation against on-chain balances.
+- **Coverage:** where history is complete, partial or unsupported. It never guesses, and never reports unknown as zero.
 
-**→ Read [`docs/findings/README.md`](docs/findings/README.md) first.** Phase 0 changed the plan in ways that matter before any code is written.
+> **Status: pre-validation.** The engine is built and tested against real mainnet data. Commercial use of the issuer's corporate-action feed is not yet licensed, and the regulatory review is pending. See [phase0-validation.md](docs/findings/phase0-validation.md) and [counsel-questions-api.md](docs/findings/counsel-questions-api.md).
 
-Three results in particular:
+## Packages
 
-- **The normalization oracle should not be built.** The `shares_per_token` scalar is already on-chain in a Token-2022 `ScaledUiAmountConfig` on every candidate wrapper. §0.2 called a Parity-run oracle "the single greatest source of value leakage in this design"; it can be deleted from the design entirely. → [ADR-002](docs/adr/0002-normalization-from-scaled-ui-amount.md)
-- **No wrapper has a transfer hook, but custody is revocable at any moment.** The §0.1 blocking risk did not materialise. Four unmodelled issuer powers did — live hook authorities, permanent delegates, global pause, freeze. → [ADR-003](docs/adr/0003-registry-tracks-issuer-powers.md)
-- **§1's premise does not hold today.** Across 18 underlyings and $18.0M of on-chain liquidity, 3.7% is consolidatable, and 98% of that is one pre-IPO underlying the spec excludes from v1. xStocks is the deepest book in all 18. → [`liquidity-fragmentation.md`](docs/findings/liquidity-fragmentation.md)
+| Package | What it does |
+|---|---|
+| `@corpact/domain` | Exact `Rational` arithmetic, units, corporate-action types |
+| `@corpact/accounting` | Evidence classifier and protected-floor ledger reducer (pure, deterministic) |
+| `@corpact/solana` | Token-2022 mint decoding, the multiplier timeline (mirrors the program's processor), the transaction parser, a kit-based chain reader |
+| `@corpact/issuers` | Issuer adapters behind `IssuerSource`: recorded fixtures (default) or live |
+| `@corpact/db` | Postgres schema, migrations, outbox, immutable observations |
+| `apps/worker` | Registry verification, archival ingestion, timeline, classification, position rebuild |
+| `apps/api` | Read-only HTTP API over the ledger |
+| `apps/web` | Reference dashboard: a demo of the API, not the product |
 
-Recommendation on record: **proceed with Phase 1 as specified; gate Phase 2 on Phase 1 data rather than on §1's premise.**
+Design decisions are in [docs/adr/](docs/adr/), and the original product plan is [PLAN.md](PLAN.md).
 
-## Layout
+## Run it
 
-```
-programs/     Anchor programs                        (empty - Phase 1+)
-reference/    Python reference math, source of truth (empty - Phase 2+)
-services/     indexer, pricing, corpactions, risk, keeper, api  (empty - Phase 1+)
-app/          Next.js frontend                       (empty - Phase 3+)
-sdk/          TypeScript and Rust SDKs               (empty - Phase 6)
-tools/
-  phase0/     mainnet investigation tools            <- the only code here today
-docs/
-  findings/   Phase 0 deliverables + raw evidence
-  adr/        architecture decision records
-  toolchain.md
-tests/        fuzz, integration, fork                (empty)
-```
-
-`tools/` is not in the spec's §4.1 layout. It holds throwaway-but-reproducible investigation scripts, kept because every number in `docs/findings/` should be re-derivable rather than trusted.
-
-## Toolchain
-
-Pinned per §4.2 — see [`docs/toolchain.md`](docs/toolchain.md). Rust 1.91.0 (`rust-toolchain.toml`), Solana CLI 4.0.0, Anchor 0.32.1, Node 24.8.0.
-
-`Anchor.toml` does not exist yet; pin `anchor_version` and `solana_version` there when the first program is scaffolded.
-
-## Reproducing Phase 0
+Requires Node 24, pnpm 10, Docker, and an archival Solana RPC. Public mainnet works but is very slow; see [ADR-0002](docs/adr/0002-archival-history-on-standard-json-rpc.md).
 
 ```bash
-cd tools/phase0
-npm install
-node inspect-mints.js
+pnpm install
+cp .env.example .env                         # set SOLANA_RPC_URL (an API-key URL stays server-side)
+docker compose up -d                         # Postgres on 127.0.0.1:54329
+
+cd apps/worker
+pnpm cli migrate
+pnpm cli sync-registry                       # verify every recorded xStock mint on mainnet
+pnpm cli import-issuer-actions               # corporate actions from fixtures (no network)
+pnpm start                                   # worker: job queue + chain-only mint polling
+
+cd ../api && PORT=4600 WEB_ORIGIN=http://localhost:3600 pnpm start
+cd ../web && NEXT_PUBLIC_API_URL=http://127.0.0.1:4600 pnpm dev --port 3600
 ```
 
-See [`tools/phase0/README.md`](tools/phase0/README.md) for the full set. A public RPC works for most of it but throttles hard; set `SOLANA_RPC_URL` to an archival provider for anything historical.
+Tests and types: `pnpm test` and `pnpm typecheck` from the root. To sync a wallet without the web app, run `pnpm cli sync-wallet <address>` in `apps/worker`.
 
-## Working agreements
+## The issuer-data constraint
 
-From §13, plus what Phase 0 added:
+The xStocks corporate-action feed has no commercial licence, and the website terms prohibit automated retrieval.
 
-- **Python reference first, always.** For every math module the arbitrary-precision Python implementation is the source of truth; Rust is verified against it by differential test. Never write the Rust first.
-- **Do not derive Orbital or TWAMM math from memory.** Fetch the papers. Where a formulation is ambiguous, write an ADR and take the pool-favouring reading.
-- **No floating point in program code.** Every rounding decision explicit and directional. Note that wrapper multipliers arrive as IEEE-754 `f64` on-chain — convert on the raw bits with integer arithmetic, and reject out-of-band values rather than rounding them. → [ADR-002](docs/adr/0002-normalization-from-scaled-ui-amount.md)
-- **Ask before adding a dependency** to any program crate. Audit surface is the scarce resource.
-- **Write the ADR before the code** for any decision the spec leaves open.
-- **Never allowlist a wrapper by symbol.** Impostor mints with identical names and symbols are live right now. Identity is the mint pubkey, and admission diligence is on the mint authority. → [`token-extensions.md`](docs/findings/token-extensions.md) §6
-- **A failed measurement must never be reported as a zero.** Phase 0 hit this twice: a rate-limited quote read as "no liquidity", and an auth failure read as "market closed". Both would have gone into a finding as fact. Probes distinguish *absent* from *unavailable*, and control cases (an always-on feed, a known-good mint) are how you tell them apart.
-- **When you disagree with the spec, argue the case.** §13 invites this; `docs/findings/liquidity-fragmentation.md` is what taking it seriously looks like.
+- **Every issuer read goes through `IssuerSource`.** `ISSUER_SOURCE=fixtures` is the default and makes no network calls. `live` is the only switch.
+- **No scheduled job reads the issuer.** `import-issuer-actions` is a one-shot command; the worker loop polls **chain state only**.
+- **These scripts call `api.xstocks.fi` live:** `tools/record-fixtures.mjs` and the Phase 0 scripts in `tools/validate/`. Do not run them until licensing is resolved.
+
+## What the numbers promise
+
+- Income comes only from issuer-reported net cash that reconciles with the shares delivered. There is no event-time price source yet. A dividend without trustworthy issuer cash keeps its quantity, with USD shown as unknown.
+- Every position carries `coverageStart`, gaps and reconciliation status. Anything that cannot be replayed from verified chain history is partial or unsupported, never zero.
+- The convertible amount appears only when replay completed. Conversion itself is not built.
