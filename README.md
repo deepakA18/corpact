@@ -22,6 +22,7 @@ Corpact turns those multiplier changes into evidence-backed accounting, which ex
 | `@corpact/solana` | Token-2022 mint decoding, the multiplier timeline (mirrors the program's processor), the transaction parser, a kit-based chain reader |
 | `@corpact/issuers` | Issuer adapters behind `IssuerSource`: recorded fixtures (default) or live |
 | `@corpact/db` | Postgres schema, migrations, outbox, immutable observations |
+| `@corpact/client` | API contract (JSON schemas → OpenAPI and TypeScript types) and a typed fetch client |
 | `apps/worker` | Registry verification, archival ingestion, timeline, classification, position rebuild |
 | `apps/api` | Read-only HTTP API over the ledger |
 | `apps/web` | Reference dashboard: a demo of the API, not the product |
@@ -43,11 +44,34 @@ pnpm cli sync-registry                       # verify every recorded xStock mint
 pnpm cli import-issuer-actions               # corporate actions from fixtures (no network)
 pnpm start                                   # worker: job queue + chain-only mint polling
 
-cd ../api && PORT=4600 WEB_ORIGIN=http://localhost:3600 pnpm start
-cd ../web && NEXT_PUBLIC_API_URL=http://127.0.0.1:4600 pnpm dev --port 3600
+cd ../api
+pnpm keys create demo-dashboard              # prints the key once; only its hash is stored
+PORT=4600 pnpm start
+
+cd ../web
+# apps/web/.env.local (gitignored):
+#   CORPACT_API_URL=http://127.0.0.1:4600
+#   CORPACT_API_KEY=cpk_...
+pnpm dev --port 3600
 ```
 
-Tests and types: `pnpm test` and `pnpm typecheck` from the root. To sync a wallet without the web app, run `pnpm cli sync-wallet <address>` in `apps/worker`.
+Checks: `pnpm test` and `pnpm typecheck` from the root, plus `pnpm --filter @corpact/api openapi:check`. CI runs all three, and applies the migrations twice against a fresh Postgres. To sync a wallet without the web app, run `pnpm cli sync-wallet <address>` in `apps/worker`.
+
+## API access
+
+- **Keys.** Every route except `/v1/health` and `/v1/openapi.json` needs `Authorization: Bearer <key>`. Keys are issued with `pnpm keys create <name>`, listed with `pnpm keys list` and revoked with `pnpm keys revoke <id>`, all in `apps/api`. Only a SHA-256 of each key is stored.
+- **Limits.** Each key is allowed `RATE_LIMIT_PER_MINUTE` requests per minute (default 120), with `429` and `retry-after` beyond that. After `AUTH_FAILURES_PER_MINUTE` failed key attempts (default 20), further attempts from that address are refused for the minute. Limits are held in memory per API instance.
+- **Contract.** The OpenAPI 3.1 document is served at `/v1/openapi.json` and committed at [packages/client/openapi.json](packages/client/openapi.json). The API, that document and the `@corpact/client` types all come from one set of schemas, and a contract test checks real responses against them.
+- **Client.**
+
+  ```ts
+  import { createCorpactClient } from '@corpact/client';
+
+  const corpact = createCorpactClient({ baseUrl: 'https://api.example', apiKey: process.env.CORPACT_API_KEY });
+  const { positions, coverage } = await corpact.portfolio('6kn8Vj9YkvNLo8peW2fzebQdSLtX33A3TkRJwXqMCy1U');
+  ```
+
+- **Browsers never hold keys.** The demo dashboard calls its own server route (`/api/corpact/*`), which attaches the key and forwards only the routes it needs.
 
 ## The issuer-data constraint
 

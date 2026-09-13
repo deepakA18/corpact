@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: Typecheck, tests, API contract
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Generate Next.js route types
+        run: pnpm --filter @corpact/web exec next typegen
+      - run: pnpm typecheck
+      - run: pnpm test
+      - name: Published OpenAPI spec matches the API
+        run: pnpm --filter @corpact/api openapi:check
+
+  migrations:
+    name: Migrations apply cleanly and idempotently
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: corpact
+          POSTGRES_PASSWORD: corpact-ci
+          POSTGRES_DB: corpact
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U corpact -d corpact"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 30
+    env:
+      DATABASE_URL: postgres://corpact:corpact-ci@127.0.0.1:5432/corpact
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Apply migrations twice
+        run: |
+          pnpm --filter @corpact/worker cli migrate
+          pnpm --filter @corpact/worker cli migrate
