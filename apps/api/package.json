@@ -1,0 +1,22 @@
+{
+  "name": "@corpact/api",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc -p .",
+    "start": "tsx --env-file-if-exists=../../.env src/main.ts"
+  },
+  "dependencies": {
+    "@fastify/cors": "11.3.0",
+    "@corpact/accounting": "workspace:*",
+    "@corpact/db": "workspace:*",
+    "@corpact/domain": "workspace:*",
+    "@corpact/solana": "workspace:*",
+    "@solana/kit": "8.3.0",
+    "fastify": "5.12.4"
+  },
+  "devDependencies": {
+    "tsx": "4.23.13"
+  }
+}
