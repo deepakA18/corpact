@@ -1,0 +1,21 @@
+{
+  "name": "@corpact/worker",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc -p .",
+    "start": "tsx --env-file-if-exists=../../.env src/main.ts run",
+    "cli": "tsx --env-file-if-exists=../../.env src/main.ts"
+  },
+  "dependencies": {
+    "@corpact/accounting": "workspace:*",
+    "@corpact/db": "workspace:*",
+    "@corpact/domain": "workspace:*",
+    "@corpact/issuers": "workspace:*",
+    "@corpact/solana": "workspace:*"
+  },
+  "devDependencies": {
+    "tsx": "4.23.13"
+  }
+}
