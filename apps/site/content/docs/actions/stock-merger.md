@@ -1,6 +1,6 @@
 ---
-title: Stock-for-stock merger
-description: The underlying company is acquired for shares of another company.
+title: "Stock-for-stock merger"
+description: "The underlying company is acquired for shares of another company."
 ---
 
 > [!WARNING] Unvalidated

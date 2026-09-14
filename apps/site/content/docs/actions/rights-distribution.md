@@ -1,6 +1,6 @@
 ---
-title: Rights distribution
-description: Subscription rights or warrants distributed to holders.
+title: "Rights distribution"
+description: "Subscription rights or warrants distributed to holders."
 ---
 
 | | |
@@ -33,9 +33,9 @@ Sold rights: a `UnitSplit` record whose 1:1 ratio cannot explain a multiplier in
 
 ## Real instances
 
-KRAQx 2026-03-26: 18,606 warrants sold at $0.5553 less a $100 subscription fee, reinvested at $0.1356647/share. Three versions; v2 cancelled v1 for the fee miscalculation, and only v3 matches the chain.
+KRAQx: 18,606 warrants sold at $0.5553 less a $100 subscription fee, reinvested at $0.1356647/share. Three versions; v2 cancelled v1 for the fee miscalculation, and only v3 matches the chain.
 
-Census note: KRAQx 2026-03-26: warrants sold for $0.1356647/share and reinvested, labelled UnitSplit (three versions, one cancelled for a fee miscalculation); exercised or lapsed rights: 0, unvalidated.
+Census note: KRAQx: warrants sold for $0.1356647/share and reinvested, labelled UnitSplit (three versions, one cancelled for a fee miscalculation); exercised or lapsed rights: 0, unvalidated.
 
 ## In the API
 

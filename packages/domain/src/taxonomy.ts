@@ -84,7 +84,7 @@ export const ACTION_KIND_SPECS: Readonly<Record<ActionKind, ActionKindSpec>> = {
     classifier: 'validated',
     realInstances: 2,
     evidence:
-      'LINx 2026-03-26 and NVOx 2025-09-05 pass back wrongly withheld tax as a CashDividend with gross 0 and positive net; recognised from the issuer note, booked like the dividend it corrects, and distinguishable by kind',
+      'LINx and NVOx pass back wrongly withheld tax as a CashDividend with gross 0 and positive net; recognised from the issuer note, booked like the dividend it corrects, and distinguishable by kind',
   }),
   stock_dividend: spec({
     kind: 'stock_dividend',
@@ -94,7 +94,7 @@ export const ACTION_KIND_SPECS: Readonly<Record<ActionKind, ActionKindSpec>> = {
     classifier: 'validated',
     realInstances: 1,
     evidence:
-      'SCCOx 2026-08-12: six versions across both issuer feeds (scheduled 1:1.012, cancelled "Will be a cash flow", rescheduled, delivered ×1.0153); resolved on the delivered record',
+      'SCCOx: six versions across both issuer feeds (scheduled 1:1.012, cancelled "Will be a cash flow", rescheduled, delivered ×1.0153); resolved on the delivered record',
   }),
   cash_and_stock_dividend: spec({
     kind: 'cash_and_stock_dividend',
@@ -121,7 +121,7 @@ export const ACTION_KIND_SPECS: Readonly<Record<ActionKind, ActionKindSpec>> = {
     treatment: 'quantity_basis',
     classifier: 'validated',
     realInstances: 1,
-    evidence: 'HONx 2026-06-29 2:1; fractional cash-in-lieu has 0 instances',
+    evidence: 'HONx 2:1; fractional cash-in-lieu has 0 instances',
   }),
   unit_split: spec({
     kind: 'unit_split',
@@ -130,7 +130,7 @@ export const ACTION_KIND_SPECS: Readonly<Record<ActionKind, ActionKindSpec>> = {
     treatment: 'not_booked',
     classifier: 'unvalidated',
     realInstances: 0,
-    evidence: 'The only UnitSplit-labelled record (KRAQx 2026-03-26) is a mislabelled rights sale; no true unit split has occurred',
+    evidence: 'The only UnitSplit-labelled record (KRAQx) is a mislabelled rights sale; no true unit split has occurred',
   }),
   cash_in_lieu: spec({
     kind: 'cash_in_lieu',
@@ -160,7 +160,7 @@ export const ACTION_KIND_SPECS: Readonly<Record<ActionKind, ActionKindSpec>> = {
     classifier: 'validated',
     realInstances: 1,
     evidence:
-      'KRAQx 2026-03-26: warrants sold for $0.1356647/share and reinvested, labelled UnitSplit (three versions, one cancelled for a fee miscalculation); exercised or lapsed rights: 0, unvalidated',
+      'KRAQx: warrants sold for $0.1356647/share and reinvested, labelled UnitSplit (three versions, one cancelled for a fee miscalculation); exercised or lapsed rights: 0, unvalidated',
   }),
   stock_merger: spec({
     kind: 'stock_merger',
@@ -197,7 +197,7 @@ export const ACTION_KIND_SPECS: Readonly<Record<ActionKind, ActionKindSpec>> = {
     classifier: 'validated',
     realInstances: 1,
     evidence:
-      'AZNx 2026-02-02: NASDAQ ADR → NYSE ordinary share 2:1, labelled StockMerger and "ReverseSplit". Name or ticker changes (NameChange): 0 instances, unvalidated',
+      'AZNx: NASDAQ ADR → NYSE ordinary share 2:1, labelled StockMerger and "ReverseSplit". Name or ticker changes (NameChange): 0 instances, unvalidated',
   }),
   redemption: spec({
     kind: 'redemption',

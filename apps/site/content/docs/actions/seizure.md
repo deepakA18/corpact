@@ -1,6 +1,6 @@
 ---
-title: Permanent-delegate transfer
-description: Tokens moved out of a holder's account by the mint's permanent delegate.
+title: "Permanent-delegate transfer"
+description: "Tokens moved out of a holder's account by the mint's permanent delegate."
 ---
 
 > [!WARNING] Not built

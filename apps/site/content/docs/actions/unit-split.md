@@ -1,6 +1,6 @@
 ---
-title: Unit split
-description: A change in the number of wrapper units per underlying share, as the issuer's enum defines it.
+title: "Unit split"
+description: "A change in the number of wrapper units per underlying share, as the issuer's enum defines it."
 ---
 
 > [!WARNING] Unvalidated
@@ -34,9 +34,9 @@ Not booked: an unclassified adjustment with its reason. No income, and the chang
 
 ## Real instances
 
-None. The only `UnitSplit`-labelled record, KRAQx 2026-03-26, was a rights sale.
+None. The only `UnitSplit`-labelled record, on KRAQx, was a rights sale.
 
-Census note: The only UnitSplit-labelled record (KRAQx 2026-03-26) is a mislabelled rights sale; no true unit split has occurred.
+Census note: The only UnitSplit-labelled record (KRAQx) is a mislabelled rights sale; no true unit split has occurred.
 
 ## In the API
 

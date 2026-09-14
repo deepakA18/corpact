@@ -1,6 +1,6 @@
 ---
-title: Reverse split
-description: Fewer shares per share; each is worth proportionally more.
+title: "Reverse split"
+description: "Fewer shares per share; each is worth proportionally more."
 ---
 
 | | |
@@ -31,9 +31,9 @@ Units ×factor. The protected floor ×factor. Zero income.
 
 ## Real instances
 
-HONx 2026-06-29, 2:1.
+HONx, 2:1.
 
-Census note: HONx 2026-06-29 2:1; fractional cash-in-lieu has 0 instances.
+Census note: HONx 2:1; fractional cash-in-lieu has 0 instances.
 
 ## In the API
 

@@ -8,7 +8,7 @@ const sans = Inter({ subsets: ['latin'], variable: '--font-sans' });
 const mono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono' });
 
 export const metadata: Metadata = {
-  title: { default: 'Corpact — corporate actions, reconciled to the chain', template: '%s · Corpact Docs' },
+  title: { default: 'Corpact: every corporate action, accounted for', template: '%s · Corpact Docs' },
   description:
     'Corpact is an API-first ledger for tokenized stocks: evidence-backed dividends, splits and corrections from on-chain multiplier changes.',
 };

@@ -1,6 +1,6 @@
 ---
-title: Identity change
-description: The same economic position under a new underlying listing or form.
+title: "Identity change"
+description: "The same economic position under a new underlying listing or form."
 ---
 
 | | |
@@ -33,9 +33,9 @@ Units ×ratio, all cost basis carried over; the protected floor scales by the ra
 
 ## Real instances
 
-AZNx 2026-02-02: NASDAQ ADR → NYSE ordinary share, 2:1. Labelled `StockMerger` by the issuer and "ReverseSplit" by multiplier history.
+AZNx: NASDAQ ADR → NYSE ordinary share, 2:1. Labelled `StockMerger` by the issuer and "ReverseSplit" by multiplier history.
 
-Census note: AZNx 2026-02-02: NASDAQ ADR → NYSE ordinary share 2:1, labelled StockMerger and "ReverseSplit". Name or ticker changes (NameChange): 0 instances, unvalidated.
+Census note: AZNx: NASDAQ ADR → NYSE ordinary share 2:1, labelled StockMerger and "ReverseSplit". Name or ticker changes (NameChange): 0 instances, unvalidated.
 
 ## In the API
 

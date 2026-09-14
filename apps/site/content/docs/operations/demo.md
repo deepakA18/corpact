@@ -43,4 +43,4 @@ Every Phase 0 trap the ledger can reproduce without a price source runs end to e
 - **Database.** `corpact_demo` is permanently labelled synthetic, and every response, header and CSV row says so. See [Synthetic vs mainnet data](/docs/concepts/datasets).
 
 > [!NOTE] Surfpool compatibility
-> Surfpool 1.0.0 returns `blockTime` in the wrong unit from `getTransaction` and `getBlock`, and null from `getSignaturesForAddress`. The demo restores both from Surfpool's own `getBlockTime` at the RPC boundary; the worker runs unmodified. The same 59 checks pass on `solana-test-validator` with no compatibility layer (verified 2026-09-14: 59/59 on both networks).
+> Surfpool 1.0.0 returns `blockTime` in the wrong unit from `getTransaction` and `getBlock`, and null from `getSignaturesForAddress`. The demo restores both from Surfpool's own `getBlockTime` at the RPC boundary; the worker runs unmodified. The same 59 checks pass on `solana-test-validator` with no compatibility layer (59/59 on both networks).

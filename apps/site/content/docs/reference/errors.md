@@ -15,14 +15,14 @@ Errors return JSON with a human-readable `error`, and a `code` when a client sho
 
 | Status | `code` | When |
 |---|---|---|
-| `400` | — | Invalid input: a malformed address, a limit out of range, an unknown dataset |
-| `401` | — | Missing, invalid or revoked API key |
+| `400` | None | Invalid input: a malformed address, a limit out of range, an unknown dataset |
+| `401` | None | Missing, invalid or revoked API key |
 | `403` | `missing_scope` | The key lacks the route's scope |
 | `403` | `wallet_quota_exceeded` | Registering a wallet beyond the tenant's quota |
 | `404` | `wallet_not_registered` | The wallet is not registered to your tenant, or does not exist |
-| `422` | — | An export exceeds 50,000 rows |
-| `429` | — | Rate limit exceeded, or too many failed key attempts; honour `retry-after` |
-| `500` | — | Internal error; the body says only `Internal error` |
+| `422` | None | An export exceeds 50,000 rows |
+| `429` | None | Rate limit exceeded, or too many failed key attempts; honour `retry-after` |
+| `500` | None | Internal error; the body says only `Internal error` |
 
 ## Limits
 

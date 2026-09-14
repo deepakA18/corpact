@@ -1,6 +1,6 @@
 ---
-title: Stock and cash merger
-description: The underlying company is acquired for shares and cash.
+title: "Stock and cash merger"
+description: "The underlying company is acquired for shares and cash."
 ---
 
 > [!WARNING] Unvalidated

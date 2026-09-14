@@ -58,4 +58,4 @@ v1's semantics did not change: kinds, amounts, income totals and response shapes
 
 - Stock dividends, rights and identity changes carry the reasons and headlines above. Before, they read "no income policy" or "does not reconcile".
 - Withholding refunds no longer carry the "Issuer gross/withholding/net are inconsistent" warning. They carry "Withholding refund: passes back tax withheld on an earlier distribution; not a new dividend" instead.
-- The two dividends those refunds correct (LINx 2026-03-11, NVOx 2025-08-26) had no matching issuer record before, and now match. They move from `unclassified_adjustment` to `dividend`, with issuer-valued USD. The refund's `Corrected` record had wrongly displaced them; see [Withholding refund](/docs/actions/withholding-adjustment).
+- The two dividends those refunds correct (on LINx and NVOx) had no matching issuer record before, and now match. They move from `unclassified_adjustment` to `dividend`, with issuer-valued USD. The refund's `Corrected` record had wrongly displaced them; see [Withholding refund](/docs/actions/withholding-adjustment).

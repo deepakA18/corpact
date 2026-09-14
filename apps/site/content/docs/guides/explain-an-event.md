@@ -1,6 +1,6 @@
 ---
 title: Explain an event
-description: The evidence behind one income entry — chain write, classification, issuer record and history.
+description: "The evidence behind one income entry: chain write, classification, issuer record and history."
 ---
 
 ## Request

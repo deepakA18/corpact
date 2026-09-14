@@ -1,6 +1,6 @@
 ---
-title: Spin-off
-description: Shares of a separated company distributed to the parent's holders.
+title: "Spin-off"
+description: "Shares of a separated company distributed to the parent's holders."
 ---
 
 | | |

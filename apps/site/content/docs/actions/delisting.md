@@ -1,6 +1,6 @@
 ---
-title: Delisting or worthless removal
-description: The underlying is delisted or declared worthless.
+title: "Delisting or worthless removal"
+description: "The underlying is delisted or declared worthless."
 ---
 
 > [!WARNING] Unvalidated

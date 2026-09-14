@@ -1,6 +1,6 @@
 ---
-title: Redemption or wrapper discontinuation
-description: The wrapper is redeemed or discontinued and holders are paid out.
+title: "Redemption or wrapper discontinuation"
+description: "The wrapper is redeemed or discontinued and holders are paid out."
 ---
 
 > [!WARNING] Unvalidated

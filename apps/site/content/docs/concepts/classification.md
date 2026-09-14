@@ -45,7 +45,7 @@ USD comes **only** from issuer evidence: shares held at the event × issuer net 
 | No issuer cash | `null`: the event is counted as unvalued |
 | Cash implausible for the shares delivered | `null`, with a warning |
 
-The last check compares the reinvestment price the issuer's numbers imply, `M_old × net ÷ (M_new − M_old)`, with the median across the same asset's other dividends. Outside a factor of 3, the issuer valuation is not used. STRCx 2025-11-30 implies **$953,728 per share** against a $94.80 median, so the dividend is kept and its USD is unknown.
+The last check compares the reinvestment price the issuer's numbers imply, `M_old × net ÷ (M_new − M_old)`, with the median across the same asset's other dividends. Outside a factor of 3, the issuer valuation is not used. STRCx implies **$953,728 per share** against a $94.80 median, so the dividend is kept and its USD is unknown.
 
 > [!IMPORTANT] Unknown is not zero
 > `usd: null` means Corpact has no trustworthy value. It is never summed as zero, and positions report `unvaluedDividendEvents` separately.

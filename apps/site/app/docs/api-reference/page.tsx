@@ -50,7 +50,7 @@ const GROUP_TITLES: Record<string, string> = { service: 'Service', assets: 'Asse
 const slug = (text: string) => text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
 function typeLabel(schema: Schema | undefined): string {
-  if (!schema) return '—';
+  if (!schema) return 'None';
   if (schema.anyOf) return schema.anyOf.map(typeLabel).join(' | ');
   if (schema.enum) return schema.enum.map((v) => JSON.stringify(v)).join(' | ');
   if (schema.const !== undefined) return JSON.stringify(schema.const);

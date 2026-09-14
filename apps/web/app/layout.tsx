@@ -4,7 +4,7 @@ import { Providers } from './providers';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Corpact demo — corporate-action accounting for tokenized stocks',
+  title: 'Corpact demo: corporate-action accounting for tokenized stocks',
   description: 'Reference dashboard for the Corpact engine: evidence-backed dividend accounting for xStocks on Solana.',
 };
 
@@ -27,7 +27,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
       <body>
         {dataset?.kind === 'synthetic' && (
           <div className="synthetic-banner" role="alert">
-            <strong>SYNTHETIC DEMO DATA</strong> — {dataset.description ?? 'generated on a local network; not mainnet history or issuer data'}
+            <strong>SYNTHETIC DEMO DATA:</strong> {dataset.description ?? 'generated on a local network; not mainnet history or issuer data'}
           </div>
         )}
         <Providers>

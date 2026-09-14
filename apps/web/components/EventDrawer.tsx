@@ -122,7 +122,7 @@ function Evidence({ detail }: { detail: IncomeDetail }) {
         <ul className="gaps">
           {detail.history.map((h) => (
             <li key={h.id}>
-              <strong>{h.entryType === 'reversal' ? 'Reversed' : 'Recognized'}</strong> {formatDateTime(h.recordedAt)} — {REASON_LABEL[h.changeReason]}
+              <strong>{h.entryType === 'reversal' ? 'Reversed' : 'Recognized'}</strong> {formatDateTime(h.recordedAt)}: {REASON_LABEL[h.changeReason]}
               {': '}
               {h.kind.replace('_', ' ')} {formatQuantity(truncateDecimal(h.quantity, 8))} units
               {h.usd !== null ? `, ${formatUsd(h.usd)}` : ''}

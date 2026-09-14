@@ -1,6 +1,6 @@
 ---
-title: Withholding refund
-description: Tax withheld by mistake on an earlier dividend, passed back to holders.
+title: "Withholding refund"
+description: "Tax withheld by mistake on an earlier dividend, passed back to holders."
 ---
 
 | | |
@@ -32,9 +32,9 @@ Income, like the dividend it corrects, and distinguishable by type. Withholding 
 
 ## Real instances
 
-LINx 2026-03-26 (refunding 2026-03-11) and NVOx 2025-09-05 (refunding 2025-08-26).
+LINx and NVOx, each refunding tax withheld on its preceding dividend.
 
-Census note: LINx 2026-03-26 and NVOx 2025-09-05 pass back wrongly withheld tax as a CashDividend with gross 0 and positive net; recognised from the issuer note, booked like the dividend it corrects, and distinguishable by kind.
+Census note: LINx and NVOx pass back wrongly withheld tax as a CashDividend with gross 0 and positive net; recognised from the issuer note, booked like the dividend it corrects, and distinguishable by kind.
 
 ## In the API
 

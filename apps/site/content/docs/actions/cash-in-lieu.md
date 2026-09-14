@@ -1,6 +1,6 @@
 ---
-title: Fractional cash in lieu
-description: Cash paid for a fractional share left over by a split.
+title: "Fractional cash in lieu"
+description: "Cash paid for a fractional share left over by a split."
 ---
 
 > [!WARNING] Unvalidated

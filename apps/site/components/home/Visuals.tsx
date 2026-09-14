@@ -54,7 +54,7 @@ export function EvidenceCore() {
       <p className="core-sub">Every multiplier change is matched to the issuer’s own record, or it is not booked as income.</p>
       <div className="chips">
         <span className="chip green">CashDividend · verified</span>
-        <span className="chip red">SpinOff · not income</span>
+        <span className="chip red">Spin-off · basis, not income</span>
         <span className="chip amber">USD unknown · never zero</span>
       </div>
       <div className="core-arc" aria-hidden="true">
@@ -103,7 +103,7 @@ export function ClassifierCard() {
   const rows = [
     { sym: 'KOx', what: '+0.45% · CashDividend', tag: 'Dividend $0.371', tone: 'green' },
     { sym: 'NFLXx', what: '+900% · ForwardSplit', tag: 'Split 10:1', tone: 'accent' },
-    { sym: 'HONx', what: '+95.11% · SpinOff', tag: 'Not income', tone: 'red' },
+    { sym: 'HONx', what: '+95.11% · SpinOff', tag: 'Basis, not income', tone: 'red' },
     { sym: 'STRCx', what: 'implies $953,728/share', tag: 'USD unknown', tone: 'amber' },
   ];
   return (
@@ -168,7 +168,7 @@ export function ChecksGauge() {
           })}
         </svg>
         <div style={{ textAlign: 'center' }}>
-          <div className="stat-big">53/53</div>
+          <div className="stat-big">59/59</div>
           <div className="stat-label">demo checks</div>
         </div>
       </div>

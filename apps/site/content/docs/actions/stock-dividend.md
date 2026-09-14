@@ -1,6 +1,6 @@
 ---
-title: Stock dividend
-description: New shares distributed to holders, delivered as a multiplier increase.
+title: "Stock dividend"
+description: "New shares distributed to holders, delivered as a multiplier increase."
 ---
 
 | | |
@@ -33,9 +33,9 @@ Units ×factor, with cost basis spread across them. The protected floor scales b
 
 ## Real instances
 
-SCCOx 2026-08-12. The issuer published six versions across two feeds: scheduled at 1:1.012, cancelled ("Will be a cash flow, not a unit change"), cancelled again, rescheduled, delivered at ×1.0153, then the schedule was cancelled after delivery. The lifecycle keeps all six, each naming the revision it supersedes.
+SCCOx. The issuer published six versions across two feeds: scheduled at 1:1.012, cancelled ("Will be a cash flow, not a unit change"), cancelled again, rescheduled, delivered at ×1.0153, then the schedule was cancelled after delivery. The lifecycle keeps all six, each naming the revision it supersedes.
 
-Census note: SCCOx 2026-08-12: six versions across both issuer feeds (scheduled 1:1.012, cancelled "Will be a cash flow", rescheduled, delivered ×1.0153); resolved on the delivered record.
+Census note: SCCOx: six versions across both issuer feeds (scheduled 1:1.012, cancelled "Will be a cash flow", rescheduled, delivered ×1.0153); resolved on the delivered record.
 
 ## In the API
 

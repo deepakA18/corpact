@@ -3,7 +3,7 @@ title: Corporate actions
 description: Every action type Corpact recognises, how it is booked, and whether real data has validated it.
 ---
 
-Every multiplier change is classified into one of these types, from issuer evidence only: never from the size of the change or its label. Counts are real instances in the recorded xStocks data and on-chain scans (2026-09-14).
+Every multiplier change is classified into one of these types, from issuer evidence only: never from the size of the change or its label. Counts are real instances in the recorded xStocks data and on-chain scans.
 
 | Action | Type | Ledger treatment | Status | Real instances |
 |---|---|---|---|---|

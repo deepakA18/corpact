@@ -43,7 +43,7 @@ const corpact = createCorpactClient({
 | `journal(wallet, { limit, offset })` | `GET /v1/journal` | `JournalResponse` |
 | `yieldMetrics(wallet)` | `GET /v1/yield` | `YieldResponse` |
 | `exportCsv(wallet, dataset)` | `GET /v1/export` | CSV text |
-| `exportUrl(wallet, dataset)` | — | URL string, for links behind a proxy |
+| `exportUrl(wallet, dataset)` | None | URL string, for links behind a proxy |
 | `opsStatus()` | `GET /v1/ops/status` | `OpsStatusResponse` |
 | `opsMetrics()` | `GET /v1/ops/metrics` | Prometheus text |
 

@@ -1,6 +1,6 @@
 ---
-title: Cash merger
-description: The underlying company is acquired for cash.
+title: "Cash merger"
+description: "The underlying company is acquired for cash."
 ---
 
 > [!WARNING] Unvalidated

@@ -40,7 +40,7 @@ const DOCS: Record<ActionKind, ActionDoc> = {
       'Effective time differs from the activation: unclassified, with both times in the reason.',
       'More than one record matches: unclassified, naming the records.',
       'No usable net cash: still a dividend, with USD **null** (unknown, never zero).',
-      'Net cash implying a reinvestment price outside ×3 of the median of the same asset\'s other dividends (STRCx 2025-11-30: ~$953,728/share): still a dividend, with USD null and a warning.',
+      'Net cash implying a reinvestment price outside ×3 of the median of the same asset\'s other dividends (STRCx: ~$953,728/share): still a dividend, with USD null and a warning.',
       'Gross × (1 − withholding) ≠ net: valued, with the inconsistency flagged.',
       "A 5% currency retention in the withholding field, with a note saying so (LINx, ETNx, ASMLx): recognised as `retentionRate`. It is not tax and is not deducted again.",
     ],
@@ -62,7 +62,7 @@ const DOCS: Record<ActionKind, ActionDoc> = {
     ],
     booking:
       'Income, like the dividend it corrects, and distinguishable by type. Withholding is deducted once: LINx 1.12 + 0.48 = 1.60, and NVOx 0.2883412 + 0.1232128 = 0.411554, each equal to the original gross.',
-    instances: 'LINx 2026-03-26 (refunding 2026-03-11) and NVOx 2025-09-05 (refunding 2025-08-26).',
+    instances: 'LINx and NVOx, each refunding tax withheld on its preceding dividend.',
   },
   stock_dividend: {
     summary: 'New shares distributed to holders, delivered as a multiplier increase.',
@@ -79,7 +79,7 @@ const DOCS: Record<ActionKind, ActionDoc> = {
     ],
     booking: 'Units ×factor, with cost basis spread across them. The protected floor scales by the same factor. Zero income; nothing newly convertible.',
     instances:
-      'SCCOx 2026-08-12. The issuer published six versions across two feeds: scheduled at 1:1.012, cancelled ("Will be a cash flow, not a unit change"), cancelled again, rescheduled, delivered at ×1.0153, then the schedule was cancelled after delivery. The lifecycle keeps all six, each naming the revision it supersedes.',
+      'SCCOx. The issuer published six versions across two feeds: scheduled at 1:1.012, cancelled ("Will be a cash flow, not a unit change"), cancelled again, rescheduled, delivered at ×1.0153, then the schedule was cancelled after delivery. The lifecycle keeps all six, each naming the revision it supersedes.',
   },
   cash_and_stock_dividend: {
     summary: 'A dividend paid partly in cash and partly in shares.',
@@ -106,7 +106,7 @@ const DOCS: Record<ActionKind, ActionDoc> = {
       'The same ratio is not enough on its own. AZNx halved its multiplier exactly like HONx did, and was an identity change; the issuer record decides.',
     ],
     booking: 'Units ×factor. The protected floor ×factor. Zero income.',
-    instances: 'HONx 2026-06-29, 2:1.',
+    instances: 'HONx, 2:1.',
   },
   unit_split: {
     summary: "A change in the number of wrapper units per underlying share, as the issuer's enum defines it.",
@@ -114,7 +114,7 @@ const DOCS: Record<ActionKind, ActionDoc> = {
     evidence: ['A standing record matching both multipliers and the activation time.', 'The unit ratio reconciles.'],
     missing: ['Ratio does not reconcile: unclassified.', ...UNVALIDATED_MISSING.slice(0, 1)],
     booking: NOT_BOOKED,
-    instances: 'None. The only `UnitSplit`-labelled record, KRAQx 2026-03-26, was a rights sale.',
+    instances: 'None. The only `UnitSplit`-labelled record, on KRAQx, was a rights sale.',
   },
   cash_in_lieu: {
     summary: 'Cash paid for a fractional share left over by a split.',
@@ -159,7 +159,7 @@ const DOCS: Record<ActionKind, ActionDoc> = {
     booking:
       "**Basis allocation**, as for a spin-off: (M_new − M_old) ÷ M_new of the position's value as principal. Issuer proceeds are recorded when published, and never booked as income.",
     instances:
-      'KRAQx 2026-03-26: 18,606 warrants sold at $0.5553 less a $100 subscription fee, reinvested at $0.1356647/share. Three versions; v2 cancelled v1 for the fee miscalculation, and only v3 matches the chain.',
+      'KRAQx: 18,606 warrants sold at $0.5553 less a $100 subscription fee, reinvested at $0.1356647/share. Three versions; v2 cancelled v1 for the fee miscalculation, and only v3 matches the chain.',
   },
   stock_merger: {
     summary: 'The underlying company is acquired for shares of another company.',
@@ -202,7 +202,7 @@ const DOCS: Record<ActionKind, ActionDoc> = {
     ],
     booking:
       'Units ×ratio, all cost basis carried over; the protected floor scales by the ratio. Zero income. The worker writes the position lineage: the identity held before, the identity after, and a link whose successor carries exactly all basis. `GET /v2/instruments/{mint}/lineage` traces it.',
-    instances: 'AZNx 2026-02-02: NASDAQ ADR → NYSE ordinary share, 2:1. Labelled `StockMerger` by the issuer and "ReverseSplit" by multiplier history.',
+    instances: 'AZNx: NASDAQ ADR → NYSE ordinary share, 2:1. Labelled `StockMerger` by the issuer and "ReverseSplit" by multiplier history.',
   },
   redemption: {
     summary: 'The wrapper is redeemed or discontinued and holders are paid out.',
@@ -279,8 +279,8 @@ function renderPage(kind: ActionKind): string {
         ? `> [!WARNING] Unvalidated\n> No real instance has confirmed this classifier. It is recognised and never booked: every instance is an unclassified adjustment with conversion disabled.\n\n`
         : `> [!WARNING] Not built\n> Recognised in the taxonomy only. See ADR-0006 for why, and for what happens today.\n\n`;
   return `---
-title: ${spec.label}
-description: ${doc.summary}
+title: ${JSON.stringify(spec.label)}
+description: ${JSON.stringify(doc.summary)}
 ---
 
 ${callout}| | |
@@ -330,7 +330,7 @@ title: Corporate actions
 description: Every action type Corpact recognises, how it is booked, and whether real data has validated it.
 ---
 
-Every multiplier change is classified into one of these types, from issuer evidence only: never from the size of the change or its label. Counts are real instances in the recorded xStocks data and on-chain scans (2026-09-14).
+Every multiplier change is classified into one of these types, from issuer evidence only: never from the size of the change or its label. Counts are real instances in the recorded xStocks data and on-chain scans.
 
 | Action | Type | Ledger treatment | Status | Real instances |
 |---|---|---|---|---|

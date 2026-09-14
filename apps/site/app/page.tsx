@@ -25,40 +25,119 @@ const corpact = createCorpactClient({
 });
 
 await corpact.requestSync(wallet);
-const { entries } = await corpact.income(wallet);
+const { actions } = await corpact.v2.actions(wallet);
 `;
 
 const RESPONSE_SAMPLE = `
 {
-  "kind": "dividend",
-  "symbol": "KOx",
-  "effectiveAt": "2026-06-14T23:55:00.000Z",
-  "quantityDisplay": "0.09059763",
-  "usd": "7.4851762504",
-  "valuation": "issuer_net_cash",
-  "revision": 1,
-  "headline": "Your KOx position gained 0.09059763 stock-equivalent units from a verified dividend adjustment. This remains invested in the stock."
+  "type": "spin_off",
+  "symbol": "HONx",
+  "treatment": "basis_allocation",
+  "validation": { "status": "validated", "realInstances": 6 },
+  "lifecycle": { "state": "activated" },
+  "distributedFraction": "0.48747",
+  "usd": null,
+  "headline": "HONx: spin-off delivered as cash reinvested in the parent. No income."
 }
 `;
 
+const PROOF: Array<{ value: string; label: string }> = [
+  { value: '654', label: 'real corporate actions replayed and classified' },
+  { value: '18', label: 'action types, each with a stated validation status' },
+  { value: '59/59', label: 'end-to-end checks through the live API' },
+  { value: '0', label: 'values guessed: unknown is never shown as zero' },
+];
+
+const PAINS: Array<{ title: string; body: string }> = [
+  {
+    title: 'The income never arrives as a transfer',
+    body: 'Tokenized stocks pay dividends by rewriting a multiplier on the mint. Balances do not move, so transfer-based indexers and wallets record nothing.',
+  },
+  {
+    title: 'The obvious signals are wrong',
+    body: 'A spin-off can look like a 95% dividend. A stock dividend, a rights sale and an ADR conversion all hide behind misleading labels in the issuer’s own feeds.',
+  },
+  {
+    title: 'Every mistake reaches a customer',
+    body: 'Overstated income ends up in portfolio views, lending limits and tax reports. Correcting it later means explaining it to holders and auditors.',
+  },
+];
+
+const FEATURES: Array<{ icon: IconName; title: string; body: string }> = [
+  {
+    icon: 'shield',
+    title: 'Classified from evidence',
+    body: 'Every change is matched to the issuer’s record on exact multipliers and activation time. Never on size, never on a label.',
+  },
+  {
+    icon: 'layers',
+    title: 'Every basis event handled',
+    body: 'Cash dividends, withholding refunds, splits, stock dividends, spin-offs, rights and identity changes, each booked with the right treatment.',
+  },
+  {
+    icon: 'link',
+    title: 'Position lineage',
+    body: 'When an underlying changes form, cost basis is carried across exactly and the full chain of identities stays traceable.',
+  },
+  {
+    icon: 'book',
+    title: 'Append-only journal',
+    body: 'Issuer corrections become a reversal plus a replacement. Nothing is edited, so every number you showed can be explained later.',
+  },
+  {
+    icon: 'check',
+    title: 'Reconciled to the chain',
+    body: 'Positions replay to the exact raw on-chain balance and are cross-checked against an independent RPC provider.',
+  },
+  {
+    icon: 'code',
+    title: 'One typed API',
+    body: 'A single JSON-schema contract generates the OpenAPI document, server validation and a TypeScript client. Scoped keys and tenancy built in.',
+  },
+];
+
 const STEPS: Array<{ title: string; body: string }> = [
-  { title: 'Observe', body: 'Reads every Token-2022 multiplier write and scheduled activation, settled on the finalized cluster clock.' },
-  { title: 'Match', body: 'Pairs each change with the issuer’s corporate action on exact multipliers and activation time. No match, no income.' },
-  { title: 'Account', body: 'Replays balances into a protected stock floor, adjusts for splits, and values only from issuer-reported cash.' },
-  { title: 'Prove', body: 'Reconciles to the raw chain balance, cross-checks an independent RPC, and journals every correction.' },
+  { title: 'Observe', body: 'Read every multiplier write and scheduled activation, settled on finalized chain time.' },
+  { title: 'Match', body: 'Pair each change with the issuer’s corporate action. No evidence, no booking.' },
+  { title: 'Account', body: 'Book income, basis adjustments and lineage with exact arithmetic.' },
+  { title: 'Prove', body: 'Reconcile to the chain, cross-check a second provider and journal every correction.' },
 ];
 
-const AUDIENCES: Array<{ icon: IconName; title: string; body: string }> = [
-  { icon: 'layers', title: 'Exchanges & custodians', body: 'Show customers the dividends their tokenized stocks earned — a number that never arrives as a transfer.' },
-  { icon: 'link', title: 'Protocols & wallets', body: 'Separate dividend growth from principal, so lending, vaults and portfolio views stop treating a split as yield.' },
-  { icon: 'book', title: 'Tax & accounting tools', body: 'Export an append-only journal with evidence, revisions and coverage on every row — defensible in an audit.' },
+const USE_CASES: Array<{ icon: IconName; title: string; body: string; points: string[] }> = [
+  {
+    icon: 'layers',
+    title: 'Exchanges and custodians',
+    body: 'Show customers what their tokenized stocks actually earned.',
+    points: ['Dividend history per position', 'Splits and spin-offs explained in plain language', 'Coverage stated, never implied'],
+  },
+  {
+    icon: 'link',
+    title: 'Protocols and wallets',
+    body: 'Separate real yield from principal before it reaches a limit or a vault.',
+    points: ['Protected principal floor per position', 'Convertible amount only when fully reconciled', 'Pauses automatically when data sources disagree'],
+  },
+  {
+    icon: 'book',
+    title: 'Tax and accounting tools',
+    body: 'Import corporate actions with the evidence an auditor asks for.',
+    points: ['Allocation factors for spin-offs and rights', 'Lifecycle and every issuer revision', 'CSV export of the append-only journal'],
+  },
 ];
 
-const REFUSALS: Array<{ q: string; a: string }> = [
-  { q: 'No trustworthy price?', a: 'USD is null — never zero — and the event is counted as unvalued.' },
-  { q: 'History incomplete?', a: 'The position is marked partial and no yield is claimed for it.' },
-  { q: 'Change the issuer never explained?', a: 'It is shown as pending classification, not income.' },
-  { q: 'Issuer revises an action?', a: 'A reversal and a replacement are appended. Nothing is edited.' },
+const COMPARISON: Array<[string, string, string]> = [
+  ['Dividend detection', 'Build a multiplier timeline reader and handle scheduled activations', 'Included'],
+  ['Spin-offs, stock dividends, rights, ADR conversions', 'Research each issuer’s delivery method case by case', 'Classified and validated on real data'],
+  ['Issuer corrections', 'Overwrite history or build a journal', 'Reversal plus replacement, append-only'],
+  ['Mislabelled and implausible issuer data', 'Discovered by customers', 'Caught and flagged with a stated reason'],
+  ['Reconciliation', 'Custom scripts per asset', 'Exact raw-balance match plus a second RPC provider'],
+  ['Audit trail', 'Logs, if kept', 'Evidence hashes, timestamps and lineage on every action'],
+];
+
+const FAQ: Array<{ q: string; a: string }> = [
+  { q: 'Which tokenized stocks are supported?', a: 'xStocks on Solana today, across every recorded asset. Additional issuers are added together with design partners.' },
+  { q: 'Does Corpact hold or move funds?', a: 'No. Corpact is read-only. It never signs a transaction and never takes custody.' },
+  { q: 'What happens when the evidence is missing?', a: 'The change is shown as pending classification with its reason. No income is booked and nothing is made convertible.' },
+  { q: 'Do you provide tax advice?', a: 'No. Corpact supplies allocation factors, lineage and evidence. Tax treatment stays with your tax engine and its counsel.' },
 ];
 
 export default async function Home() {
@@ -69,8 +148,8 @@ export default async function Home() {
       <header className="site-header">
         <Logo />
         <nav className="site-nav" aria-label="Main">
-          <a href="#how">How it works</a>
-          <a href="#traps">What it catches</a>
+          <a href="#product">Product</a>
+          <a href="#use-cases">Use cases</a>
           <a href="#developers">Developers</a>
           <Link href="/docs">Docs</Link>
         </nav>
@@ -85,24 +164,33 @@ export default async function Home() {
       <section className="hero">
         <Glyphs />
         <span className="eyebrow">
-          <b>Private preview</b> Tokenized stocks on Solana
+          <b>Private preview</b> Built for tokenized stock platforms
         </span>
         <h1>
-          Corporate Actions,
+          Every Corporate Action,
           <br />
-          Reconciled to the Chain
+          Accounted For
         </h1>
         <p className="hero-sub">
-          Corpact is an API-first ledger for tokenized stocks. It turns multiplier changes that arrive with no transaction into evidence-backed dividends, splits and
-          corrections — so your product can show holders what they actually earned.
+          Dividends, splits and spin-offs reach tokenized stocks as silent changes on chain. Corpact turns them into an audit-ready ledger your exchange, wallet or tax
+          product can trust, through one API.
         </p>
         <div className="hero-cta">
           <Link href="/docs/quickstart" className="btn btn-accent">
-            Get Started
+            Start building
           </Link>
-          <Link href="/docs" className="btn btn-ghost">
-            Read the docs <Icon name="arrow" size={16} />
-          </Link>
+          <a href="#proof" className="btn btn-ghost">
+            See the proof <Icon name="arrow" size={16} />
+          </a>
+        </div>
+
+        <div className="proof-strip">
+          {PROOF.map((p) => (
+            <div className="proof-item" key={p.label}>
+              <strong>{p.value}</strong>
+              <span>{p.label}</span>
+            </div>
+          ))}
         </div>
 
         <div className="bento">
@@ -129,14 +217,39 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="section" id="how">
+      <section className="section" id="problem">
         <div className="section-head center">
-          <span className="kicker">How it works</span>
-          <h2>From a silent multiplier change to a ledger entry you can defend</h2>
-          <p className="section-sub">
-            Tokenized stocks pay dividends by changing a multiplier on the mint. Wallet balances never move, so transfer-based indexers see nothing. Corpact reads
-            the change, proves what it was, and accounts for it.
-          </p>
+          <span className="kicker">The problem</span>
+          <h2>Tokenized stock income is invisible to the tools you already have</h2>
+          <p className="section-sub">Reading it wrong is easy. Explaining the mistake to a customer is not.</p>
+        </div>
+        <div className="pains">
+          {PAINS.map((p, i) => (
+            <div className="pain" key={p.title}>
+              <span className="pain-num">0{i + 1}</span>
+              <h4>{p.title}</h4>
+              <p>{p.body}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="section" id="product">
+        <div className="section-head center">
+          <span className="kicker">The product</span>
+          <h2>A corporate-actions engine you can put in front of customers</h2>
+          <p className="section-sub">Everything needed to turn raw chain data into numbers your holders, partners and auditors will accept.</p>
+        </div>
+        <div className="features">
+          {FEATURES.map((f) => (
+            <div className="feature" key={f.title}>
+              <span className="feature-icon">
+                <Icon name={f.icon} size={20} />
+              </span>
+              <h4>{f.title}</h4>
+              <p>{f.body}</p>
+            </div>
+          ))}
         </div>
         <div className="steps">
           {STEPS.map((s, i) => (
@@ -149,63 +262,95 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="section" id="traps">
+      <section className="section" id="proof">
         <div className="section-head">
-          <span className="kicker">What it catches</span>
-          <h2>The obvious reading is wrong often enough to matter</h2>
-          <p className="section-sub">From the recorded issuer data set: 654 real multiplier changes, run through the production classifier.</p>
+          <span className="kicker">Proven on real data</span>
+          <h2>Where the obvious reading fails, Corpact gets it right</h2>
+          <p className="section-sub">Every real multiplier change published for xStocks on Solana, replayed through the production engine.</p>
         </div>
         <div className="traps">
           <div className="trap">
-            <span className="trap-sym">HONx · 2026-06-29</span>
-            <h4>A +95% change that is a spin-off</h4>
+            <span className="trap-sym">HONx spin-off</span>
+            <h4>A +95% change that is not income</h4>
             <div className="verdict naive">
               <b>Naive reading</b>Books 95.11% more shares as dividend income.
             </div>
             <div className="verdict ours">
-              <b>Corpact</b>Unclassified adjustment. The issuer record is a SpinOff, so no income is booked.
+              <b>Corpact</b>Books a basis allocation: 48.75% of the position’s value arrived as principal. No income.
             </div>
-            <p className="trap-foot">24 multiplier increases in the data set are not cash dividends.</p>
+            <p className="trap-foot">22 multiplier increases in the data set are not cash dividends.</p>
           </div>
           <div className="trap">
-            <span className="trap-sym">STRCx · 2025-11-30</span>
-            <h4>Issuer cash the shares can’t support</h4>
+            <span className="trap-sym">KRAQx rights sale</span>
+            <h4>Labelled a unit split by the issuer</h4>
             <div className="verdict naive">
-              <b>Naive reading</b>Books $0.627 of income per share held.
+              <b>Naive reading</b>Trusts the label and books a split, or books +1.38% as income.
             </div>
             <div className="verdict ours">
-              <b>Corpact</b>Dividend kept, USD unknown: the cash implies $953,728 per share against a $94.80 median.
+              <b>Corpact</b>Reads the issuer’s note, recognises warrants sold and reinvested, and allocates basis. No income.
             </div>
-            <p className="trap-foot">7 dividends refuse an implausible issuer valuation.</p>
+            <p className="trap-foot">12 changes carry a label the evidence contradicts.</p>
           </div>
           <div className="trap">
-            <span className="trap-sym">14 changes</span>
-            <h4>The label says “Dividend”; the evidence disagrees</h4>
+            <span className="trap-sym">LINx withholding refund</span>
+            <h4>Tax refunded as a “new dividend”</h4>
             <div className="verdict naive">
-              <b>Naive reading</b>Trusts the multiplier-history reason field.
+              <b>Naive reading</b>Lets the refund replace the original dividend, or double-counts it.
             </div>
             <div className="verdict ours">
-              <b>Corpact</b>Classifies from the issuer corporate action — spin-offs, a stock dividend, a merger and unexplained changes are not income.
+              <b>Corpact</b>Keeps both, labels the refund, and deducts withholding exactly once.
             </div>
-            <p className="trap-foot">628 verified dividends · 9 reconciled splits · 17 not attributed.</p>
+            <p className="trap-foot">628 cash dividends · 2 refunds · 10 splits · 7 spin-offs and rights · 1 identity change.</p>
           </div>
         </div>
-        <p className="provenance">Figures come from xStocks issuer responses recorded on 2026-09-13 and replayed offline. No market prices are used.</p>
       </section>
 
-      <section className="section" id="audiences">
+      <section className="section" id="use-cases">
         <div className="section-head center">
-          <span className="kicker">Built for</span>
-          <h2>Teams who owe holders an accurate number</h2>
+          <span className="kicker">Use cases</span>
+          <h2>Built for teams who owe holders an accurate number</h2>
         </div>
-        <div className="audience">
-          {AUDIENCES.map((a) => (
-            <div className="step" key={a.title}>
-              <span className="step-num">
-                <Icon name={a.icon} size={18} />
+        <div className="usecases">
+          {USE_CASES.map((u) => (
+            <div className="feature usecase" key={u.title}>
+              <span className="feature-icon">
+                <Icon name={u.icon} size={20} />
               </span>
-              <h4>{a.title}</h4>
-              <p>{a.body}</p>
+              <h4>{u.title}</h4>
+              <p>{u.body}</p>
+              <ul>
+                {u.points.map((point) => (
+                  <li key={point}>
+                    <Icon name="check" size={16} />
+                    {point}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="section" id="compare">
+        <div className="section-head center">
+          <span className="kicker">Build or buy</span>
+          <h2>Skip the year of edge cases</h2>
+          <p className="section-sub">What it takes to get corporate actions right in-house, and what you get with Corpact on day one.</p>
+        </div>
+        <div className="compare">
+          <div className="compare-row compare-head">
+            <span />
+            <span>Building in-house</span>
+            <span>With Corpact</span>
+          </div>
+          {COMPARISON.map(([topic, diy, corpact]) => (
+            <div className="compare-row" key={topic}>
+              <span className="compare-topic">{topic}</span>
+              <span className="compare-diy">{diy}</span>
+              <span className="compare-ours">
+                <Icon name="check" size={16} />
+                {corpact}
+              </span>
             </div>
           ))}
         </div>
@@ -215,11 +360,8 @@ export default async function Home() {
         <div className="dev">
           <div>
             <span className="kicker">Developers</span>
-            <h2>One API. Typed end to end.</h2>
-            <p className="section-sub">
-              A JSON-schema contract generates the OpenAPI document, the server validation and the TypeScript client. Scoped keys, tenant isolation and CSV exports are
-              built in.
-            </p>
+            <h2>Integrate in an afternoon</h2>
+            <p className="section-sub">Register a wallet, sync it and read typed corporate actions. Every response carries its evidence, validation status and lifecycle.</p>
             <ul className="endpoints">
               <li>
                 <span className="method post">POST</span>
@@ -227,11 +369,11 @@ export default async function Home() {
               </li>
               <li>
                 <span className="method get">GET</span>
-                <code>/v1/portfolio</code> positions, floor and coverage
+                <code>/v2/actions</code> type, lifecycle, evidence, validation
               </li>
               <li>
                 <span className="method get">GET</span>
-                <code>/v1/income</code> dividends, splits, pending changes
+                <code>/v1/portfolio</code> positions, floor and coverage
               </li>
               <li>
                 <span className="method get">GET</span>
@@ -256,31 +398,31 @@ export default async function Home() {
               <i />
               <i />
               <i />
-              <span>income.ts</span>
+              <span>actions.ts</span>
             </div>
             <div dangerouslySetInnerHTML={{ __html: sdk }} />
             <div className="window-bar split">
-              <span style={{ marginLeft: 0 }}>GET /v1/income → entries[0]</span>
+              <span style={{ marginLeft: 0 }}>GET /v2/actions: one action (excerpt)</span>
             </div>
             <div dangerouslySetInnerHTML={{ __html: response }} />
           </div>
         </div>
       </section>
 
-      <section className="section">
+      <section className="section" id="faq">
         <div className="section-head center">
-          <span className="kicker">What we refuse to guess</span>
-          <h2>Honest by construction</h2>
+          <span className="kicker">Questions</span>
+          <h2>What teams ask first</h2>
         </div>
         <div className="refuse">
-          {REFUSALS.map((r) => (
-            <div className="refuse-item" key={r.q}>
+          {FAQ.map((f) => (
+            <div className="refuse-item" key={f.q}>
               <span className="icon">
                 <Icon name="shield" size={20} />
               </span>
               <div>
-                <div className="q">{r.q}</div>
-                <p>{r.a}</p>
+                <div className="q">{f.q}</div>
+                <p>{f.a}</p>
               </div>
             </div>
           ))}
@@ -288,11 +430,11 @@ export default async function Home() {
       </section>
 
       <section className="cta-band">
-        <h2>See your first verified dividend in minutes</h2>
-        <p>Run the demo on a local network, or point the worker at mainnet and sync a real wallet.</p>
+        <h2>Give your holders numbers they can trust</h2>
+        <p>Start with the quickstart, or run the full demo locally with one command.</p>
         <div className="hero-cta">
           <Link href="/docs/quickstart" className="btn btn-accent">
-            Get Started
+            Start building
           </Link>
           <Link href="/docs/operations/demo" className="btn btn-ghost">
             Run the demo
@@ -305,9 +447,9 @@ export default async function Home() {
         <nav aria-label="Footer">
           <Link href="/docs">Docs</Link>
           <Link href="/docs/api-reference">API reference</Link>
-          <Link href="/docs/concepts/classification">How classification works</Link>
+          <Link href="/docs/actions">Corporate actions</Link>
         </nav>
-        <span>© 2026 Corpact</span>
+        <span>© Corpact</span>
       </footer>
     </div>
   );

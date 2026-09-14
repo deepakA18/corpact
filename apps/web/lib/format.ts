@@ -1,13 +1,13 @@
 export const shortAddress = (a: string) => `${a.slice(0, 4)}…${a.slice(-4)}`;
 
 export function formatDate(iso: string | null | undefined): string {
-  if (!iso) return '—';
+  if (!iso) return 'Not recorded';
   // UTC, so dates agree with the chain and issuer evidence (activations sit near midnight UTC).
   return new Date(iso).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' });
 }
 
 export function formatDateTime(iso: string | null | undefined): string {
-  if (!iso) return '—';
+  if (!iso) return 'Not recorded';
   return new Date(iso).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short', timeZone: 'UTC' }) + ' UTC';
 }
 

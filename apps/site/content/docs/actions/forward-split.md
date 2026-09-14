@@ -1,6 +1,6 @@
 ---
-title: Forward split
-description: More shares per share; each is worth proportionally less.
+title: "Forward split"
+description: "More shares per share; each is worth proportionally less."
 ---
 
 | | |

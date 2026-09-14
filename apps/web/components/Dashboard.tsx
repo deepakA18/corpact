@@ -159,7 +159,7 @@ function SyncBanner({ sync }: { sync: SyncStatus | null }) {
         <strong>{sync.status === 'queued' ? 'Sync queued' : 'Reading on-chain history'}</strong>
         <span className="muted">
           {phase ?? 'Starting'}
-          {done !== undefined && total !== undefined ? ` — ${done} of ${total}` : ''}
+          {done !== undefined && total !== undefined ? `: ${done} of ${total}` : ''}
         </span>
       </div>
     );
@@ -184,8 +184,8 @@ function CoverageBanner({ portfolio }: { portfolio: Portfolio }) {
       <span className="muted">
         {coverage.complete
           ? 'Every position is reconstructed from its first on-chain movement and reconciles exactly with current balances.'
-          : `${coverage.partialPositions} partial and ${coverage.unsupportedPositions} unsupported position(s). Income outside the covered periods is not attributed — it is not counted as zero.`}{' '}
-        As of slot {portfolio.asOfSlot ?? '—'} ({formatDateTime(portfolio.asOfTime)}).
+          : `${coverage.partialPositions} partial and ${coverage.unsupportedPositions} unsupported position(s). Income outside the covered periods is not attributed; it is not counted as zero.`}{' '}
+        As of slot {portfolio.asOfSlot ?? 'unknown'} ({formatDateTime(portfolio.asOfTime)}).
       </span>
       {gaps.length > 0 && (
         <details>
@@ -226,7 +226,7 @@ function PrimaryValues({ portfolio }: { portfolio: Portfolio }) {
       <div className="value">
         <div className="label">Tracking start</div>
         <div className="amount">{formatDate(portfolio.coverage.trackingStart)}</div>
-        <div className="note">{portfolio.coverage.complete ? 'Complete coverage' : 'Partial coverage — see notes above'}</div>
+        <div className="note">{portfolio.coverage.complete ? 'Complete coverage' : 'Partial coverage: see notes above'}</div>
       </div>
     </div>
   );
@@ -285,7 +285,7 @@ function Positions({ portfolio, yields }: { portfolio: Portfolio; yields: YieldR
                   </div>
                 </td>
                 <td className="num">{formatQuantity(p.quantity)}</td>
-                <td className="num">{p.protectedQuantity === null ? '—' : formatQuantity(p.protectedQuantity)}</td>
+                <td className="num">{p.protectedQuantity === null ? 'n/a' : formatQuantity(p.protectedQuantity)}</td>
                 <td className="num">
                   {p.availableQuantity === null ? (
                     <span className="muted">Unavailable</span>
@@ -364,7 +364,7 @@ function Events({ owner, entries, onSelect }: { owner: string; entries: IncomeEn
                   <td className="num">
                     {e.kind === 'split' ? `×${formatQuantity(e.splitFactor ?? '')}` : formatQuantity(e.quantityDisplay)}
                   </td>
-                  <td className="num">{e.kind !== 'dividend' ? '—' : e.usd === null ? <span className="muted">Unknown</span> : formatUsd(e.usd)}</td>
+                  <td className="num">{e.kind !== 'dividend' ? 'n/a' : e.usd === null ? <span className="muted">Unknown</span> : formatUsd(e.usd)}</td>
                 </tr>
               ))}
             </tbody>

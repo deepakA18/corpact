@@ -1,6 +1,6 @@
 ---
-title: Cash and stock dividend
-description: A dividend paid partly in cash and partly in shares.
+title: "Cash and stock dividend"
+description: "A dividend paid partly in cash and partly in shares."
 ---
 
 > [!WARNING] Unvalidated

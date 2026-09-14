@@ -137,7 +137,7 @@ function describeEntry(e: {
     const value =
       e.usd !== null
         ? `Value from issuer-reported net cash reinvested: $${Rational.fromDecimal(e.usd).toFixed(2)}.`
-        : `USD value unavailable${e.warnings[0] ? ` — ${e.warnings[0]}` : ''}.`;
+        : `USD value unavailable${e.warnings[0] ? `: ${e.warnings[0]}` : ''}.`;
     return `Your ${e.symbol} position gained ${e.quantityDisplay} stock-equivalent units from a verified dividend adjustment. ${value} This remains invested in the stock.`;
   }
   if (e.kind === 'split') return 'Stock split applied; no dividend income recorded.';

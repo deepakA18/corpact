@@ -1,6 +1,6 @@
 ---
-title: Cash dividend
-description: Cash paid on the underlying share and reinvested by the issuer through the multiplier.
+title: "Cash dividend"
+description: "Cash paid on the underlying share and reinvested by the issuer through the multiplier."
 ---
 
 | | |
@@ -28,7 +28,7 @@ A multiplier increase that matches a standing `CashDividend` record exactly: bot
 - Effective time differs from the activation: unclassified, with both times in the reason.
 - More than one record matches: unclassified, naming the records.
 - No usable net cash: still a dividend, with USD **null** (unknown, never zero).
-- Net cash implying a reinvestment price outside ×3 of the median of the same asset's other dividends (STRCx 2025-11-30: ~$953,728/share): still a dividend, with USD null and a warning.
+- Net cash implying a reinvestment price outside ×3 of the median of the same asset's other dividends (STRCx: ~$953,728/share): still a dividend, with USD null and a warning.
 - Gross × (1 − withholding) ≠ net: valued, with the inconsistency flagged.
 - A 5% currency retention in the withholding field, with a note saying so (LINx, ETNx, ASMLx): recognised as `retentionRate`. It is not tax and is not deducted again.
 
