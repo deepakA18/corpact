@@ -3,6 +3,7 @@ import { withTransaction, type DbClient } from '@corpact/db';
 import { Rational, displayedQuantity, type Classification } from '@corpact/domain';
 import { TOKEN_2022_PROGRAM, bitsFromFloat64, float64FromBits, type TokenAccountSnapshot } from '@corpact/solana';
 import { isoOf, type Context } from './context';
+import { crossCheckBalances } from './crosscheck';
 import { journalValuesFromEntry, planJournal, type JournalValues, type OpenRecognition } from './journal';
 import { resolveTransactionOrder } from './transactions';
 
@@ -88,6 +89,7 @@ async function buildPosition(
   snapshot: { slot: bigint; accounts: TokenAccountSnapshot[] },
   clock: { slot: bigint; unixTime: bigint },
   walletGaps: string[],
+  providerReasons: readonly string[],
 ): Promise<PositionResult> {
   const gaps = [...walletGaps];
   const held = snapshot.accounts.filter((a) => a.mint === mint);
@@ -162,7 +164,7 @@ async function buildPosition(
     classification: classificationFromRow(r),
   }));
 
-  const disabledReasons = [CONVERSION_NOT_ENABLED];
+  const disabledReasons = [CONVERSION_NOT_ENABLED, ...providerReasons];
   const base = { mint, symbol: asset.symbol, coverageEndUnix: clock.unixTime, coverageEndSlot: snapshot.slot, links: new Map<number, EntryLink>() };
 
   if (!knownFrom) {
@@ -407,11 +409,27 @@ export async function rebuildPositions(ctx: Context, owner: string) {
   const { rows: syncRows } = await ctx.db.query('SELECT gaps FROM wallet_syncs WHERE owner = $1', [owner]);
   const walletGaps = (syncRows[0]?.gaps as string[] | undefined) ?? [];
 
+  // PLAN Appendix B: pause conversion on source disagreement; keep reads available.
+  const providerReasons = new Map<string, string[]>();
+  const addReason = (mint: string, reason: string) => providerReasons.set(mint, [...(providerReasons.get(mint) ?? []), reason]);
+  const balanceCheck = await crossCheckBalances(ctx, owner, snapshot, new Set(assets.keys()));
+  if (balanceCheck?.outcome === 'disagree') {
+    for (const d of balanceCheck.differences) {
+      addReason(d.mint, `An independent RPC provider reports ${d.secondaryRaw ?? 'no account'} raw on ${d.account}, the primary ${d.primaryRaw ?? 'no account'}; conversion is paused until they agree`);
+    }
+  }
+  const { rows: mintChecks } = await ctx.db.query(
+    `SELECT DISTINCT ON (subject) subject, outcome FROM provider_checks WHERE kind = 'mint_state' ORDER BY subject, id DESC`,
+  );
+  for (const r of mintChecks) {
+    if (r.outcome === 'disagree') addReason(r.subject, 'RPC providers disagree on this mint’s multiplier state; conversion is paused until they agree');
+  }
+
   const results: PositionResult[] = [];
   for (const mint of mints) {
     const asset = assets.get(mint);
     if (!asset) continue; // not a verified supported asset
-    results.push(await buildPosition(ctx, owner, mint, asset, snapshot, clock, walletGaps));
+    results.push(await buildPosition(ctx, owner, mint, asset, snapshot, clock, walletGaps, providerReasons.get(mint) ?? []));
   }
 
   await withTransaction(ctx.db, async (client) => {

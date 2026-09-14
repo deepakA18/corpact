@@ -22,6 +22,8 @@ export interface MonitoringSnapshot {
   failedWalletSyncs: number;
   mintsWithTimelineGaps: number;
   issuerFeed: { source: string | null; lastIngestedUnix: number | null };
+  /** Independent reconciliation provider, as reported by the freshest worker. */
+  providers: { reconciliationHost: string | null; currentDisagreements: number; lastCheckedUnix: number | null };
 }
 
 export interface Thresholds {
@@ -30,6 +32,7 @@ export interface Thresholds {
   stuckJobSeconds: number;
   activationGraceSeconds: number;
   liveIssuerStaleSeconds: number;
+  providerCheckStaleSeconds: number;
 }
 
 /** PLAN §14 targets: alert above 2 minutes of lag; activations are the case a subscription-only design misses. */
@@ -39,6 +42,8 @@ export const DEFAULT_THRESHOLDS: Thresholds = {
   stuckJobSeconds: 1800,
   activationGraceSeconds: 300,
   liveIssuerStaleSeconds: 2 * 86_400,
+  // Agreeing mint checks are recorded at most hourly.
+  providerCheckStaleSeconds: 2 * 3600,
 };
 
 export async function collectSnapshot(q: Queryable, t: Thresholds = DEFAULT_THRESHOLDS): Promise<MonitoringSnapshot> {
@@ -46,8 +51,14 @@ export async function collectSnapshot(q: Queryable, t: Thresholds = DEFAULT_THRE
   const count = async (sql: string, params: unknown[] = []) => Number((await q.query(sql, params)).rows[0]?.n ?? 0);
 
   const workers = await q.query(
-    `SELECT worker_id, extract(epoch FROM last_seen_at)::bigint AS last_seen, mint_poll_seconds, rpc_requests, rpc_retries, rpc_failures
+    `SELECT worker_id, extract(epoch FROM last_seen_at)::bigint AS last_seen, mint_poll_seconds, rpc_requests, rpc_retries, rpc_failures,
+            reconciliation_rpc_host
        FROM worker_heartbeats ORDER BY last_seen_at DESC LIMIT 20`,
+  );
+  const providerChecks = await q.query(
+    `SELECT (SELECT count(*) FROM (SELECT DISTINCT ON (kind, subject) outcome FROM provider_checks ORDER BY kind, subject, id DESC) latest
+              WHERE outcome = 'disagree')::int AS disagreements,
+            (SELECT extract(epoch FROM max(checked_at))::bigint FROM provider_checks) AS last_checked`,
   );
   const poll = await q.query(`SELECT state FROM sync_cursors WHERE stream = 'mint-poll'`);
   const positions = await q.query(
@@ -88,6 +99,11 @@ export async function collectSnapshot(q: Queryable, t: Thresholds = DEFAULT_THRE
       `SELECT count(*)::int AS n FROM sync_cursors WHERE stream LIKE 'multiplier-timeline:%' AND jsonb_array_length(gaps) > 0`,
     ),
     issuerFeed: { source: issuer.rows[0]?.source ?? null, lastIngestedUnix: issuer.rows[0] ? Number(issuer.rows[0].at) : null },
+    providers: {
+      reconciliationHost: workers.rows[0]?.reconciliation_rpc_host ?? null,
+      currentDisagreements: Number(providerChecks.rows[0]?.disagreements ?? 0),
+      lastCheckedUnix: providerChecks.rows[0]?.last_checked == null ? null : Number(providerChecks.rows[0].last_checked),
+    },
   };
 }
 
@@ -163,6 +179,29 @@ export function evaluateChecks(s: MonitoringSnapshot, t: Thresholds = DEFAULT_TH
     `${s.mintsWithTimelineGaps} mint(s) have gaps in their multiplier history`,
   );
 
+  const { reconciliationHost, currentDisagreements, lastCheckedUnix } = s.providers;
+  if (currentDisagreements > 0) {
+    add(
+      'provider_agreement',
+      'critical',
+      currentDisagreements,
+      '0 disagreements',
+      `${currentDisagreements} balance or mint-state check(s) currently disagree with the independent provider; conversion is disabled for affected positions`,
+    );
+  } else if (reconciliationHost === null) {
+    add('provider_agreement', 'warn', null, 'independent RPC configured', 'No independent reconciliation RPC is configured (RECONCILIATION_RPC_URL); chain data comes from one provider');
+  } else {
+    const age = lastCheckedUnix === null ? null : s.nowUnix - lastCheckedUnix;
+    const stale = age === null || age > t.providerCheckStaleSeconds;
+    add(
+      'provider_agreement',
+      stale ? 'warn' : 'ok',
+      age,
+      `≤ ${t.providerCheckStaleSeconds}s`,
+      stale ? `No cross-check against ${reconciliationHost} for ${age ?? 'ever'}s` : `Agrees with ${reconciliationHost}; last checked ${age}s ago`,
+    );
+  }
+
   const { source, lastIngestedUnix } = s.issuerFeed;
   if (source === null) add('issuer_feed', 'warn', null, 'loaded', 'No issuer corporate actions are loaded; transitions cannot be classified');
   else if (source === 'fixtures') {
@@ -200,5 +239,6 @@ export function toPrometheus(s: MonitoringSnapshot, result: { checks: CheckResul
   family('corpact_jobs_failed_24h', 'gauge', 'Jobs that exhausted retries in the last 24 hours', [['', s.failedJobs24h]]);
   family('corpact_positions_unreconciled', 'gauge', 'Fully replayed positions not matching chain balances', [['', s.unreconciledPositions]]);
   family('corpact_positions_partial', 'gauge', 'Positions with partial coverage', [['', s.partialPositions]]);
+  family('corpact_provider_disagreements', 'gauge', 'Subjects whose latest independent-provider check disagrees', [['', s.providers.currentDisagreements]]);
   return `${lines.join('\n')}\n`;
 }

@@ -120,14 +120,20 @@ export function createChainReader(options: ChainReaderOptions) {
       return { slot, unixTime: BigInt(time) };
     },
 
-    /** Raw account data. `slot` is the oldest context slot across batches. */
-    async accounts(addresses: readonly string[]) {
+    /** Raw account data. `slot` is the oldest context slot across batches; `minContextSlot` aligns reads across providers. */
+    async accounts(addresses: readonly string[], options: { minContextSlot?: bigint } = {}) {
       const result = new Map<string, { owner: Address; data: Uint8Array } | null>();
       let slot: bigint | null = null;
       for (let i = 0; i < addresses.length; i += 100) {
         const batch = addresses.slice(i, i + 100).map((a) => address(a));
         const { context, value } = await call(`getMultipleAccounts[${i}..${i + batch.length}]`, () =>
-          rpc.getMultipleAccounts(batch, { encoding: 'base64', commitment: 'finalized' }).send(),
+          rpc
+            .getMultipleAccounts(batch, {
+              encoding: 'base64',
+              commitment: 'finalized',
+              ...(options.minContextSlot !== undefined ? { minContextSlot: options.minContextSlot } : {}),
+            })
+            .send(),
         );
         slot = slot === null || context.slot < slot ? context.slot : slot;
         value.forEach((account, k) => {
@@ -138,10 +144,18 @@ export function createChainReader(options: ChainReaderOptions) {
     },
 
     /** Current inventory only — not history. */
-    async tokenAccountsByOwner(owner: string, tokenProgram: Address) {
+    async tokenAccountsByOwner(owner: string, tokenProgram: Address, options: { minContextSlot?: bigint } = {}) {
       const { context, value } = await call(`getTokenAccountsByOwner(${owner})`, () =>
         rpc
-          .getTokenAccountsByOwner(address(owner), { programId: tokenProgram }, { encoding: 'base64', commitment: 'finalized' })
+          .getTokenAccountsByOwner(
+            address(owner),
+            { programId: tokenProgram },
+            {
+              encoding: 'base64',
+              commitment: 'finalized',
+              ...(options.minContextSlot !== undefined ? { minContextSlot: options.minContextSlot } : {}),
+            },
+          )
           .send(),
       );
       const accounts: TokenAccountSnapshot[] = [];

@@ -23,8 +23,8 @@ export async function insertObservation(q: Queryable, o: ObservationInput): Prom
   const hash = sha256Hex(text);
   const { rows } = await q.query(
     `WITH inserted AS (
-       INSERT INTO chain_observations (kind, signature, subject, slot, block_time_unix, payload, payload_sha256)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)
+       INSERT INTO chain_observations (kind, signature, subject, slot, block_time_unix, payload, payload_sha256, stored_payload_sha256)
+       VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7, encode(sha256(convert_to($6::jsonb::text, 'UTF8')), 'hex'))
        ON CONFLICT (kind, signature, subject, slot) DO NOTHING
        RETURNING id, payload_sha256)
      SELECT id, payload_sha256 FROM inserted

@@ -3,6 +3,11 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "exports": {
+    "./app": "./src/app.ts",
+    "./access": "./src/access.ts",
+    "./keys": "./src/keys.ts"
+  },
   "scripts": {
     "typecheck": "tsc -p .",
     "start": "tsx --env-file-if-exists=../../.env src/main.ts",

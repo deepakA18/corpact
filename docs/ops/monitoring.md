@@ -20,7 +20,10 @@ cd apps/api && pnpm keys create monitoring --tenant <slug> --scopes ops:read
 
 - **`worker_heartbeats`**: every `run` process upserts a row every 15 s, on a timer so a long backfill still counts as alive. The row carries that process's RPC request, retry and failure counters, as the infrastructure budget. Only the RPC host is stored, never the URL.
 - **`sync_cursors` stream `mint-poll`**: written after each chain-only mint poll, with wall time, the finalized clock and the slot.
+- **`provider_checks`**: the latest outcome of each balance and mint-state cross-check against the independent reconciliation provider. The heartbeat carries that provider's host, so monitoring knows whether one is configured ([ADR-0004](../adr/0004-independent-reconciliation-provider.md)).
 - **Ledger tables**: `multiplier_versions`, `jobs_outbox`, `position_epochs`, `wallet_syncs`, `corporate_actions`.
+
+Data integrity is checked separately, read-only and on demand, with `pnpm cli verify-integrity` in `apps/worker`. It runs after every restore; see the [backup and restore runbook](backup-restore.md).
 
 ## Checks
 
@@ -33,6 +36,7 @@ cd apps/api && pnpm keys create monitoring --tenant <slug> --scopes ops:read
 | `job_queue_draining` | critical: pending jobs waiting too long | 1800 s | Worker down or saturated; see `jobs_outbox` by kind |
 | `failed_jobs_24h` | warn: jobs exhausted retries | 0 | `SELECT kind, business_key, last_error FROM jobs_outbox WHERE status = 'failed'` |
 | `balance_reconciliation` | critical: a fully replayed position differs from chain | 0 | Conversion is already disabled for it. Treat as a ledger bug: compare `reconciliation_checks` against chain |
+| `provider_agreement` | critical: a balance or mint-state check currently disagrees with the independent provider. warn: no independent provider configured, or no check within 2 h | 0 disagreements | Conversion is already paused for affected positions. Compare `provider_checks.details` with a third source before trusting either provider; switch `SOLANA_RPC_URL` if the primary is the wrong one |
 | `failed_wallet_syncs` | warn | 0 | `wallet_syncs.error`; re-request the sync |
 | `timeline_gaps` | warn: a mint's multiplier history has gaps | 0 | Usually RPC history limits; affected positions are already partial |
 | `partial_positions` | informational | none | Shown to users; no action |

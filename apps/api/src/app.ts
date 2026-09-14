@@ -22,9 +22,9 @@ const DAY = 86_400n;
 
 const YIELD_DEFINITIONS = {
   shareYield:
-    'Dividend-attributed shares gained ÷ time-weighted average shares held over the covered part of the window, in the current split basis. Not annualized. Needs no price; it approximates net dividend yield at the prices the issuer reinvested at. Windows starting before coverage are marked partial.',
+    'Dividend-attributed shares gained ÷ time-weighted average shares held, in the current split basis. Not annualized. Needs no price; it approximates net dividend yield at the prices the issuer reinvested at. Claimed only for a completely replayed position over a window its coverage fully spans; otherwise null with an excluded reason, while observed income and quantities for the covered part are still reported.',
   trailingNetDistributionPerShare:
-    "Sum of issuer-verified net cash per share over the trailing 365 days, normalized to today's split basis. Null when any distribution lacks issuer net cash; partial when chain history does not reach the window start.",
+    "Sum of issuer-verified net cash per share over the trailing 365 days, normalized to today's split basis. Null with an excluded reason when any distribution lacks issuer net cash or when the observed multiplier history starts inside the window.",
   distributionYield: 'Trailing net distribution per share ÷ current share price. Unavailable: no price source is configured.',
 } as const;
 
@@ -667,7 +667,14 @@ export async function buildApp(options: AppOptions) {
           p.status === 'unsupported'
             ? []
             : specs.map(({ window, start }) => {
-                const m = windowMetrics({ samples: quantitySamples, dividends: dividendPoints, splits: splitPoints, coverageStart, window: { start, end } });
+                const m = windowMetrics({
+                  samples: quantitySamples,
+                  dividends: dividendPoints,
+                  splits: splitPoints,
+                  coverageStart,
+                  positionComplete: p.status === 'complete',
+                  window: { start, end },
+                });
                 return {
                   window,
                   start: iso(start.toString()),
@@ -681,6 +688,7 @@ export async function buildApp(options: AppOptions) {
                   dividendQuantity: exact(m.dividendQuantity),
                   averageQuantity: m.averageQuantity ? m.averageQuantity.toFixed(8) : null,
                   shareYield: m.shareYield ? m.shareYield.toFixed(10) : null,
+                  excluded: m.excluded,
                 };
               });
 
@@ -712,6 +720,7 @@ export async function buildApp(options: AppOptions) {
             distributions: ttm.distributions,
             missingNetCash: ttm.missingNetCash,
             partial: ttm.partial,
+            excluded: ttm.excluded,
           },
           distributionYield: { value: null, reason: 'No price source is configured' },
         });

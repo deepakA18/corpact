@@ -14,6 +14,7 @@ const healthy = (overrides: Partial<MonitoringSnapshot> = {}): MonitoringSnapsho
   failedWalletSyncs: 0,
   mintsWithTimelineGaps: 0,
   issuerFeed: { source: 'fixtures', lastIngestedUnix: NOW - 86_400 },
+  providers: { reconciliationHost: 'rpc.second-provider.example', currentDisagreements: 0, lastCheckedUnix: NOW - 60 },
   ...overrides,
 });
 
@@ -52,6 +53,24 @@ describe('evaluateChecks', () => {
     expect(statusOf(healthy(), 'issuer_feed')).toBe('ok');
     expect(statusOf(healthy({ issuerFeed: { source: 'live', lastIngestedUnix: NOW - 5 * 86_400 } }), 'issuer_feed')).toBe('warn');
     expect(statusOf(healthy({ issuerFeed: { source: null, lastIngestedUnix: null } }), 'issuer_feed')).toBe('warn');
+  });
+});
+
+describe('provider_agreement', () => {
+  it('is critical on a current disagreement, even without a configured provider in the freshest heartbeat', () => {
+    const check = evaluateChecks(healthy({ providers: { reconciliationHost: null, currentDisagreements: 1, lastCheckedUnix: NOW } })).checks.find(
+      (c) => c.name === 'provider_agreement',
+    );
+    expect(check).toMatchObject({ status: 'critical', value: 1 });
+    expect(check?.message).toMatch(/conversion is disabled/);
+  });
+
+  it('warns when no independent provider is configured or checks have gone stale', () => {
+    expect(statusOf(healthy({ providers: { reconciliationHost: null, currentDisagreements: 0, lastCheckedUnix: null } }), 'provider_agreement')).toBe('warn');
+    expect(statusOf(healthy({ providers: { reconciliationHost: 'rpc.second-provider.example', currentDisagreements: 0, lastCheckedUnix: NOW - 10_000 } }), 'provider_agreement')).toBe(
+      'warn',
+    );
+    expect(statusOf(healthy(), 'provider_agreement')).toBe('ok');
   });
 });
 

@@ -1,6 +1,7 @@
 import { enqueueJob, insertObservation, sha256Hex, withTransaction, type Queryable } from '@corpact/db';
 import { TOKEN_2022_PROGRAM, decodeToken2022Mint, type DecodedMint } from '@corpact/solana';
 import type { Context } from './context';
+import { crossCheckMints } from './crosscheck';
 
 type MintAccount = { owner: string; data: Uint8Array } | null;
 
@@ -97,6 +98,20 @@ export async function pollMintState(ctx: Context): Promise<void> {
   }
   const mints = rows.map((r) => r.mint as string);
   const { slot, accounts } = await ctx.chain.accounts(mints);
+
+  if (ctx.reconciler) {
+    // Cross-check the mints someone holds a position in: that is where a wrong multiplier changes a number.
+    const { rows: held } = await ctx.db.query('SELECT DISTINCT mint FROM position_epochs');
+    const heldMints = held.map((r) => r.mint as string).filter((m) => accounts.has(m));
+    const changed = await crossCheckMints(ctx, heldMints, { slot, accounts });
+    if (changed.length > 0) {
+      // A disagreement appearing or clearing changes which positions may convert.
+      const { rows: owners } = await ctx.db.query('SELECT DISTINCT owner FROM position_epochs WHERE mint = ANY($1)', [changed]);
+      for (const { owner } of owners) {
+        await enqueueJob(ctx.db, { kind: 'rebuild_positions', businessKey: `rebuild_positions:${owner}`, payload: { owner } });
+      }
+    }
+  }
 
   for (const mint of mints) {
     const { decoded, error } = verifyMint(accounts.get(mint) ?? null);

@@ -360,16 +360,25 @@ describe('API responses match the published contract', () => {
 });
 
 describe('API yield and export', () => {
-  it('reports share yield over the covered part of each window, marking windows that start before coverage', async () => {
+  it('claims share yield only over fully covered windows, still reporting what a partial window observed', async () => {
     const body = (await (await app()).inject({ url: `/v1/yield?owner=${OWNER}`, headers: readOnly })).json();
     const [kox] = body.positions;
     const byWindow = Object.fromEntries(kox.windows.map((w: { window: string }) => [w.window, w]));
     expect(Object.keys(byWindow)).toEqual(['trailing_30d', 'trailing_365d', 'tracked']);
-    // 0.09059763073 dividend shares over 19.9014456 held since coverage began.
-    expect(byWindow.trailing_365d).toMatchObject({ partial: true, coveredStart: '2025-10-23T17:04:27.000Z', valuedDividends: 1, unvaluedDividends: 0 });
-    expect(byWindow.trailing_365d.shareYield).toMatch(/^0\.0045/);
-    expect(byWindow.trailing_30d).toMatchObject({ partial: false, valuedDividends: 0, incomeUsd: '0' });
-    expect(kox.trailingDistribution).toMatchObject({ netPerShare: '0.371', distributions: 1, missingNetCash: 0, partial: true });
+    // Coverage starts 2025-10-23, inside the 365-day window: observed income stays, the yield claim does not.
+    expect(byWindow.trailing_365d).toMatchObject({
+      partial: true,
+      coveredStart: '2025-10-23T17:04:27.000Z',
+      valuedDividends: 1,
+      shareYield: null,
+      excluded: { code: 'coverage_after_window_start' },
+    });
+    // 0.09059763073 dividend shares over 19.9014456 held, across the fully covered tracked period.
+    expect(byWindow.tracked).toMatchObject({ partial: false, excluded: null });
+    expect(byWindow.tracked.shareYield).toMatch(/^0\.0045/);
+    expect(byWindow.trailing_30d).toMatchObject({ partial: false, valuedDividends: 0, incomeUsd: '0', excluded: null });
+    // Multiplier history is known only from 2025-10-01, inside the trailing year.
+    expect(kox.trailingDistribution).toMatchObject({ netPerShare: null, distributions: 1, partial: true, excluded: { code: 'coverage_after_window_start' } });
     expect(kox.distributionYield.value).toBeNull();
   });
 
@@ -413,6 +422,7 @@ describe('API operations endpoints', () => {
     failedWalletSyncs: 0,
     mintsWithTimelineGaps: 0,
     issuerFeed: { source: 'fixtures', lastIngestedUnix: 1_789_000_000 },
+    providers: { reconciliationHost: 'rpc.second-provider.example', currentDisagreements: 0, lastCheckedUnix: 1_789_323_950 },
   };
   const ops = { authorization: `Bearer ${OPS_KEY}` };
   const opsApp = () => app({ collectMonitoring: async () => snapshot });

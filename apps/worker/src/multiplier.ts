@@ -360,8 +360,9 @@ export async function importIssuerActions(ctx: Context): Promise<{ inserted: num
         const { rowCount } = await client.query(
           `INSERT INTO corporate_actions (issuer, external_id, revision, symbol, kind, status, effective_at, issuer_created_at,
                                           multiplier_old, multiplier_new, gross_cash_per_share, net_cash_per_share, withholding_rate,
-                                          from_units, to_units, notes, source, payload, evidence_sha256)
-           VALUES ('xstocks', $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
+                                          from_units, to_units, notes, source, payload, evidence_sha256, stored_payload_sha256)
+           VALUES ('xstocks', $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17::jsonb, $18,
+                   encode(sha256(convert_to($17::jsonb::text, 'UTF8')), 'hex'))
            ON CONFLICT (issuer, external_id, revision) DO NOTHING`,
           [
             a.eventId, a.version, a.symbol, a.type, a.status, a.effectiveAt, a.createdAt, a.multiplierOld, a.multiplierNew,

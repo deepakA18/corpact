@@ -6,6 +6,8 @@ import { createChainReader, type ChainReader } from '@corpact/solana';
 export interface WorkerConfig {
   databaseUrl: string;
   rpcUrl: string;
+  /** A second, independent provider for balance and mint-state cross-checks; null disables them. */
+  reconciliationRpcUrl: string | null;
   rpcMaxConcurrency: number;
   rpcMinIntervalMs: number;
   mintPollSeconds: number;
@@ -23,9 +25,16 @@ const positiveInt = (name: string, raw: string | undefined, fallback: number): n
 };
 
 export function loadConfig(env: Record<string, string | undefined> = process.env): WorkerConfig {
+  const rpcUrl = env.SOLANA_RPC_URL ?? 'https://api.mainnet-beta.solana.com';
+  const reconciliationRpcUrl = env.RECONCILIATION_RPC_URL || null;
+  if (reconciliationRpcUrl !== null && new URL(reconciliationRpcUrl).origin === new URL(rpcUrl).origin) {
+    // Same origin is the same provider, whatever the path or key: it cannot catch that provider being wrong.
+    throw new Error('RECONCILIATION_RPC_URL must be an independent provider, not the SOLANA_RPC_URL origin');
+  }
   return {
     databaseUrl: env.DATABASE_URL ?? 'postgres://parityfi:parityfi-dev@127.0.0.1:54329/parityfi',
-    rpcUrl: env.SOLANA_RPC_URL ?? 'https://api.mainnet-beta.solana.com',
+    rpcUrl,
+    reconciliationRpcUrl,
     rpcMaxConcurrency: positiveInt('RPC_MAX_CONCURRENCY', env.RPC_MAX_CONCURRENCY, 2),
     rpcMinIntervalMs: positiveInt('RPC_MIN_INTERVAL_MS', env.RPC_MIN_INTERVAL_MS, 150),
     mintPollSeconds: positiveInt('MINT_POLL_SECONDS', env.MINT_POLL_SECONDS, 45),
@@ -49,6 +58,8 @@ export const log: Logger = (level, message, fields = {}) => {
 export interface Context {
   db: Db;
   chain: ChainReader;
+  /** Independent reconciliation provider, when configured. */
+  reconciler: ChainReader | null;
   issuer: IssuerSource;
   config: WorkerConfig;
   log: Logger;
@@ -62,9 +73,24 @@ export function createContext(config: WorkerConfig = loadConfig()): Context {
     minIntervalMs: config.rpcMinIntervalMs,
     onRetry: (label, attempt, error) => log('warn', 'rpc retry', { label, attempt, error }),
   });
+  const reconciler =
+    config.reconciliationRpcUrl === null
+      ? null
+      : createChainReader({
+          rpcUrl: config.reconciliationRpcUrl,
+          maxConcurrency: 1,
+          minIntervalMs: config.rpcMinIntervalMs,
+          maxAttempts: 4,
+          onRetry: (label, attempt, error) => log('warn', 'reconciliation rpc retry', { label, attempt, error }),
+        });
   // RPC URLs often embed an API key: log the host only.
-  log('info', 'context', { rpcHost: new URL(config.rpcUrl).host, issuerSource: issuer.kind, workerId: config.workerId });
-  return { db: createDb(config.databaseUrl), chain, issuer, config, log };
+  log('info', 'context', {
+    rpcHost: new URL(config.rpcUrl).host,
+    reconciliationRpcHost: config.reconciliationRpcUrl === null ? null : new URL(config.reconciliationRpcUrl).host,
+    issuerSource: issuer.kind,
+    workerId: config.workerId,
+  });
+  return { db: createDb(config.databaseUrl), chain, reconciler, issuer, config, log };
 }
 
 export const unixOf = (date: Date): bigint => BigInt(Math.floor(date.getTime() / 1000));

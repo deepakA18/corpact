@@ -393,12 +393,28 @@ export const journalResponse = {
   },
 } as const;
 
+const yieldExclusion = {
+  description: 'Why the yield figure is withheld; null when it is claimed',
+  anyOf: [
+    { type: 'null' },
+    {
+      type: 'object',
+      additionalProperties: false,
+      required: ['code', 'message'],
+      properties: {
+        code: { type: 'string', enum: ['position_incomplete', 'coverage_after_window_start', 'no_holdings', 'missing_net_cash'] },
+        message: str,
+      },
+    },
+  ],
+} as const;
+
 const yieldWindow = {
   type: 'object',
   additionalProperties: false,
   required: [
     'window', 'start', 'end', 'days', 'partial', 'coveredStart', 'incomeUsd', 'valuedDividends', 'unvaluedDividends',
-    'dividendQuantity', 'averageQuantity', 'shareYield',
+    'dividendQuantity', 'averageQuantity', 'shareYield', 'excluded',
   ],
   properties: {
     window: { type: 'string', enum: ['trailing_30d', 'trailing_365d', 'tracked'] },
@@ -412,7 +428,8 @@ const yieldWindow = {
     unvaluedDividends: int,
     dividendQuantity: { ...decimal, description: 'Current split basis' },
     averageQuantity: { ...nullableDecimal, description: 'Time-weighted, current split basis' },
-    shareYield: { ...nullableDecimal, description: 'Shares gained ÷ average shares held; not annualized' },
+    shareYield: { ...nullableDecimal, description: 'Shares gained ÷ average shares held; not annualized. Null whenever excluded is set' },
+    excluded: yieldExclusion,
   },
 } as const;
 
@@ -443,7 +460,7 @@ export const yieldResponse = {
           trailingDistribution: {
             type: 'object',
             additionalProperties: false,
-            required: ['windowStart', 'windowEnd', 'netPerShare', 'distributions', 'missingNetCash', 'partial'],
+            required: ['windowStart', 'windowEnd', 'netPerShare', 'distributions', 'missingNetCash', 'partial', 'excluded'],
             properties: {
               windowStart: str,
               windowEnd: str,
@@ -451,6 +468,7 @@ export const yieldResponse = {
               distributions: int,
               missingNetCash: int,
               partial: bool,
+              excluded: yieldExclusion,
             },
           },
           distributionYield: {

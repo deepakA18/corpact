@@ -2525,7 +2525,8 @@
                                 "unvaluedDividends",
                                 "dividendQuantity",
                                 "averageQuantity",
-                                "shareYield"
+                                "shareYield",
+                                "excluded"
                               ],
                               "properties": {
                                 "window": {
@@ -2582,7 +2583,37 @@
                                     "null"
                                   ],
                                   "pattern": "^-?\\d+(\\.\\d+)?$",
-                                  "description": "Shares gained ÷ average shares held; not annualized"
+                                  "description": "Shares gained ÷ average shares held; not annualized. Null whenever excluded is set"
+                                },
+                                "excluded": {
+                                  "description": "Why the yield figure is withheld; null when it is claimed",
+                                  "anyOf": [
+                                    {
+                                      "type": "null"
+                                    },
+                                    {
+                                      "type": "object",
+                                      "additionalProperties": false,
+                                      "required": [
+                                        "code",
+                                        "message"
+                                      ],
+                                      "properties": {
+                                        "code": {
+                                          "type": "string",
+                                          "enum": [
+                                            "position_incomplete",
+                                            "coverage_after_window_start",
+                                            "no_holdings",
+                                            "missing_net_cash"
+                                          ]
+                                        },
+                                        "message": {
+                                          "type": "string"
+                                        }
+                                      }
+                                    }
+                                  ]
                                 }
                               }
                             }
@@ -2596,7 +2627,8 @@
                               "netPerShare",
                               "distributions",
                               "missingNetCash",
-                              "partial"
+                              "partial",
+                              "excluded"
                             ],
                             "properties": {
                               "windowStart": {
@@ -2620,6 +2652,36 @@
                               },
                               "partial": {
                                 "type": "boolean"
+                              },
+                              "excluded": {
+                                "description": "Why the yield figure is withheld; null when it is claimed",
+                                "anyOf": [
+                                  {
+                                    "type": "null"
+                                  },
+                                  {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "required": [
+                                      "code",
+                                      "message"
+                                    ],
+                                    "properties": {
+                                      "code": {
+                                        "type": "string",
+                                        "enum": [
+                                          "position_incomplete",
+                                          "coverage_after_window_start",
+                                          "no_holdings",
+                                          "missing_net_cash"
+                                        ]
+                                      },
+                                      "message": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  }
+                                ]
                               }
                             }
                           },

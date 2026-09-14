@@ -1,0 +1,23 @@
+{
+  "name": "@corpact/demo",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc -p .",
+    "demo": "tsx src/main.ts"
+  },
+  "dependencies": {
+    "@corpact/api": "workspace:*",
+    "@corpact/client": "workspace:*",
+    "@corpact/db": "workspace:*",
+    "@corpact/domain": "workspace:*",
+    "@solana-program/system": "0.14.1",
+    "@solana-program/token-2022": "0.17.0",
+    "@solana/kit": "8.3.0",
+    "@solana/sysvars": "8.3.0"
+  },
+  "devDependencies": {
+    "tsx": "4.23.13"
+  }
+}

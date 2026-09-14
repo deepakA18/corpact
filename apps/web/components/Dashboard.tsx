@@ -232,18 +232,27 @@ function PrimaryValues({ portfolio }: { portfolio: Portfolio }) {
   );
 }
 
+/** The trailing year when it is claimable, else the tracked period (labelled with its span), else the reason neither is. */
 function YieldCell({ position }: { position: PositionYield | undefined }) {
-  const window = position?.windows.find((w) => w.window === 'trailing_365d');
-  if (!window || window.shareYield === null) return <span className="muted">—</span>;
-  return (
-    <>
-      {formatPercent(window.shareYield)}
-      {window.partial && (
-        <div className="muted" style={{ fontSize: 12 }} title={`Covers ${formatDate(window.coveredStart)} onward`}>
-          since {formatDate(window.coveredStart)}
+  const find = (name: PositionYield['windows'][number]['window']) => position?.windows.find((w) => w.window === name);
+  const year = find('trailing_365d');
+  const tracked = find('tracked');
+  if (year?.shareYield != null) return <>{formatPercent(year.shareYield)}</>;
+  if (tracked?.shareYield != null) {
+    return (
+      <>
+        {formatPercent(tracked.shareYield)}
+        <div className="muted" style={{ fontSize: 12 }}>
+          {tracked.days} days since {formatDate(tracked.start)}
         </div>
-      )}
-    </>
+      </>
+    );
+  }
+  const reason = (tracked ?? year)?.excluded?.message ?? 'No yield is claimed for this position';
+  return (
+    <span className="muted" title={reason}>
+      Not claimed
+    </span>
   );
 }
 
@@ -262,7 +271,7 @@ function Positions({ portfolio, yields }: { portfolio: Portfolio; yields: YieldR
               <th>Protected</th>
               <th>Available to convert</th>
               <th>Dividend income</th>
-              <th>Share yield (365d)</th>
+              <th>Share yield</th>
               <th>Status</th>
             </tr>
           </thead>

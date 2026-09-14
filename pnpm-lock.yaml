@@ -61,6 +61,37 @@ importers:
         specifier: 4.23.13
         version: 4.23.13
 
+  apps/demo:
+    dependencies:
+      '@corpact/api':
+        specifier: workspace:*
+        version: link:../api
+      '@corpact/client':
+        specifier: workspace:*
+        version: link:../../packages/client
+      '@corpact/db':
+        specifier: workspace:*
+        version: link:../../packages/db
+      '@corpact/domain':
+        specifier: workspace:*
+        version: link:../../packages/domain
+      '@solana-program/system':
+        specifier: 0.14.1
+        version: 0.14.1(@solana/kit@8.3.0(typescript@7.0.2))
+      '@solana-program/token-2022':
+        specifier: 0.17.0
+        version: 0.17.0(@solana/kit@8.3.0(typescript@7.0.2))(@solana/sysvars@8.3.0(typescript@7.0.2))(@solana/zk-sdk@0.5.2)
+      '@solana/kit':
+        specifier: 8.3.0
+        version: 8.3.0(typescript@7.0.2)
+      '@solana/sysvars':
+        specifier: 8.3.0
+        version: 8.3.0(typescript@7.0.2)
+    devDependencies:
+      tsx:
+        specifier: 4.23.13
+        version: 4.23.13
+
   apps/web:
     dependencies:
       '@corpact/client':
@@ -569,6 +600,14 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@noble/curves@2.4.0':
+    resolution: {integrity: sha512-P4/62zrgfH33CneE3Dn4WhJVA22YUU0eR51wKIan4NVRvwsA0YnPTwWGpNbpuacSujmSFLvyzpyuR30+fbq2Ew==}
+    engines: {node: '>= 20.19.0'}
+
+  '@noble/hashes@2.4.0':
+    resolution: {integrity: sha512-X5XaVWZIBCT7HHZGm5I7ZQXDwLG+bGXuSrMQAW+7Zvl87h1kmc1ZB1VSRJcpUfoUrGQp4Fkoxm5kZ+Ms+aW+eA==}
+    engines: {node: '>= 20.19.0'}
+
   '@oxc-project/types@0.149.0':
     resolution: {integrity: sha512-Efcc+iF0j3Bf67YjEqIqWXbX5XddXoK/Mw4K1/JuXwRCZ8N16VR7iT23nlCc9XrveFVh/E5Rqs2StT0V8v9LdA==}
 
@@ -678,6 +717,11 @@ packages:
     peerDependencies:
       '@solana/kit': ^5.0
 
+  '@solana-program/record@0.4.1':
+    resolution: {integrity: sha512-3iurtMAc3POMKVSZBqpNZQeoxAYVIxi0VZNOjkdaZqxr5glCxkWWruT8JekDwNFM0FnXxvtdu7tFFn3j6Kpegg==}
+    peerDependencies:
+      '@solana/kit': ^8.0.0
+
   '@solana-program/stake@0.5.0':
     resolution: {integrity: sha512-G3G1kcyTDTqcDEUqJkKyPfHAGh6AociXnDu4dZ87LprWeV3qZ26tReiOu3HN7inf2wCyJ32BWJyxoKNFVL9C8w==}
     peerDependencies:
@@ -687,6 +731,21 @@ packages:
     resolution: {integrity: sha512-Go+LOEZmqmNlfr+Gjy5ZWAdY5HbYzk2RBewD9QinEU/bBSzpFfzqDRT55JjFRBGJUvMgf3C2vfXEGT4i8DSI4g==}
     peerDependencies:
       '@solana/kit': ^5.0
+
+  '@solana-program/system@0.14.1':
+    resolution: {integrity: sha512-K6ZiIrAKoJAfcwfUdsoFvfSAxeRJaRrV7BPFTJvUVRS4m3zszN+nLcdaNMMe2F1/zTriZqC+xh+Kgw6ziGUqpQ==}
+    peerDependencies:
+      '@solana/kit': ^8.0.0
+
+  '@solana-program/token-2022@0.17.0':
+    resolution: {integrity: sha512-LAtSQVLuWLSANAzvyOURR4yDik3eVHtgYiAMADmcayX4ljeN3CEdOtQvbfmB95wDa4R/N0PUhbyXTMWsELKkpw==}
+    peerDependencies:
+      '@solana/kit': ^8.0.0
+      '@solana/sysvars': ^8.0.0
+      '@solana/zk-sdk': ^0.5.1
+    peerDependenciesMeta:
+      '@solana/zk-sdk':
+        optional: true
 
   '@solana-program/token-2022@0.7.0':
     resolution: {integrity: sha512-ByQdTdbgyhjGf9JklqGRf3u0nbQF5Hbn8Wb2Ir0LZHCgo8lG+2PmBN8UvNY6ONVYb7CjLbApgghvBAEQK1aagg==}
@@ -699,6 +758,11 @@ packages:
     resolution: {integrity: sha512-vnZxndd4ED4Fc56sw93cWZ2djEeeOFxtaPS8SPf5+a+JZjKA/EnKqzbE1y04FuMhIVrLERQ8uR8H2h72eZzlsA==}
     peerDependencies:
       '@solana/kit': ^5.0
+
+  '@solana-program/zk-elgamal-proof@0.4.0':
+    resolution: {integrity: sha512-bf2Q3f25xcCNaLm/MR4lwoAguJzEW2eeLdrJb6rUjMcA63qcgyJOWl6To7Bn4e+0OyWBa+J7YP2BUhi//VPz3g==}
+    peerDependencies:
+      '@solana/kit': ^8.0.0
 
   '@solana/accounts@5.5.1':
     resolution: {integrity: sha512-TfOY9xixg5rizABuLVuZ9XI2x2tmWUC/OoN556xwfDlhBHBjKfszicYYOyD6nbFmwTGYarCmyGIdteXxTXIdhQ==}
@@ -1465,6 +1529,9 @@ packages:
   '@solana/wallet-standard-features@1.5.0':
     resolution: {integrity: sha512-gxlLaEfPAqbhd3LNkK0Ks2pbVvDm1SDGqBK/ynDQy13Gu+qiURLpRCfSPjbtrw5bmqQsZ6rS2YJHL31bY/Koag==}
     engines: {node: '>=22'}
+
+  '@solana/zk-sdk@0.5.2':
+    resolution: {integrity: sha512-4Bsjr45Vy7HMY7VSEGwGI/qgOXR0ytKH5XZtW2CbJcFdL1Txfd2tFdOL17q8P0ZXWgfwTGurJi96bWZs/XlHqg==}
 
   '@swc/helpers@0.5.23':
     resolution: {integrity: sha512-5lSsMOTXURePglDfvuAQUqkGek9Hg2kksOYay2m0+XR++b2NWYL/4sWyuvVBIs8oKnJaxkdi9whaL/sqN13afw==}
@@ -2580,6 +2647,12 @@ snapshots:
   '@next/swc-win32-x64-msvc@16.3.5':
     optional: true
 
+  '@noble/curves@2.4.0':
+    dependencies:
+      '@noble/hashes': 2.4.0
+
+  '@noble/hashes@2.4.0': {}
+
   '@oxc-project/types@0.149.0': {}
 
   '@pinojs/redact@0.4.0': {}
@@ -2639,6 +2712,11 @@ snapshots:
     dependencies:
       '@solana/kit': 5.5.1(typescript@7.0.2)
 
+  '@solana-program/record@0.4.1(@solana/kit@8.3.0(typescript@7.0.2))':
+    dependencies:
+      '@solana-program/system': 0.14.1(@solana/kit@8.3.0(typescript@7.0.2))
+      '@solana/kit': 8.3.0(typescript@7.0.2)
+
   '@solana-program/stake@0.5.0(@solana/kit@5.5.1(typescript@7.0.2))':
     dependencies:
       '@solana/kit': 5.5.1(typescript@7.0.2)
@@ -2646,6 +2724,21 @@ snapshots:
   '@solana-program/system@0.10.0(@solana/kit@5.5.1(typescript@7.0.2))':
     dependencies:
       '@solana/kit': 5.5.1(typescript@7.0.2)
+
+  '@solana-program/system@0.14.1(@solana/kit@8.3.0(typescript@7.0.2))':
+    dependencies:
+      '@solana/kit': 8.3.0(typescript@7.0.2)
+
+  '@solana-program/token-2022@0.17.0(@solana/kit@8.3.0(typescript@7.0.2))(@solana/sysvars@8.3.0(typescript@7.0.2))(@solana/zk-sdk@0.5.2)':
+    dependencies:
+      '@noble/curves': 2.4.0
+      '@solana-program/record': 0.4.1(@solana/kit@8.3.0(typescript@7.0.2))
+      '@solana-program/system': 0.14.1(@solana/kit@8.3.0(typescript@7.0.2))
+      '@solana-program/zk-elgamal-proof': 0.4.0(@solana/kit@8.3.0(typescript@7.0.2))
+      '@solana/kit': 8.3.0(typescript@7.0.2)
+      '@solana/sysvars': 8.3.0(typescript@7.0.2)
+    optionalDependencies:
+      '@solana/zk-sdk': 0.5.2
 
   '@solana-program/token-2022@0.7.0(@solana/kit@5.5.1(typescript@7.0.2))(@solana/sysvars@8.3.0(typescript@7.0.2))':
     dependencies:
@@ -2655,6 +2748,11 @@ snapshots:
   '@solana-program/token@0.9.0(@solana/kit@5.5.1(typescript@7.0.2))':
     dependencies:
       '@solana/kit': 5.5.1(typescript@7.0.2)
+
+  '@solana-program/zk-elgamal-proof@0.4.0(@solana/kit@8.3.0(typescript@7.0.2))':
+    dependencies:
+      '@solana-program/system': 0.14.1(@solana/kit@8.3.0(typescript@7.0.2))
+      '@solana/kit': 8.3.0(typescript@7.0.2)
 
   '@solana/accounts@5.5.1(typescript@7.0.2)':
     dependencies:
@@ -3632,6 +3730,9 @@ snapshots:
     dependencies:
       '@wallet-standard/base': 1.1.1
       '@wallet-standard/features': 1.1.1
+
+  '@solana/zk-sdk@0.5.2':
+    optional: true
 
   '@swc/helpers@0.5.23':
     dependencies:

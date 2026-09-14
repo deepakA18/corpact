@@ -1,4 +1,4 @@
-import { claimJob, collectSnapshot, completeJob, enqueueJob, evaluateChecks, failJob, migrate } from '@corpact/db';
+import { claimJob, collectSnapshot, completeJob, enqueueJob, evaluateChecks, failJob, migrate, verifyIntegrity } from '@corpact/db';
 import { createContext, type Context } from './context';
 import { backfillMintWrites, classifyTransitions, importIssuerActions, rebuildTimeline } from './multiplier';
 import { rebuildPositions } from './positions';
@@ -32,14 +32,19 @@ function heartbeat(ctx: Context, startedAt: Date, lastJobKind: string | null) {
   const stats = ctx.chain.stats();
   return ctx.db.query(
     `INSERT INTO worker_heartbeats (worker_id, started_at, last_seen_at, last_job_kind, last_job_at, mint_poll_seconds, rpc_host,
-                                    rpc_requests, rpc_retries, rpc_failures)
-     VALUES ($1, $2, now(), $3, CASE WHEN $3::text IS NULL THEN NULL ELSE now() END, $4, $5, $6, $7, $8)
+                                    rpc_requests, rpc_retries, rpc_failures, reconciliation_rpc_host)
+     VALUES ($1, $2, now(), $3, CASE WHEN $3::text IS NULL THEN NULL ELSE now() END, $4, $5, $6, $7, $8, $9)
      ON CONFLICT (worker_id) DO UPDATE SET
        last_seen_at = now(),
        last_job_kind = COALESCE(EXCLUDED.last_job_kind, worker_heartbeats.last_job_kind),
        last_job_at = COALESCE(EXCLUDED.last_job_at, worker_heartbeats.last_job_at),
-       rpc_requests = EXCLUDED.rpc_requests, rpc_retries = EXCLUDED.rpc_retries, rpc_failures = EXCLUDED.rpc_failures`,
-    [ctx.config.workerId, startedAt, lastJobKind, ctx.config.mintPollSeconds, new URL(ctx.config.rpcUrl).host, stats.requests, stats.retries, stats.failures],
+       rpc_requests = EXCLUDED.rpc_requests, rpc_retries = EXCLUDED.rpc_retries, rpc_failures = EXCLUDED.rpc_failures,
+       reconciliation_rpc_host = EXCLUDED.reconciliation_rpc_host`,
+    [
+      ctx.config.workerId, startedAt, lastJobKind, ctx.config.mintPollSeconds, new URL(ctx.config.rpcUrl).host,
+      stats.requests, stats.retries, stats.failures,
+      ctx.config.reconciliationRpcUrl === null ? null : new URL(ctx.config.reconciliationRpcUrl).host,
+    ],
   );
 }
 
@@ -90,7 +95,7 @@ async function runLoop(ctx: Context) {
   }
 }
 
-const COMMANDS = ['migrate', 'sync-registry', 'import-issuer-actions', 'sync-wallet', 'check', 'run'];
+const COMMANDS = ['migrate', 'sync-registry', 'import-issuer-actions', 'sync-wallet', 'check', 'verify-integrity', 'run'];
 
 const USAGE = `usage: worker <command>
   migrate                 apply database migrations
@@ -98,6 +103,7 @@ const USAGE = `usage: worker <command>
   import-issuer-actions   one-shot import of corporate actions from ISSUER_SOURCE (default: fixtures)
   sync-wallet <owner>     historical sync and position rebuild for one wallet, in the foreground
   check                   evaluate monitoring checks; exits 1 if any is critical
+  verify-integrity        check evidence hashes, append-only guards and journal invariants (read-only; exits 1 on failure)
   run                     persistent worker: job queue + chain-only mint polling`;
 
 async function main() {
@@ -130,6 +136,13 @@ async function main() {
         const result = evaluateChecks(await collectSnapshot(ctx.db));
         console.log(JSON.stringify(result, null, 2));
         if (result.status === 'critical') process.exitCode = 1;
+        break;
+      }
+      case 'verify-integrity': {
+        // Deliberately no migrate first: a restored copy is checked exactly as it is.
+        const results = await verifyIntegrity(ctx.db);
+        for (const r of results) console.log(`${r.ok ? 'PASS' : 'FAIL'}  ${r.name}: ${r.detail}`);
+        if (results.some((r) => !r.ok)) process.exitCode = 1;
         break;
       }
       case 'run':

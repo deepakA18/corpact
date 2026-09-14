@@ -10,6 +10,7 @@ export {
   type TrailingDistribution,
   type Window,
   type WindowMetrics,
+  type YieldExclusion,
 } from './metrics';
 export {
   LedgerInvariantError,

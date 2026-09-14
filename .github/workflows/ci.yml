@@ -57,3 +57,5 @@ jobs:
         run: |
           pnpm --filter @corpact/worker cli migrate
           pnpm --filter @corpact/worker cli migrate
+      - name: Integrity checks pass on the migrated schema
+        run: pnpm --filter @corpact/worker cli verify-integrity
