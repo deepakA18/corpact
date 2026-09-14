@@ -1,9 +1,6 @@
-import { createTenant, dbAccessStore } from '@corpact/api/access';
-import { buildApp } from '@corpact/api/app';
-import { createApiKey, dbKeyStore } from '@corpact/api/keys';
 import type { IncomeEntry, IncomeResponse, JournalResponse, OpsStatusResponse, Portfolio, YieldResponse } from '@corpact/client';
-import { createDb } from '@corpact/db';
 import { Rational } from '@corpact/domain';
+import type { DemoApi } from './api';
 import type { ExpectedEntry, Scenario, TrapEvent } from './scenario';
 
 export interface Check {
@@ -19,8 +16,8 @@ export interface LedgerSnapshot {
   portfolio: string;
 }
 
-const check = (name: string, pass: boolean, detail: string, trap: string | null = null): Check => ({ name, trap, pass, detail });
-const includes = (texts: readonly string[], needle: string) => texts.some((t) => t.toLowerCase().includes(needle.toLowerCase()));
+export const check = (name: string, pass: boolean, detail: string, trap: string | null = null): Check => ({ name, trap, pass, detail });
+export const includes = (texts: readonly string[], needle: string) => texts.some((t) => t.toLowerCase().includes(needle.toLowerCase()));
 
 function describeEntry(e: IncomeEntry | undefined): string {
   if (!e) return 'no entry';
@@ -38,30 +35,17 @@ function matches(e: IncomeEntry | undefined, expected: ExpectedEntry): boolean {
   return e.usd === null;
 }
 
-/**
- * Reads the demo ledger through the real API (Fastify app, database key store, tenant
- * registration), i.e. what an integrating customer would see.
- */
-export async function createChecker(databaseUrl: string, scenario: Scenario) {
-  const db = createDb(databaseUrl);
-  const app = await buildApp({
-    db,
-    keys: dbKeyStore(db),
-    access: dbAccessStore(db),
-    rateLimitPerMinute: 100_000,
-    authFailuresPerMinute: 100,
-    logger: false,
-  });
-  const tenant = await createTenant(db, { slug: 'demo', name: 'Synthetic demo' });
-  const { key } = await createApiKey(db, { name: 'demo-checks', tenant: 'demo', scopes: ['assets:read', 'ledger:read'] });
-  const { key: opsKey } = await createApiKey(db, { name: 'demo-ops', tenant: 'demo', scopes: ['ops:read'] });
-  await dbAccessStore(db).register(tenant.id, scenario.holder);
+/** The trap regression suite's checks, read through the demo API for the scenario's holder. */
+export async function createChecker(api: DemoApi, scenario: Scenario) {
+  await api.register(scenario.holder);
   const owner = encodeURIComponent(scenario.holder);
+  const { db } = api;
 
-  const opsCheck = async (name: string) => {
-    const res = await app.inject({ url: '/v1/ops/status', headers: { authorization: `Bearer ${opsKey}` } });
-    return (res.json() as OpsStatusResponse).checks.find((c) => c.name === name);
-  };
+  const income = async () => (await api.get<IncomeResponse>(`/v1/income?owner=${owner}&limit=200`)).entries;
+  const journal = async () => (await api.get<JournalResponse>(`/v1/journal?owner=${owner}&limit=200`)).entries;
+  const portfolio = () => api.get<Portfolio>(`/v1/portfolio?owner=${owner}`);
+  const position = (p: Portfolio, symbol: string) => p.positions.find((x) => x.symbol === symbol);
+  const opsCheck = async (name: string) => (await api.get<OpsStatusResponse>('/v1/ops/status', 'ops')).checks.find((c) => c.name === name);
   const latestBalanceCheck = async () =>
     (
       await db.query(
@@ -69,18 +53,6 @@ export async function createChecker(databaseUrl: string, scenario: Scenario) {
         [scenario.holder],
       )
     ).rows[0] as { outcome: string; details: Array<{ account: string; primaryRaw: string | null; secondaryRaw: string | null }>; secondary_host: string } | undefined;
-
-  async function request(url: string) {
-    const res = await app.inject({ url, headers: { authorization: `Bearer ${key}` } });
-    if (res.statusCode !== 200) throw new Error(`GET ${url} answered ${res.statusCode}: ${res.body.slice(0, 300)}`);
-    return res;
-  }
-  const get = async <T>(url: string): Promise<T> => (await request(url)).json() as T;
-
-  const income = async () => (await get<IncomeResponse>(`/v1/income?owner=${owner}&limit=200`)).entries;
-  const journal = async () => (await get<JournalResponse>(`/v1/journal?owner=${owner}&limit=200`)).entries;
-  const portfolio = () => get<Portfolio>(`/v1/portfolio?owner=${owner}`);
-  const position = (p: Portfolio, symbol: string) => p.positions.find((x) => x.symbol === symbol);
 
   /** Income entries per symbol, oldest first, lined up against the scenario's expectations. */
   function eventChecks(entries: readonly IncomeEntry[], pick: (e: TrapEvent) => ExpectedEntry | null): Check[] {
@@ -128,13 +100,15 @@ export async function createChecker(databaseUrl: string, scenario: Scenario) {
 
   let firstSyncJournal: JournalResponse['entries'] = [];
   let firstSyncD1Usd: string | null = null;
-  const d1Label = scenario.events.find((e) => e.label.startsWith('D1'))!.scheduledUnix;
+  const d1Activation = scenario.events.find((e) => e.label.startsWith('D1'))!.scheduledUnix;
 
   return {
+    snapshot,
+
     async firstSync(): Promise<Check[]> {
       const entries = await income();
       const p = await portfolio();
-      const yields = await get<YieldResponse>(`/v1/yield?owner=${owner}`);
+      const yields = await api.get<YieldResponse>(`/v1/yield?owner=${owner}`);
       const checks = eventChecks(entries, (e) => e.firstSync);
 
       const superseded = await chainVersion(scenario.supersededScheduleUnix);
@@ -172,7 +146,7 @@ export async function createChecker(databaseUrl: string, scenario: Scenario) {
           'DDIVx income is exactly the valued dividends: the split, spin-off and unmatched change add nothing',
           ddiv !== undefined && Rational.fromDecimal(ddiv.dividendIncomeUsd).eq(sum),
           `position income ${ddiv?.dividendIncomeUsd} vs ${valued.length} valued dividends summing to ${sum.toTerminatingDecimal()}`,
-          '"Any increase is income" is wrong: 16 of the recorded increases were not cash dividends',
+          '"Any increase is income" is wrong: 24 of the recorded increases were not cash dividends',
         ),
       );
       checks.push(
@@ -242,8 +216,8 @@ export async function createChecker(databaseUrl: string, scenario: Scenario) {
         check(
           'DDIVx D1 shows the corrected value as revision 2, with the correction time',
           d1 !== undefined && d1.revision === 2 && d1.correctedAt !== null && d1.usd !== null && firstSyncD1Usd !== null && !Rational.fromDecimal(d1.usd).eq(Rational.fromDecimal(firstSyncD1Usd)),
-          `${describeEntry(d1)}; was USD ${firstSyncD1Usd} (activation ${new Date(Number(d1Label) * 1000).toISOString()})`,
-          'Issuer corrections (STRCx c5721924 had four revisions)',
+          `${describeEntry(d1)}; was USD ${firstSyncD1Usd} (activation ${new Date(Number(d1Activation) * 1000).toISOString()})`,
+          'Issuer corrections (STRCx c5721924 had several revisions)',
         ),
       );
 
@@ -261,9 +235,7 @@ export async function createChecker(databaseUrl: string, scenario: Scenario) {
         const now = rows.find((j) => j.id === old.id);
         return now !== undefined && now.entryType === old.entryType && now.usd === old.usd && now.issuerRevision === old.issuerRevision;
       });
-      checks.push(
-        check('Every earlier journal row is still present and unchanged', stillThere, `${firstSyncJournal.length} earlier rows, ${rows.length} now`, 'Append-only journal'),
-      );
+      checks.push(check('Every earlier journal row is still present and unchanged', stillThere, `${firstSyncJournal.length} earlier rows, ${rows.length} now`, 'Append-only journal'));
 
       const lateEventId = scenario.laterActions.find((a) => a.version === 1)?.eventId;
       const lateRecognition = rows.find((j) => j.entryType === 'recognition' && j.kind === 'dividend' && j.issuerEventId === lateEventId);
@@ -278,20 +250,28 @@ export async function createChecker(databaseUrl: string, scenario: Scenario) {
 
       const ddiv = position(p, 'DDIVx');
       checks.push(
-        check(
-          'Conversion is paused for review after the correction',
-          ddiv !== undefined && includes(ddiv.conversionDisabledReasons, 'issuer corrected'),
-          ddiv?.conversionDisabledReasons.join('; ') ?? 'no position',
-        ),
+        check('Conversion is paused for review after the correction', ddiv !== undefined && includes(ddiv.conversionDisabledReasons, 'issuer corrected'), ddiv?.conversionDisabledReasons.join('; ') ?? 'no position'),
       );
 
-      const csv = (await request(`/v1/export?owner=${owner}&dataset=journal`)).body;
+      const csv = (await api.request(`/v1/export?owner=${owner}&dataset=journal`)).body;
       const lines = csv.split('\r\n').filter(Boolean);
-      checks.push(check('The journal CSV carries every journal row', lines.length === rows.length + 1, `${lines.length - 1} CSV rows, ${rows.length} journal rows`));
+      checks.push(
+        check(
+          'The journal CSV carries every journal row, each labelled synthetic',
+          lines.length === rows.length + 1 && lines.slice(1).every((l) => l.startsWith('synthetic,')),
+          `${lines.length - 1} CSV rows, ${rows.length} journal rows`,
+        ),
+      );
       return checks;
     },
 
-    snapshot,
+    determinism(before: LedgerSnapshot, after: LedgerSnapshot): Check[] {
+      return [
+        check('Re-running the sync appends no journal rows', before.journalRows === after.journalRows, `${before.journalRows} → ${after.journalRows}`),
+        check('Re-running the sync reproduces every income entry exactly', before.income === after.income, before.income === after.income ? 'identical' : 'income entries differ'),
+        check('Re-running the sync reproduces every position exactly', before.portfolio === after.portfolio, before.portfolio === after.portfolio ? 'identical' : 'positions differ'),
+      ];
+    },
 
     async providerDisagreement(account: string, before: LedgerSnapshot): Promise<Check[]> {
       const p = await portfolio();
@@ -334,19 +314,6 @@ export async function createChecker(databaseUrl: string, scenario: Scenario) {
         ),
         check('Monitoring no longer reports a disagreement', agreement !== undefined && agreement.status !== 'critical', `${agreement?.status}: ${agreement?.message}`),
       ];
-    },
-
-    determinism(before: LedgerSnapshot, after: LedgerSnapshot): Check[] {
-      return [
-        check('Re-running the sync appends no journal rows', before.journalRows === after.journalRows, `${before.journalRows} → ${after.journalRows}`),
-        check('Re-running the sync reproduces every income entry exactly', before.income === after.income, before.income === after.income ? 'identical' : 'income entries differ'),
-        check('Re-running the sync reproduces every position exactly', before.portfolio === after.portfolio, before.portfolio === after.portfolio ? 'identical' : 'positions differ'),
-      ];
-    },
-
-    async close() {
-      await app.close();
-      await db.end();
     },
   };
 }

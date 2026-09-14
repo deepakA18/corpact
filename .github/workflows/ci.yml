@@ -21,7 +21,9 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - name: Generate Next.js route types
-        run: pnpm --filter @corpact/web exec next typegen
+        run: |
+          pnpm --filter @corpact/web exec next typegen
+          pnpm --filter @corpact/site exec next typegen
       - run: pnpm typecheck
       - run: pnpm test
       - name: Published OpenAPI spec matches the API

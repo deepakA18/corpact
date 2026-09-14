@@ -58,7 +58,15 @@ pnpm dev --port 3600
 
 Checks: `pnpm test` and `pnpm typecheck` from the root, plus `pnpm --filter @corpact/api openapi:check`. CI runs all three, and applies the migrations twice against a fresh Postgres. To sync a wallet without the web app, run `pnpm cli sync-wallet <address>` in `apps/worker`.
 
-**Synthetic demo.** `pnpm --filter @corpact/demo demo` replays every Phase 0 trap on a local test validator with synthetic assets and issuer records. It covers dividends, a split, a spin-off, missing and implausible issuer cash, superseded and late writes, late ingestion, an issuer correction, partial history, and deterministic replay. The run passes only if all checks pass, read through the real API. See [docs/demo.md](docs/demo.md).
+**Website and docs.** `apps/site` is the homepage and developer documentation: guides, concepts, operations, and an API reference generated from the OpenAPI document. Run it with `pnpm --filter @corpact/site dev` at http://localhost:3700. Pages are Markdown files in `apps/site/content/docs`.
+
+**Demo.** `pnpm --filter @corpact/demo demo` needs Surfpool 1.0 and takes about 4½ minutes. It runs three parts:
+
+1. A narrated walkthrough on a local network: position, a dividend with no transfer, the entry, a split that isn't income, and an issuer correction.
+2. The recorded HONx spin-off and STRCx implausible-cash cases, beside the naive reading.
+3. The full synthetic trap regression suite.
+
+Synthetic data is labelled in every API response, export and dashboard view. See [docs/demo.md](docs/demo.md). The one-page leave-behind is [docs/findings/what-this-catches.md](docs/findings/what-this-catches.md), regenerated with `pnpm --filter @corpact/demo catches`.
 
 ## API access
 

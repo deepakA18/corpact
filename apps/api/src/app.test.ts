@@ -138,6 +138,8 @@ async function fakeQuery(sql: string) {
   const rows =
     text === 'BEGIN' || text === 'COMMIT' || text === 'ROLLBACK'
       ? []
+      : sql.includes('FROM dataset_label')
+        ? []
       : sql.includes('INSERT INTO wallet_syncs')
         ? [{ status: 'queued' }]
         : sql.includes('INSERT INTO jobs_outbox')
@@ -210,7 +212,7 @@ const app = (overrides: Partial<AppOptions> = {}) =>
 describe('API authentication', () => {
   it('serves health and the OpenAPI document without a key', async () => {
     const api = await app();
-    expect((await api.inject({ url: '/v1/health' })).json()).toEqual({ ok: true });
+    expect((await api.inject({ url: '/v1/health' })).json()).toEqual({ ok: true, dataset: { kind: 'mainnet', description: null } });
     const spec = (await api.inject({ url: '/v1/openapi.json' })).json();
     expect(spec.openapi).toBe('3.1.0');
     expect(spec.components.securitySchemes.apiKey).toMatchObject({ type: 'http', scheme: 'bearer' });
@@ -388,9 +390,9 @@ describe('API yield and export', () => {
     expect(res.headers['content-type']).toMatch(/^text\/csv/);
     expect(res.headers['content-disposition']).toMatch(/^attachment; filename="corpact-journal-6kn8Vj9Y-\d{4}-\d{2}-\d{2}\.csv"$/);
     const [header, row, trailer] = res.body.split('\r\n');
-    expect(header!.split(',').slice(0, 3)).toEqual(['recorded_at', 'entry_type', 'sign']);
+    expect(header!.split(',').slice(0, 4)).toEqual(['dataset', 'recorded_at', 'entry_type', 'sign']);
     expect(header).toContain('position_reconciled');
-    expect(row).toMatch(/^2026-09-13T20:00:00\.000Z,reversal,-1,6kn8Vj9Y/);
+    expect(row).toMatch(/^mainnet,2026-09-13T20:00:00\.000Z,reversal,-1,6kn8Vj9Y/);
     // Exact values for reconciliation, then spreadsheet-friendly ones.
     expect(row).toContain(',0.09059763073,0.09059763,,7.4851762504,7.49,issuer_net_cash,');
     expect(row).toContain('issuer_correction');
@@ -402,10 +404,35 @@ describe('API yield and export', () => {
     const income = await api.inject({ url: `/v1/export?owner=${OWNER}&dataset=income`, headers: readOnly });
     expect(income.statusCode).toBe(200);
     const [header, row] = income.body.split('\r\n');
-    expect(header).toMatch(/^effective_at,symbol,mint,kind,quantity,quantity_display,split_factor,usd,usd_rounded,/);
+    expect(header).toMatch(/^dataset,effective_at,symbol,mint,kind,quantity,quantity_display,split_factor,usd,usd_rounded,/);
     expect(row).toContain(',KOx,');
     expect(row).toContain(',0.09059763073,0.09059763,,7.4851762504,7.49,');
     expect((await api.inject({ url: `/v1/export?owner=${OWNER}&dataset=prices`, headers: readOnly })).statusCode).toBe(400);
+  });
+});
+
+describe('synthetic data labelling', () => {
+  const labelledQuery = async (sql: string) =>
+    sql.includes('FROM dataset_label') ? { rows: [{ description: 'SYNTHETIC demo run' }], rowCount: 1 } : fakeQuery(sql);
+  const labelledDb = { query: labelledQuery, connect: async () => ({ query: labelledQuery, release: () => {} }) } as unknown as Db;
+
+  it('stamps a synthetic database on every data response, header and export', async () => {
+    const api = await app({ db: labelledDb });
+    const portfolio = await api.inject({ url: `/v1/portfolio?owner=${OWNER}`, headers: full });
+    expect(portfolio.headers['x-corpact-dataset']).toBe('synthetic');
+    expect(portfolio.json().dataset).toEqual({ kind: 'synthetic', description: 'SYNTHETIC demo run' });
+    for (const url of [`/v1/income?owner=${OWNER}`, `/v1/journal?owner=${OWNER}`, `/v1/yield?owner=${OWNER}`, '/v1/health']) {
+      expect((await api.inject({ url, headers: full })).json().dataset.kind).toBe('synthetic');
+    }
+    const csv = await api.inject({ url: `/v1/export?owner=${OWNER}`, headers: full });
+    expect(csv.headers['content-disposition']).toMatch(/filename="corpact-SYNTHETIC-journal-/);
+    expect(csv.body.split('\r\n').filter(Boolean).slice(1).every((line) => line.startsWith('synthetic,'))).toBe(true);
+  });
+
+  it('labels an unlabelled database as mainnet', async () => {
+    const res = await (await app()).inject({ url: `/v1/portfolio?owner=${OWNER}`, headers: full });
+    expect(res.headers['x-corpact-dataset']).toBe('mainnet');
+    expect(res.json().dataset.kind).toBe('mainnet');
   });
 });
 

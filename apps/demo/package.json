@@ -5,13 +5,16 @@
   "type": "module",
   "scripts": {
     "typecheck": "tsc -p .",
-    "demo": "tsx src/main.ts"
+    "demo": "tsx src/main.ts",
+    "catches": "tsx src/catches.ts"
   },
   "dependencies": {
+    "@corpact/accounting": "workspace:*",
     "@corpact/api": "workspace:*",
     "@corpact/client": "workspace:*",
     "@corpact/db": "workspace:*",
     "@corpact/domain": "workspace:*",
+    "@corpact/issuers": "workspace:*",
     "@solana-program/system": "0.14.1",
     "@solana-program/token-2022": "0.17.0",
     "@solana/kit": "8.3.0",

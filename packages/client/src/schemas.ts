@@ -33,11 +33,22 @@ export const errorResponse = {
   },
 } as const;
 
+/** Stamped on every data response: synthetic demo data must never pass for real history. */
+export const dataset = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['kind', 'description'],
+  properties: {
+    kind: { type: 'string', enum: ['mainnet', 'synthetic'], description: 'mainnet: real chain history. synthetic: generated demo data on a local network' },
+    description: { type: ['string', 'null'] },
+  },
+} as const;
+
 export const healthResponse = {
   type: 'object',
   additionalProperties: false,
-  required: ['ok'],
-  properties: { ok: { type: 'boolean', const: true } },
+  required: ['ok', 'dataset'],
+  properties: { ok: { type: 'boolean', const: true }, dataset },
 } as const;
 
 export const asset = {
@@ -180,9 +191,10 @@ export const position = {
 export const portfolioResponse = {
   type: 'object',
   additionalProperties: false,
-  required: ['owner', 'asOfSlot', 'asOfTime', 'dataStatus', 'valuationStatus', 'coverage', 'totals', 'positions'],
+  required: ['owner', 'dataset', 'asOfSlot', 'asOfTime', 'dataStatus', 'valuationStatus', 'coverage', 'totals', 'positions'],
   properties: {
     owner: str,
+    dataset,
     asOfSlot: nullableDecimal,
     asOfTime: nullableStr,
     dataStatus: { anyOf: [syncStatus, { type: 'null' }] },
@@ -277,9 +289,10 @@ export const incomeEntry = {
 export const incomeResponse = {
   type: 'object',
   additionalProperties: false,
-  required: ['owner', 'entries', 'nextOffset'],
+  required: ['owner', 'dataset', 'entries', 'nextOffset'],
   properties: {
     owner: str,
+    dataset,
     entries: { type: 'array', items: incomeEntry },
     nextOffset: { type: ['integer', 'null'] },
   },
@@ -378,9 +391,10 @@ export const incomeDetail = {
 export const journalResponse = {
   type: 'object',
   additionalProperties: false,
-  required: ['owner', 'entries', 'nextOffset'],
+  required: ['owner', 'dataset', 'entries', 'nextOffset'],
   properties: {
     owner: str,
+    dataset,
     entries: {
       type: 'array',
       items: {
@@ -436,9 +450,10 @@ const yieldWindow = {
 export const yieldResponse = {
   type: 'object',
   additionalProperties: false,
-  required: ['owner', 'definitions', 'positions'],
+  required: ['owner', 'dataset', 'definitions', 'positions'],
   properties: {
     owner: str,
+    dataset,
     definitions: {
       type: 'object',
       additionalProperties: false,

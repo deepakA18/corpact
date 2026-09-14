@@ -41,6 +41,7 @@ body {
   font: 15px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 .shell { max-width: 1080px; margin: 0 auto; padding: 32px 20px 64px; }
+.synthetic-banner { position: sticky; top: 0; z-index: 20; padding: 10px 20px; text-align: center; background: #8a1c1c; color: #fff; letter-spacing: 0.01em; }
 h1 { font-size: 24px; margin: 0 0 4px; letter-spacing: -0.01em; }
 h2 { font-size: 16px; margin: 32px 0 12px; }
 .muted { color: var(--muted); }

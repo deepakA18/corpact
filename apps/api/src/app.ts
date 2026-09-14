@@ -4,7 +4,17 @@ import swagger from '@fastify/swagger';
 import Fastify, { type FastifyRequest, type FastifyServerOptions } from 'fastify';
 import { positionView, trailingDistributionPerShare, windowMetrics } from '@corpact/accounting';
 import { schemas } from '@corpact/client';
-import { collectSnapshot, enqueueJob, evaluateChecks, toPrometheus, withTransaction, type Db, type MonitoringSnapshot } from '@corpact/db';
+import {
+  collectSnapshot,
+  enqueueJob,
+  evaluateChecks,
+  readDataset,
+  toPrometheus,
+  withTransaction,
+  type Dataset,
+  type Db,
+  type MonitoringSnapshot,
+} from '@corpact/db';
 import { Rational } from '@corpact/domain';
 import { float64FromBits, isAddress } from '@corpact/solana';
 import type { AccessStore, Scope } from './access';
@@ -231,8 +241,17 @@ export async function buildApp(options: AppOptions) {
     }),
   });
 
+  // What kind of data this database holds, stamped on every response and export. Cached briefly; a label never changes.
+  let datasetCache: { value: Dataset; at: number } | null = null;
+  const dataset = async (): Promise<Dataset> => {
+    if (!datasetCache || Date.now() - datasetCache.at > 5_000) datasetCache = { value: await readDataset(db), at: Date.now() };
+    return datasetCache.value;
+  };
+
   app.addHook('onSend', async (_request, reply) => {
     reply.header('cache-control', 'no-store');
+    const current = await dataset().catch(() => null);
+    if (current) reply.header('x-corpact-dataset', current.kind);
   });
 
   app.setErrorHandler((error: unknown, request, reply) => {
@@ -282,7 +301,7 @@ export async function buildApp(options: AppOptions) {
     { schema: { tags: ['service'], summary: 'Service and database health', security: [], response: { 200: schemas.healthResponse } } },
     async () => {
       await db.query('SELECT 1');
-      return { ok: true };
+      return { ok: true, dataset: await dataset() };
     },
   );
 
@@ -451,6 +470,7 @@ export async function buildApp(options: AppOptions) {
       const endSlots = rows.map((p) => BigInt(p.coverage_end_slot));
       return {
         owner,
+        dataset: await dataset(),
         asOfSlot: endSlots.length ? endSlots.reduce((a, b) => (a < b ? a : b)).toString() : null,
         asOfTime: rows.length ? iso(rows.map((p) => p.coverage_end_unix).sort()[0]) : null,
         dataStatus: await syncStatus(owner),
@@ -520,7 +540,7 @@ export async function buildApp(options: AppOptions) {
         };
         return { ...entry, headline: describeEntry(entry), revision: r.interpretation_revision as number, correctedAt: r.last_corrected_at };
       });
-      return { owner, entries, nextOffset: rows.length > q.limit ? q.offset + q.limit : null };
+      return { owner, dataset: await dataset(), entries, nextOffset: rows.length > q.limit ? q.offset + q.limit : null };
     },
   );
 
@@ -725,7 +745,7 @@ export async function buildApp(options: AppOptions) {
           distributionYield: { value: null, reason: 'No price source is configured' },
         });
       }
-      return { owner, definitions: YIELD_DEFINITIONS, positions };
+      return { owner, dataset: await dataset(), definitions: YIELD_DEFINITIONS, positions };
     },
   );
 
@@ -801,7 +821,11 @@ export async function buildApp(options: AppOptions) {
           ]),
         );
       }
-      const filename = `corpact-${q.dataset}-${owner.slice(0, 8)}-${new Date().toISOString().slice(0, 10)}.csv`;
+      // A saved file must say what it is on its own: every row carries the dataset, and synthetic files say so in the name.
+      const label = await dataset();
+      const lines = csv.split('\r\n');
+      csv = lines.map((line, i) => (line === '' ? line : `${i === 0 ? 'dataset' : label.kind},${line}`)).join('\r\n');
+      const filename = `corpact-${label.kind === 'synthetic' ? 'SYNTHETIC-' : ''}${q.dataset}-${owner.slice(0, 8)}-${new Date().toISOString().slice(0, 10)}.csv`;
       return reply.type('text/csv; charset=utf-8').header('content-disposition', `attachment; filename="${filename}"`).send(csv);
     },
   );
@@ -860,6 +884,7 @@ export async function buildApp(options: AppOptions) {
       );
       return {
         owner,
+        dataset: await dataset(),
         entries: rows.slice(0, q.limit).map((r) => ({ ...journalEntryFromRow(r), mint: r.mint, symbol: r.symbol })),
         nextOffset: rows.length > q.limit ? q.offset + q.limit : null,
       };

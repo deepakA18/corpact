@@ -32,7 +32,8 @@
                   "type": "object",
                   "additionalProperties": false,
                   "required": [
-                    "ok"
+                    "ok",
+                    "dataset"
                   ],
                   "properties": {
                     "ok": {
@@ -40,6 +41,30 @@
                       "enum": [
                         true
                       ]
+                    },
+                    "dataset": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "description"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "enum": [
+                            "mainnet",
+                            "synthetic"
+                          ],
+                          "description": "mainnet: real chain history. synthetic: generated demo data on a local network"
+                        },
+                        "description": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      }
                     }
                   }
                 }
@@ -1007,6 +1032,7 @@
                   "additionalProperties": false,
                   "required": [
                     "owner",
+                    "dataset",
                     "asOfSlot",
                     "asOfTime",
                     "dataStatus",
@@ -1018,6 +1044,30 @@
                   "properties": {
                     "owner": {
                       "type": "string"
+                    },
+                    "dataset": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "description"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "enum": [
+                            "mainnet",
+                            "synthetic"
+                          ],
+                          "description": "mainnet: real chain history. synthetic: generated demo data on a local network"
+                        },
+                        "description": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      }
                     },
                     "asOfSlot": {
                       "type": [
@@ -1571,12 +1621,37 @@
                   "additionalProperties": false,
                   "required": [
                     "owner",
+                    "dataset",
                     "entries",
                     "nextOffset"
                   ],
                   "properties": {
                     "owner": {
                       "type": "string"
+                    },
+                    "dataset": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "description"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "enum": [
+                            "mainnet",
+                            "synthetic"
+                          ],
+                          "description": "mainnet: real chain history. synthetic: generated demo data on a local network"
+                        },
+                        "description": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      }
                     },
                     "entries": {
                       "type": "array",
@@ -2446,12 +2521,37 @@
                   "additionalProperties": false,
                   "required": [
                     "owner",
+                    "dataset",
                     "definitions",
                     "positions"
                   ],
                   "properties": {
                     "owner": {
                       "type": "string"
+                    },
+                    "dataset": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "description"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "enum": [
+                            "mainnet",
+                            "synthetic"
+                          ],
+                          "description": "mainnet: real chain history. synthetic: generated demo data on a local network"
+                        },
+                        "description": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      }
                     },
                     "definitions": {
                       "type": "object",
@@ -3493,12 +3593,37 @@
                   "additionalProperties": false,
                   "required": [
                     "owner",
+                    "dataset",
                     "entries",
                     "nextOffset"
                   ],
                   "properties": {
                     "owner": {
                       "type": "string"
+                    },
+                    "dataset": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "description"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "enum": [
+                            "mainnet",
+                            "synthetic"
+                          ],
+                          "description": "mainnet: real chain history. synthetic: generated demo data on a local network"
+                        },
+                        "description": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      }
                     },
                     "entries": {
                       "type": "array",

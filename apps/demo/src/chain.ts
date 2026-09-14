@@ -74,10 +74,14 @@ export async function createDemoChain(rpcUrl: string, wsUrl: string) {
 
   /** Cluster Clock time of a slot at the given commitment: the time the Token-2022 processor sees. */
   async function clock(commitment: Commitment = 'confirmed'): Promise<bigint> {
-    const slot = await rpc.getSlot({ commitment }).send();
-    const time = await rpc.getBlockTime(slot).send();
-    if (time === null) throw new Error(`Slot ${slot} has no block time`);
-    return BigInt(time);
+    // A just-produced slot can briefly lack a block time; retry for a few seconds before failing.
+    for (let attempt = 0; attempt < 20; attempt++) {
+      const slot = await rpc.getSlot({ commitment }).send();
+      const time = await rpc.getBlockTime(slot).send();
+      if (time !== null) return BigInt(time);
+      await new Promise((resolve) => setTimeout(resolve, 250));
+    }
+    throw new Error(`No block time at the ${commitment} commitment after 5 s`);
   }
 
   async function waitForClock(unix: bigint, commitment: Commitment = 'confirmed'): Promise<void> {
@@ -110,6 +114,11 @@ export async function createDemoChain(rpcUrl: string, wsUrl: string) {
     waitForClock,
     /** The associated Token-2022 account of `owner` for `mint`. */
     tokenAccount: ata,
+
+    /** Transactions that have touched an address — evidence that something did or did not write to it. */
+    async signatureCount(address: Address): Promise<number> {
+      return (await rpc.getSignaturesForAddress(address, { commitment: 'confirmed', limit: 1000 }).send()).length;
+    },
 
     /** Token-2022 mint with a ScaledUiAmount multiplier of 1 and the issuer as mint authority, created and paid for by `payer`. */
     async createScaledUiMint(multiplierAuthority: Address, decimals: number, payer: KeyPairSigner = issuer): Promise<Address> {

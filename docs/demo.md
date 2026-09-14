@@ -1,67 +1,105 @@
-# Synthetic demo: the Phase 0 traps, end to end
+# Corpact demo
 
-`apps/demo` runs the plan's demo script (PLAN §8) against a **local test validator** with **synthetic** assets. It walks through every trap Phase 0 found that the ledger can reproduce without a price source. Nothing is mocked: the worker, the classifier, the ledger reducer and the API all run unmodified. Every check reads its result through the public API, with a real tenant and key.
+One command runs the whole demo on a local Surfpool network. It walks through the plan's demo script, shows two real recorded cases beside the naive reading, and runs the full trap regression suite. The worker, classifier, ledger and API run unmodified, and every number shown is read back through the real API.
 
 ```bash
+brew install txtx/taps/surfpool           # Surfpool 1.0
 docker compose up -d                       # Postgres
-pnpm --filter @corpact/demo demo           # ~3 minutes; exits 1 if any check fails
+pnpm --filter @corpact/demo demo           # ~4½ minutes; exits 1 if any check fails
 ```
 
-It needs `solana-test-validator` on `PATH` (Agave 4.x) and nothing listening on `127.0.0.1:8899`.
+Output goes to `apps/demo/out/<run>/`:
+- `walkthrough.md`: the narrated run, ready to send;
+- `report.json`: every event and check.
 
-## What it does
+A verified run is kept at [demo-walkthrough-sample.md](demo-walkthrough-sample.md).
 
-1. **Starts a validator.** A fresh `solana-test-validator` runs, with its ledger under `apps/demo/out/<run>/`.
-2. **Seeds the scenario with kit-built transactions.** Every key is generated per run. There are two Token-2022 mints with the ScaledUiAmount extension:
-   - **DDIVx** is fully covered and walks through the traps.
-   - **DPARx** is held before its first observable multiplier write.
+**What to send.**
+- **Leave-behind:** [what-this-catches.md](findings/what-this-catches.md), generated from recorded issuer data by `pnpm --filter @corpact/demo catches`.
+- **Walkthrough:** a run's `walkthrough.md`.
 
-   Multiplier updates use the issuer's own pattern: re-assert the live value, then schedule the next one in the same transaction.
-3. **Writes synthetic issuer fixtures.** They go under `apps/demo/out/<run>/issuer-fixtures/`, in the recorded xStocks response shapes, so they pass the same Zod schemas.
-4. **Creates the demo database.** `corpact_demo` is dropped and recreated, and the worker runs `migrate`, `sync-registry`, `import-issuer-actions` and `sync-wallet`.
-5. **Checks the first sync.** The issuer then publishes a late record and a correction, the worker re-imports and re-syncs, and the checks run again.
-6. **Checks determinism.** The worker syncs once more with no new evidence, and the checks confirm nothing changed.
-7. **Checks the independent provider.** Throughout, a local JSON-RPC proxy on its own origin acts as the independent reconciliation provider (`RECONCILIATION_RPC_URL`). It misreports one DDIVx balance by one raw unit, the worker re-syncs, and the checks run. It is then honest again, the worker re-syncs, and the checks run once more.
-7. **Writes the report.** `apps/demo/out/<run>/report.json` records every event and check.
+## The three parts
 
-## Trap → check
+### Part 1: Walkthrough (synthetic)
+
+A holder of 100 DWLKx on a local network. Each step syncs the worker and reads the API before showing anything.
+
+| Step | What it shows | Pinned by |
+|---|---|---|
+| 1. Position | Raw base units (`10000000000`), displayed quantity (100), protected floor (100), complete and reconciled | Status, raw balance, quantity and floor |
+| 2. No-transfer dividend | A scheduled multiplier change activates by chain time: the raw balance and the token account's transaction count are unchanged, and the displayed quantity rises to 100.35 | Unchanged raw balance and transaction count; quantity 100.35 |
+| 3. Dividend entry | 0.35 extra shares; estimated value $35.00 from issuer net cash, not a market price; retained in stock, $0 USDC | Kind, $35, `issuer_net_cash`, "remains invested", floor 100, available 0.35 |
+| 4. Split | 2-for-1: quantity 200.70, floor 200, income still $35.00; the split entry has no USD | Split factor 2, USD null, income unchanged |
+| 5. Correction | The issuer revises withholding from 30% to 34%. The journal keeps #1 ($35), appends a reversal and a $33 replacement, and pauses conversion for review | Reversal and replacement exist; the original row is unchanged; revision 2 |
+
+### Part 2: Recorded cases beside the naive reading (recorded issuer data)
+
+These are the two cases a buyer cannot trivially rebuild, computed from `fixtures/xstocks/recorded-20260913` by the production classifier.
+
+- **HONx 2026-06-29 spin-off.** The multiplier goes from 0.5120 to 0.9991. The naive reading books 95.11% more shares as income, worth the issuer's $216.66 per share. Corpact books no income: a SpinOff has no income policy.
+- **STRCx 2025-11-30.** The issuer states $0.627 net cash per share, for 0.00000066 shares delivered. The naive reading books $0.627 per share. Corpact keeps the dividend with USD unknown, because the cash implies $953,728 per share against a $94.80 median.
+
+The same figures are pinned by `apps/demo/src/recorded.test.ts`, which runs in `pnpm test`.
+
+### Part 3: Trap regression suite (synthetic)
 
 | Phase 0 finding or release-checklist item | Scenario event | What must hold |
 |---|---|---|
 | Verified dividend with no account transfer | D1 | Dividend with USD from issuer net cash |
 | Historical transfers replay deterministically | Deposit before D2, withdrawal before S1 | Position `complete` and reconciled to the exact raw chain balance |
-| STRCx 2025-11-30: issuer cash implying ~$953k/share | D3 (net $350 on a ~$100 reinvestment) | Dividend kept, USD **unknown**, warning names the implied price |
-| 16 dividends with null `netCashflowUsd` | D4 | Dividend kept, USD **unknown**, counted as unvalued, never zero |
-| A split books no income | S1 (2-for-1, `ForwardSplit` 1→2) | `split` entry; position income equals the valued dividends exactly |
+| STRCx: issuer cash implying ~$953k/share | D3 (net $350 on a ~$100 reinvestment) | Dividend kept; USD **unknown**; the warning names the implied price |
+| 16 dividends with null `netCashflowUsd` | D4 | Dividend kept; USD **unknown**; counted as unvalued, never zero |
+| A split books no income | S1 (2-for-1) | `split` entry; position income equals the valued dividends exactly |
 | Multiplier-history `reason` is not evidence | SP (spin-off labelled "Dividend") | `unclassified_adjustment`: SpinOff has no income policy |
-| Multiplier changes with no corporate action | N1 | `unclassified_adjustment`: no published issuer action matches |
-| Pending value overwritten before activation | X (×1.01, replaced by D5's transaction) | Version `superseded`; never booked |
-| Issuer endpoints disagree in the last bit (HONx) | D5 (issuer decimal is the adjacent f64) | Still a verified dividend (4ε match) |
-| Late publication (VTIx, 70 s) | D6 (published 20 s after its schedule) | Applies at publication; no history gap |
-| Late ingestion | D7 (issuer record published after the first sync) | Unclassified first, then recognized as a dividend (revision 2) |
-| Issuer corrections (STRCx c5721924) | D1 v2 `Corrected`, withholding 30% → 34% | Revision 2 with new USD; reversal + replacement in the journal; earlier rows unchanged; conversion paused for review |
-| Partial history is visible and excluded from yield claims | DPARx (funded before the first multiplier write the backfill can see) | Position `partial` with the reason; every yield window excluded as `position_incomplete`; DDIVx still claims yield over its tracked period |
-| Corrections and late data replay deterministically | Final re-sync | No new journal rows; income entries and positions identical |
-| Documented activation time is not the real one | Every event (activations at arbitrary seconds) | Classification matches the on-chain timestamp exactly |
-| Primary RPC plus an independent reconciliation RPC | Honest proxy during the first three phases | Every balance cross-check agrees |
-| Pause on source disagreement; keep reads available | Proxy misreports one DDIVx balance | Disagreement recorded with both values; conversion paused for DDIVx only; ledger and reads unchanged; `/v1/ops/status` critical |
-| Recovery | Proxy honest again | Latest check agrees; the pause lifts; monitoring no longer critical |
+| Multiplier changes with no corporate action | N1 | `unclassified_adjustment`: no issuer action matches |
+| Pending value overwritten before activation | X (×1.01, replaced) | Version `superseded`; never booked |
+| Issuer endpoints disagree in the last bit (HONx) | D5 (issuer decimal is the adjacent f64) | Still a verified dividend |
+| Late publication (VTIx, 70 s) | D6 (published 20 s late) | Applies at publication; no history gap |
+| Late ingestion | D7 (issuer record published after the first sync) | Unclassified first, then a verified dividend |
+| Issuer corrections | D1 revision 2 | Reversal plus replacement; earlier rows unchanged; conversion paused |
+| Partial history is excluded from yield claims | DPARx (held before its first observable multiplier write) | `partial`; every yield window excluded as `position_incomplete` |
+| Deterministic replay | Final re-sync | No new journal rows; identical income and positions |
+| Independent reconciliation RPC | Honest proxy | Every balance cross-check agrees |
+| Pause on source disagreement | Proxy misreports one balance by one raw unit | Recorded; conversion paused for that position only; ledger untouched; monitoring critical |
+| Recovery | Proxy honest again | Pause lifts; monitoring no longer critical |
 
-**Not covered:** the CRWDx price-source disagreement. There is no price source yet, so there is nothing to disagree.
+Late data and corrections are also pinned below the chain layer, on recorded KOx data, by `apps/worker/src/late-and-corrections.test.ts`.
+
+**Not covered:** the CRWDx price-source disagreement. There is no price source yet, so Corpact publishes no market-price valuations.
+
+## Synthetic data can never pass for real data
+
+- **Network.** Surfpool runs `--offline`, with no mainnet datasource. It holds only built-in programs and the accounts this run creates, all from freshly generated keys.
+- **Database.** The demo uses its own database, `corpact_demo`, and permanently labels it synthetic in `dataset_label`. That table is append-only, so a demo database cannot be relabelled real.
+- **API.** Every data response (portfolio, income, journal, yield) and `/v1/health` carries `dataset: { kind: "synthetic", description }`, and every response sets `x-corpact-dataset: synthetic`. The real ledger reports `mainnet`.
+- **Exports.** Every CSV row starts with a `dataset` column, and synthetic files are named `corpact-SYNTHETIC-…`.
+- **Dashboard.** Pointed at a synthetic database, every page shows a **SYNTHETIC DEMO DATA** banner.
+- **Run output.** Asset names say SYNTHETIC; `walkthrough.md` labels Parts 1 and 3 synthetic and Part 2 recorded; `report.json` starts with `"dataset": "synthetic"`.
+
+## Surfpool compatibility
+
+Surfpool 1.0.0 has two RPC bugs the production worker correctly refuses to work around:
+- `getTransaction` and `getBlock` return `blockTime` divided by 1000, so the seconds are lost;
+- `getSignaturesForAddress` returns `blockTime: null`.
+
+The demo puts a narrow proxy in front of Surfpool for the worker only (`apps/demo/src/proxy.ts`). It restores those two fields from Surfpool's own `getBlockTime(slot)`, which is correct, and changes nothing else. The same demo also runs against `solana-test-validator` with no proxy (`DEMO_VALIDATOR=solana-test-validator`), which cross-checks that the layer changes no outcome.
+
+Surfpool also ignores SIGTERM. The demo stops it with SIGKILL after 5 s, so no node is left running.
 
 ## Safety
 
-- **Local chain only.** The chain helpers refuse any RPC or WebSocket host other than `127.0.0.1`/`localhost`, and the validator is started fresh; the demo will not attach to an existing one.
-- **Demo database only.** The only database created or dropped is `corpact_demo`, and only on a local Postgres.
-- **Clean worker environment.** Worker commands get an environment built from scratch: the demo database, the local RPC, `ISSUER_SOURCE=fixtures` and the generated fixture directory. The repo `.env`, and with it the mainnet RPC key, is never loaded.
-- **No live issuer access.** No step reads `api.xstocks.fi`. Synthetic records are labelled `SYNTHETIC` in `_source` and in asset names. `apps/demo/out/` is gitignored.
+- **Local only.** Chain helpers refuse any RPC or WebSocket host other than `127.0.0.1`/`localhost`. The network starts fresh, and the demo will not attach to an existing node.
+- **One database.** Only `corpact_demo` is created or dropped, and only on a local Postgres.
+- **Clean worker environment.** Worker commands get an environment built from scratch. The repo `.env`, and with it the mainnet RPC key, is never loaded.
+- **No live issuer access.** No step calls `api.xstocks.fi`. Part 2 reads recorded files. `apps/demo/out/` is gitignored.
 
 ## Looking at a run
 
-The `corpact_demo` database survives until the next run:
+`corpact_demo` survives until the next run.
 
-1. Start the API with `DATABASE_URL` pointed at it (`PORT=4700`).
-2. Create a tenant and key there (`pnpm tenants create demo …`, `pnpm keys create …`), then sync or register the holder address printed at the end of the run.
-3. Point a dashboard's `CORPACT_API_URL` at that API.
+1. Start an API on it: `DATABASE_URL=…/corpact_demo PORT=4700 pnpm start` in `apps/api`.
+2. Create a tenant and key.
+3. Register the holder addresses from `report.json`.
+4. Point a dashboard's `CORPACT_API_URL` at that API.
 
-Synthetic events never mix with the mainnet ledger, because they live in a different database.
+Every page then shows the synthetic banner.
