@@ -20,6 +20,8 @@ import { float64FromBits, isAddress } from '@corpact/solana';
 import type { AccessStore, Scope } from './access';
 import { toCsv } from './csv';
 import { hashApiKey, type ApiKeyIdentity, type ApiKeyStore } from './keys';
+import { HttpError, errors, exact, iso, isoOfDate, ratio, towardZero } from './shared';
+import { registerV2 } from './v2';
 
 export const API_VERSION = '0.1.0';
 export const DEFAULT_DATABASE_URL = 'postgres://parityfi:parityfi-dev@127.0.0.1:54329/parityfi';
@@ -49,9 +51,6 @@ const INCOME_CSV_COLUMNS = [
   'reasons', 'position_status', 'position_reconciled', 'coverage_start',
 ] as const;
 
-const ratio = (num: string, den: string) => Rational.of(BigInt(num), BigInt(den));
-const isoOfDate = (value: unknown) => (value == null ? null : new Date(value as string | Date).toISOString());
-
 declare module 'fastify' {
   interface FastifyRequest {
     apiKey?: ApiKeyIdentity;
@@ -76,46 +75,64 @@ export interface AppOptions {
   logger?: FastifyServerOptions['logger'];
 }
 
-class HttpError extends Error {
-  constructor(
-    readonly statusCode: number,
-    message: string,
-    /** Machine-readable reason, for clients that branch on it. */
-    readonly code?: string,
-  ) {
-    super(message);
-  }
+/**
+ * API v1 predates the action taxonomy. Kinds v1 never booked — spin-offs and rights (distributions), stock dividends
+ * and identity changes — are presented there as unclassified adjustments: no income and nothing convertible, which is
+ * true. The treatment is stated in reasons and headline, so v1's kinds and response shape are unchanged. API v2
+ * reports the kind itself (docs: API v1 → v2).
+ */
+type KindRow = Record<string, any>;
+export const v1Hidden = (r: KindRow) => r.kind === 'distribution' || r.kind === 'identity_change' || r.action_kind === 'stock_dividend';
+const v1Kind = (r: KindRow) => (v1Hidden(r) ? 'unclassified_adjustment' : r.kind);
+const v1Result = (classification: string, actionKind: string | null) =>
+  v1Hidden({ kind: classification, action_kind: actionKind }) ? 'unclassified' : classification;
+const v1SplitFactor = (r: Record<string, any>) => (r.split_factor_num == null || v1Hidden(r) ? null : exact(ratio(r.split_factor_num, r.split_factor_den)));
+
+function distributedPercent(r: Record<string, any>): string | null {
+  return r.distributed_fraction_num == null
+    ? null
+    : Rational.of(BigInt(r.distributed_fraction_num), BigInt(r.distributed_fraction_den)).mul(Rational.of(100n)).toFixed(2);
 }
 
-const iso = (unix: string | null | undefined) => (unix == null ? null : new Date(Number(unix) * 1000).toISOString());
+const factorText = (r: Record<string, any>) => (r.split_factor_num == null ? 'by an unknown factor' : `×${ratio(r.split_factor_num, r.split_factor_den).toFixed(6)}`);
 
-/** Exact when the value terminates (all ledger values here do); otherwise 18 places. */
-function exact(r: Rational): string {
-  try {
-    return r.toTerminatingDecimal();
-  } catch {
-    return r.toFixed(18);
+function v1Reasons(r: Record<string, any>): string[] {
+  if (!v1Hidden(r)) return (r.reasons as string[] | null) ?? [];
+  switch (r.action_kind) {
+    case 'rights_distribution':
+      return [`Rights distribution booked as a basis allocation, not income: ${distributedPercent(r) ?? 'an unknown share'}% of the position's value came from rights sold and reinvested`];
+    case 'stock_dividend':
+      return [`Stock dividend booked as a quantity adjustment, not income: units ${factorText(r)}, with cost basis spread across them`];
+    case 'identity_change':
+      return [`Identity change of the underlying booked as a quantity adjustment, not income: units ${factorText(r)}, all cost basis carried over`];
+    default:
+      return [`Spin-off booked as a basis allocation, not income: ${distributedPercent(r) ?? 'an unknown share'}% of the position's value was distributed and reinvested`];
   }
-}
-
-/** Round toward zero at `scale` places — never displays more convertible exposure than exists. */
-function towardZero(r: Rational, scale: number): string {
-  const scaled = r.mul(Rational.of(10n ** BigInt(scale)));
-  const truncated = scaled.isNegative() ? scaled.ceil() : scaled.floor();
-  const negative = truncated < 0n;
-  const digits = (negative ? -truncated : truncated).toString().padStart(scale + 1, '0');
-  const body = scale === 0 ? digits : `${digits.slice(0, -scale)}.${digits.slice(-scale)}`;
-  return negative ? `-${body}` : body;
 }
 
 function describeEntry(e: {
   kind: string;
+  action: string | null;
   quantityDisplay: string;
   symbol: string;
   usd: string | null;
   warnings: string[];
   reasons: string[];
+  distributedPercent?: string | null;
+  factor?: string;
 }): string {
+  if (e.kind === 'distribution' && e.action === 'rights_distribution') {
+    return `Your ${e.symbol} position gained ${e.quantityDisplay} units from rights sold and reinvested as principal (${e.distributedPercent ?? 'an unknown share'}% of the position). No income recorded.`;
+  }
+  if (e.kind === 'distribution') {
+    return `Your ${e.symbol} position gained ${e.quantityDisplay} units from a spin-off: the distributed value was reinvested as principal (${e.distributedPercent ?? 'an unknown share'}% of the position). No income recorded.`;
+  }
+  if (e.kind === 'identity_change') {
+    return `Your ${e.symbol} position moved to a new underlying listing: units ${e.factor ?? 'rescaled'} (${e.quantityDisplay}), all cost basis carried over. No income recorded.`;
+  }
+  if (e.kind === 'split' && e.action === 'stock_dividend') {
+    return `Your ${e.symbol} position gained ${e.quantityDisplay} units from a stock dividend (units ${e.factor ?? 'rescaled'}); cost basis is spread across them. No income recorded.`;
+  }
   if (e.kind === 'dividend') {
     const value =
       e.usd !== null
@@ -132,10 +149,10 @@ function journalEntryFromRow(r: Record<string, any>) {
     id: String(r.id),
     recordedAt: r.recorded_at,
     entryType: r.entry_type,
-    kind: r.kind,
+    kind: v1Kind(r),
     effectiveAt: iso(r.effective_unix),
     quantity: exact(Rational.of(BigInt(r.quantity_num), BigInt(r.quantity_den))),
-    splitFactor: r.split_factor_num === null ? null : exact(Rational.of(BigInt(r.split_factor_num), BigInt(r.split_factor_den))),
+    splitFactor: v1SplitFactor(r),
     usd: r.usd === null ? null : exact(Rational.fromDecimal(r.usd)),
     valuation: r.valuation,
     issuerEventId: r.issuer_event_id,
@@ -177,14 +194,6 @@ function createFailureLimiter(maxPerMinute: number) {
     },
   };
 }
-
-const errors = {
-  400: schemas.errorResponse,
-  401: schemas.errorResponse,
-  403: schemas.errorResponse,
-  404: schemas.errorResponse,
-  429: schemas.errorResponse,
-} as const;
 
 export async function buildApp(options: AppOptions) {
   const { db } = options;
@@ -411,7 +420,8 @@ export async function buildApp(options: AppOptions) {
         `SELECT p.*, a.symbol, a.name,
                 (SELECT count(*) FROM income_entries e WHERE e.position_epoch_id = p.id AND e.kind = 'dividend')::int AS dividend_count,
                 (SELECT count(*) FROM income_entries e WHERE e.position_epoch_id = p.id AND e.kind = 'dividend' AND e.usd IS NULL)::int AS unvalued_count,
-                (SELECT count(*) FROM income_entries e WHERE e.position_epoch_id = p.id AND e.kind = 'unclassified_adjustment')::int AS unclassified_count,
+                (SELECT count(*) FROM income_entries e WHERE e.position_epoch_id = p.id
+                    AND (e.kind IN ('unclassified_adjustment', 'distribution', 'identity_change') OR e.action_kind = 'stock_dividend'))::int AS unclassified_count,
                 (SELECT coalesce(sum(e.usd), 0)::text FROM income_entries e WHERE e.position_epoch_id = p.id AND e.usd IS NOT NULL) AS income_usd
            FROM position_epochs p JOIN assets a ON a.mint = p.mint
           WHERE p.owner = $1
@@ -515,7 +525,8 @@ export async function buildApp(options: AppOptions) {
       const owner = await authorizeWallet(request, q.owner);
       const { rows } = await db.query(
         `SELECT e.id, e.kind, e.effective_unix, e.quantity_num, e.quantity_den, e.split_factor_num, e.split_factor_den,
-                e.usd, e.valuation, e.warnings, e.reasons, p.mint, a.symbol, a.decimals, e.interpretation_revision, e.last_corrected_at
+                e.usd, e.valuation, e.warnings, e.reasons, p.mint, a.symbol, a.decimals, e.interpretation_revision, e.last_corrected_at,
+                e.distributed_fraction_num, e.distributed_fraction_den, e.action_kind
            FROM income_entries e JOIN position_epochs p ON p.id = e.position_epoch_id JOIN assets a ON a.mint = p.mint
           WHERE p.owner = $1
           ORDER BY e.effective_unix DESC, e.id DESC
@@ -528,17 +539,18 @@ export async function buildApp(options: AppOptions) {
           id: String(r.id),
           mint: r.mint,
           symbol: r.symbol,
-          kind: r.kind,
+          kind: v1Kind(r),
           effectiveAt: iso(r.effective_unix),
           quantity: exact(quantity),
           quantityDisplay: towardZero(quantity, Number(r.decimals)),
-          splitFactor: r.split_factor_num === null ? null : exact(Rational.of(BigInt(r.split_factor_num), BigInt(r.split_factor_den))),
+          splitFactor: v1SplitFactor(r),
           usd: r.usd === null ? null : exact(Rational.fromDecimal(r.usd)),
           valuation: r.valuation,
           warnings: r.warnings as string[],
-          reasons: r.reasons as string[],
+          reasons: v1Reasons(r),
         };
-        return { ...entry, headline: describeEntry(entry), revision: r.interpretation_revision as number, correctedAt: r.last_corrected_at };
+        const headline = describeEntry({ ...entry, kind: r.kind, action: r.action_kind ?? null, distributedPercent: distributedPercent(r), factor: factorText(r) });
+        return { ...entry, headline, revision: r.interpretation_revision as number, correctedAt: r.last_corrected_at };
       });
       return { owner, dataset: await dataset(), entries, nextOffset: rows.length > q.limit ? q.offset + q.limit : null };
     },
@@ -563,7 +575,7 @@ export async function buildApp(options: AppOptions) {
         `SELECT e.*, p.owner, p.mint, a.symbol, a.decimals,
                 v.update_signature, v.observed_slot, v.observed_instruction_path, v.scheduled_unix, v.effective_unix AS version_effective_unix,
                 v.immediate, v.old_multiplier_bits, v.new_multiplier_bits, v.old_multiplier_exact, v.new_multiplier_exact, v.status AS version_status,
-                m.classifier_version, m.classification, m.external_id, m.revision, m.net_cash_per_share,
+                m.classifier_version, m.classification, m.action_kind AS match_action_kind, m.external_id, m.revision, m.net_cash_per_share,
                 m.reasons AS match_reasons, m.warnings AS match_warnings,
                 ca.payload AS action_payload, ca.source AS action_source, ca.evidence_sha256
            FROM income_entries e
@@ -583,21 +595,21 @@ export async function buildApp(options: AppOptions) {
       );
       const quantity = Rational.of(BigInt(r.quantity_num), BigInt(r.quantity_den));
       const base = {
-        kind: r.kind,
+        kind: v1Kind(r),
         quantity: exact(quantity),
         quantityDisplay: towardZero(quantity, Number(r.decimals)),
         symbol: r.symbol,
         usd: r.usd === null ? null : exact(Rational.fromDecimal(r.usd)),
         valuation: r.valuation,
         warnings: r.warnings as string[],
-        reasons: r.reasons as string[],
+        reasons: v1Reasons(r),
       };
       return {
         id,
         owner,
         mint: r.mint,
         ...base,
-        headline: describeEntry(base),
+        headline: describeEntry({ ...base, kind: r.kind, action: r.action_kind ?? null, distributedPercent: distributedPercent(r), factor: factorText(r) }),
         effectiveAt: iso(r.effective_unix),
         revision: r.interpretation_revision as number,
         correctedAt: r.last_corrected_at,
@@ -618,7 +630,7 @@ export async function buildApp(options: AppOptions) {
           classification: r.classification
             ? {
                 classifierVersion: r.classifier_version,
-                result: r.classification,
+                result: v1Result(r.classification, r.match_action_kind ?? null),
                 issuerEventId: r.external_id,
                 issuerRevision: r.revision,
                 netCashPerShare: r.net_cash_per_share,
@@ -658,11 +670,16 @@ export async function buildApp(options: AppOptions) {
         const [samples, dividends, splits, actions, cursor] = await Promise.all([
           db.query('SELECT effective_unix, quantity_num, quantity_den FROM position_quantity_samples WHERE position_epoch_id = $1 ORDER BY seq', [p.id]),
           db.query(`SELECT effective_unix, quantity_num, quantity_den, usd FROM income_entries WHERE position_epoch_id = $1 AND kind = 'dividend'`, [p.id]),
-          db.query(`SELECT effective_unix, split_factor_num, split_factor_den FROM income_entries WHERE position_epoch_id = $1 AND kind = 'split'`, [p.id]),
+          // v1 yield predates stock dividends: they stay outside its split basis, as when they were unclassified.
+          db.query(
+            `SELECT effective_unix, split_factor_num, split_factor_den FROM income_entries WHERE position_epoch_id = $1 AND kind = 'split' AND action_kind IS DISTINCT FROM 'stock_dividend'`,
+            [p.id],
+          ),
           db.query(
             `SELECT v.effective_unix, m.classification, m.net_cash_per_share, m.split_factor_num, m.split_factor_den
                FROM multiplier_versions v JOIN action_matches m ON m.multiplier_version_id = v.id AND m.superseded_at IS NULL
-              WHERE v.mint = $1 AND v.status IN ('active', 'orphaned') AND m.classification IN ('dividend', 'split')`,
+              WHERE v.mint = $1 AND v.status IN ('active', 'orphaned') AND m.classification IN ('dividend', 'split')
+                AND m.action_kind IS DISTINCT FROM 'stock_dividend'`,
             [p.mint],
           ),
           db.query('SELECT state FROM sync_cursors WHERE stream = $1', [`multiplier-timeline:${p.mint}`]),
@@ -774,7 +791,7 @@ export async function buildApp(options: AppOptions) {
         return [
           exact(quantity),
           towardZero(quantity, Number(r.decimals)),
-          r.split_factor_num === null ? null : exact(ratio(r.split_factor_num, r.split_factor_den)),
+          v1SplitFactor(r),
           usd === null ? null : exact(usd),
           usd === null ? null : usd.toFixed(2),
         ];
@@ -794,7 +811,7 @@ export async function buildApp(options: AppOptions) {
         csv = toCsv(
           JOURNAL_CSV_COLUMNS,
           rows.map((r) => [
-            isoOfDate(r.recorded_at), r.entry_type, r.entry_type === 'reversal' ? '-1' : '1', r.owner, r.symbol, r.mint, iso(r.effective_unix), r.kind,
+            isoOfDate(r.recorded_at), r.entry_type, r.entry_type === 'reversal' ? '-1' : '1', r.owner, r.symbol, r.mint, iso(r.effective_unix), v1Kind(r),
             ...amounts(r),
             r.valuation, r.issuer_event_id, r.issuer_revision, String(r.id), r.reverses_id === null ? null : String(r.reverses_id),
             r.change_reason, r.change_detail, r.position_status ?? null, r.reconciled ?? null, iso(r.coverage_start_unix ?? null),
@@ -813,10 +830,10 @@ export async function buildApp(options: AppOptions) {
         csv = toCsv(
           INCOME_CSV_COLUMNS,
           rows.map((r) => [
-            iso(r.effective_unix), r.symbol, r.mint, r.kind,
+            iso(r.effective_unix), r.symbol, r.mint, v1Kind(r),
             ...amounts(r),
             r.valuation, r.interpretation_revision, isoOfDate(r.last_corrected_at),
-            ((r.warnings as string[] | null) ?? []).join(' | '), ((r.reasons as string[] | null) ?? []).join(' | '),
+            ((r.warnings as string[] | null) ?? []).join(' | '), v1Reasons(r).join(' | '),
             r.position_status, r.reconciled, iso(r.coverage_start_unix),
           ]),
         );
@@ -890,6 +907,8 @@ export async function buildApp(options: AppOptions) {
       };
     },
   );
+
+  await registerV2(app, { db, dataset, authorizeWallet });
 
   return app;
 }

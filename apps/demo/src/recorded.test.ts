@@ -11,24 +11,25 @@ beforeAll(async () => {
 });
 
 describe('recorded universe summary', () => {
-  it('matches the Phase 0 classification of all 654 changes', () => {
+  it('classifies all 654 changes from evidence', () => {
     const s = summarize(rows);
-    expect(s).toMatchObject({ transitions: 654, dividends: { total: 628 }, splits: { total: 9 }, unclassified: { total: 17 } });
-    expect(s.splits.byIssuerType).toEqual({ ForwardSplit: 8, ReverseSplit: 1 });
-    expect(s.unclassified.byReason).toEqual({
-      'SpinOff: no income policy': 6,
-      'StockMerger: no income policy': 1,
-      'StockDividend: no income policy': 1,
-      'Split ratio does not reconcile with the multipliers': 1,
-      'No issuer action published for the change': 8,
+    expect(s).toMatchObject({
+      transitions: 654,
+      dividends: { total: 630 },
+      splits: { total: 10 },
+      distributions: { total: 7 },
+      identityChanges: { total: 1 },
+      unclassified: { total: 6 },
     });
+    expect(s.splits.byIssuerType).toEqual({ ForwardSplit: 8, ReverseSplit: 1, StockDividend: 1 });
+    expect(s.unclassified.byReason).toEqual({ 'No issuer action published for the change': 6 });
   });
 
-  it('finds 24 multiplier increases that are not cash dividends: 16 with a non-dividend issuer action, 8 with none', () => {
+  it('finds 22 multiplier increases that are not cash dividends: 16 with a non-dividend issuer action, 6 with none', () => {
     const increases = summarize(rows).increasesNotCashDividends;
-    expect(increases).toHaveLength(24);
+    expect(increases).toHaveLength(22);
     expect(increases.filter((r) => r.action !== null)).toHaveLength(16);
-    expect(increases.filter((r) => r.action === null)).toHaveLength(8);
+    expect(increases.filter((r) => r.action === null)).toHaveLength(6);
   });
 
   it('flags the history labels issuer evidence contradicts, including GMEx and AZNx', () => {
@@ -38,11 +39,11 @@ describe('recorded universe summary', () => {
 });
 
 describe('side-by-side cases', () => {
-  it('HONx: the naive reading books +95% as income; Corpact books none, citing the SpinOff', () => {
+  it('HONx: the naive reading books +95% as income; Corpact books a basis allocation, citing the SpinOff', () => {
     const c = honxSpinOff(rows);
     expect(c.naive.reading).toMatch(/^Books 95\.11% more shares as dividend income, worth the issuer's \$216\.66 per share held$/);
-    expect(c.corpact.outcome).toBe('Unclassified adjustment — no income booked');
-    expect(c.corpact.reason).toMatch(/SpinOff .* has no income policy/);
+    expect(c.corpact.outcome).toBe('Spin-off — basis allocation, no income booked');
+    expect(c.corpact.reason).toMatch(/^Issuer SpinOff ca3da1bc; distributed share .* = 0\.48747/);
   });
 
   it('STRCx: the naive reading books $0.627/share; Corpact refuses a $953k implied price and leaves USD unknown', () => {

@@ -6,7 +6,9 @@
   "scripts": {
     "typecheck": "tsc -p .",
     "demo": "tsx src/main.ts",
-    "catches": "tsx src/catches.ts"
+    "catches": "tsx src/catches.ts",
+    "action-docs": "tsx src/action-docs.ts",
+    "lineage-check": "tsx src/lineage-check.ts"
   },
   "dependencies": {
     "@corpact/accounting": "workspace:*",

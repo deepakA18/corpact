@@ -1,4 +1,14 @@
-import { RECORDING, honxSpinOff, strcxImplausibleCash, type RecordedTransition, type SideBySide } from './recorded';
+import {
+  RECORDING,
+  aznxIdentityChange,
+  honxSpinOff,
+  kraqxRights,
+  linxWithholdingRefund,
+  sccoxChurn,
+  strcxImplausibleCash,
+  type RecordedTransition,
+  type SideBySide,
+} from './recorded';
 
 export const table = (head: readonly string[], rows: ReadonlyArray<readonly (string | number)[]>) =>
   [`| ${head.join(' | ')} |`, `|${head.map(() => '---').join('|')}|`, ...rows.map((r) => `| ${r.join(' | ')} |`)].join('\n');
@@ -19,23 +29,32 @@ export function sideBySideMarkdown(c: SideBySide): string {
   ].join('\n');
 }
 
-/** Part 2 of the demo: the two recorded cases a buyer cannot trivially rebuild. */
+/** The recorded cases shown in Part 2, in the order they are presented. */
+export const recordedCases = (rows: readonly RecordedTransition[]) => ({
+  honx: honxSpinOff(rows),
+  strcx: strcxImplausibleCash(rows),
+  kraqx: kraqxRights(rows),
+  sccox: sccoxChurn(rows),
+  linx: linxWithholdingRefund(rows),
+  aznx: aznxIdentityChange(rows),
+});
+
+/** Part 2 of the demo: real cases a buyer cannot trivially rebuild. */
 export function recordedCasesMarkdown(rows: readonly RecordedTransition[]): string {
-  const honx = honxSpinOff(rows);
-  const strcx = strcxImplausibleCash(rows);
+  const { honx, strcx, kraqx, sccox, linx, aznx } = recordedCases(rows);
+  const section = (c: SideBySide) => [`### ${c.title}`, '', sideBySideMarkdown(c), ''];
   return [
-    `## Part 2 — Two real cases the naive reading gets wrong (RECORDED issuer data)`,
+    `## Part 2 — Six real cases the naive reading gets wrong (RECORDED issuer data)`,
     '',
     `> **Recorded, not synthetic, and not live.** These are xStocks corporate-action and multiplier-history responses recorded on 2026-09-13 (\`${RECORDING}\`), replayed offline through the production classifier.`,
     '',
-    `### ${honx.title}`,
-    '',
-    sideBySideMarkdown(honx),
-    '',
-    `### ${strcx.title}`,
-    '',
-    sideBySideMarkdown(strcx),
-    '',
+    ...section(honx),
+    ...section(strcx),
     `The issuer's own numbers imply a reinvestment price of **$${Number(strcx.impliedPriceUsd).toLocaleString('en-US', { maximumFractionDigits: 2 })}** per share (M_old × net cash ÷ (M_new − M_old)), against a median of **$${strcx.peerMedianUsd}** across STRCx's other dividends.`,
+    '',
+    ...section(kraqx),
+    ...section(sccox),
+    ...section(linx),
+    ...section(aznx),
   ].join('\n');
 }

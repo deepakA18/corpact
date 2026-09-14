@@ -75,8 +75,8 @@ describe('classifyTransition against recorded issuer data', () => {
   it('HONx: the spin-off (multiplier 0.51 → 0.999) is never booked as dividend income', () => {
     const { actions, at } = load('HONx');
     const c = classifyTransition(at('2026-06-29T23:55:00.000Z'), actions);
-    expect(c.kind).toBe('unclassified');
-    if (c.kind === 'unclassified') expect(c.reasons.join()).toMatch(/SpinOff/);
+    expect(c.kind).not.toBe('dividend');
+    expect(c).toMatchObject({ kind: 'distribution', action: 'spin_off', eventId: expect.stringMatching(/^ca3da1bc/) });
   });
 
   it('KLACx: 10-for-1 split on top of a dividend-carrying multiplier', () => {
@@ -120,11 +120,18 @@ describe('classifyTransition against recorded issuer data', () => {
     }
   });
 
-  it('HONx: a spin-off the multiplier-history endpoint labels "Dividend" is still not income', () => {
+  it('HONx: a spin-off the multiplier-history endpoint labels "Dividend" is a basis allocation, never income', () => {
     const { actions, at } = load('HONx');
     expect(classifyTransition(at('2025-10-30T23:55:00.000Z'), actions)).toMatchObject({
-      kind: 'unclassified',
-      reasons: [expect.stringMatching(/SpinOff/)],
+      kind: 'distribution',
+      action: 'spin_off',
+      warnings: [expect.stringMatching(/no proceeds amount/)],
     });
+  });
+
+  it('carries the claimed action kind and validation status on every outcome', () => {
+    const { actions, at } = load('STRCx');
+    expect(classifyTransition(at('2026-04-01T00:30:00.000Z'), actions)).toMatchObject({ kind: 'unclassified', action: 'unknown', classifier: 'not_built' });
+    expect(classifyTransition(at('2026-08-30T23:55:00.000Z'), actions)).toMatchObject({ action: 'cash_dividend', classifier: 'validated' });
   });
 });

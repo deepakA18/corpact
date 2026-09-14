@@ -2,6 +2,7 @@ import {
   Rational,
   displayedQuantity,
   unitScale,
+  type ActionKind,
   type Classification,
   type ObservedTransition,
   type ScaledUsdPrice,
@@ -31,6 +32,7 @@ export type LedgerEntry =
   | {
       type: 'dividend';
       at: Date;
+      action: 'cash_dividend' | 'withholding_adjustment';
       eventId: string;
       quantity: Rational;
       /** Null means unknown — never zero. */
@@ -38,8 +40,39 @@ export type LedgerEntry =
       valuation: DividendValuation | null;
       warnings: string[];
     }
-  | { type: 'split'; at: Date; eventId: string; factor: Rational }
-  | { type: 'unclassified_adjustment'; at: Date; quantityDelta: Rational; reasons: string[] };
+  | {
+      type: 'split';
+      at: Date;
+      action: 'forward_split' | 'reverse_split' | 'unit_split' | 'stock_dividend';
+      eventId: string;
+      factor: Rational;
+      /** Displayed units added or removed. Never income. */
+      quantityDelta: Rational;
+    }
+  | {
+      /** Same position, new underlying listing or form; units rescaled by the conversion ratio. */
+      type: 'identity_change';
+      at: Date;
+      action: 'identity_change';
+      eventId: string;
+      factor: Rational;
+      quantityDelta: Rational;
+      fromUnderlying: string | null;
+      toUnderlying: string | null;
+    }
+  | {
+      /** Distributed value reinvested into the position: principal with allocated basis, not income. */
+      type: 'distribution';
+      at: Date;
+      action: 'spin_off' | 'rights_distribution';
+      eventId: string;
+      quantityDelta: Rational;
+      distributedFraction: Rational;
+      /** Shares held × issuer proceeds per share, when issuer proceeds are usable. Not income. */
+      proceedsUsd: Rational | null;
+      warnings: string[];
+    }
+  | { type: 'unclassified_adjustment'; at: Date; action: ActionKind; quantityDelta: Rational; reasons: string[] };
 
 export interface PositionState {
   readonly mint: string;
@@ -149,21 +182,59 @@ function transition(s: PositionState, e: Extract<LedgerEvent, { type: 'transitio
       // Floor unchanged: the new exposure is income, not principal.
       return {
         ...next,
-        entries: [...s.entries, { type: 'dividend', at, eventId: c.eventId, quantity, usd, valuation, warnings }],
+        entries: [...s.entries, { type: 'dividend', at, action: c.action, eventId: c.eventId, quantity, usd, valuation, warnings }],
       };
     }
     case 'split':
       return {
         ...next,
         floor: s.floor.mul(c.factor),
-        entries: [...s.entries, { type: 'split', at, eventId: c.eventId, factor: c.factor }],
+        entries: [...s.entries, { type: 'split', at, action: c.action, eventId: c.eventId, factor: c.factor, quantityDelta: qAfter.sub(qBefore) }],
+      };
+    case 'identity_change':
+      // The same holding in a new form: principal and earlier dividend exposure rescale together, like a split.
+      return {
+        ...next,
+        floor: s.floor.mul(c.factor),
+        entries: [
+          ...s.entries,
+          {
+            type: 'identity_change',
+            at,
+            action: c.action,
+            eventId: c.eventId,
+            factor: c.factor,
+            quantityDelta: qAfter.sub(qBefore),
+            fromUnderlying: c.fromUnderlying,
+            toUnderlying: c.toUnderlying,
+          },
+        ],
+      };
+    case 'distribution':
+      // The added units were bought with distributed value: principal, so the floor scales and nothing becomes available.
+      return {
+        ...next,
+        floor: s.floor.mul(after.div(before)),
+        entries: [
+          ...s.entries,
+          {
+            type: 'distribution',
+            at,
+            action: c.action,
+            eventId: c.eventId,
+            quantityDelta: qAfter.sub(qBefore),
+            distributedFraction: c.distributedFraction,
+            proceedsUsd: c.proceedsUsdPerShare === null ? null : qBefore.mul(c.proceedsUsdPerShare),
+            warnings: c.warnings,
+          },
+        ],
       };
     case 'unclassified':
       // Scale the floor with the multiplier so an unexplained change makes nothing newly available.
       return {
         ...next,
         floor: s.floor.mul(after.div(before)),
-        entries: [...s.entries, { type: 'unclassified_adjustment', at, quantityDelta: qAfter.sub(qBefore), reasons: c.reasons }],
+        entries: [...s.entries, { type: 'unclassified_adjustment', at, action: c.action, quantityDelta: qAfter.sub(qBefore), reasons: c.reasons }],
       };
   }
 }

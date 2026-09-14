@@ -61,9 +61,9 @@ describe('HONx: a spin-off must never book as income', () => {
     ];
     const state = replay(openPosition(window[0]!.mint, 8, window[0]!.before), events);
 
-    expect(state.entries.map((e) => e.type)).toEqual(['deposit', 'dividend', 'split', 'unclassified_adjustment', 'dividend']);
+    expect(state.entries.map((e) => e.type)).toEqual(['deposit', 'dividend', 'split', 'distribution', 'dividend']);
     const spinOff = state.entries[3]!;
-    expect(spinOff.type === 'unclassified_adjustment' && spinOff.reasons.join()).toMatch(/SpinOff/);
+    expect(spinOff.type === 'distribution' && spinOff.action).toBe('spin_off');
 
     // Income is exactly shares-held × issuer net cash for the two real dividends — nothing from the +95% spin-off.
     const expected = Rational.of(tokens)
@@ -103,12 +103,8 @@ describe('STRCx: an implausible issuer cash figure is not used for valuation', (
 });
 
 describe('unclassified changes carry their reason', () => {
+  // Spin-offs, SCCOx, KRAQx and AZNx are classified now: see spinoffs.test.ts and basis-events.test.ts.
   it.each([
-    ['GMEx', '2025-10-08T23:55:00.000Z', /SpinOff/], // labelled "Dividend" by multiplier history
-    ['CMCSAx', '2026-01-07T23:55:00.000Z', /SpinOff/],
-    ['SCCOx', '2026-08-12T00:30:00.000Z', /StockDividend/],
-    ['AZNx', '2026-02-02T22:00:00.000Z', /StockMerger/], // labelled "ReverseSplit" by multiplier history
-    ['KRAQx', '2026-03-26T23:55:00.000Z', /does not reconcile/],
     ['STRCx', '2026-04-01T00:30:00.000Z', /No published issuer action/],
     ['JPMx', '2026-04-03T13:00:00.000Z', /No published issuer action/],
   ])('%s %s', async (symbol, iso, reason) => {
@@ -119,14 +115,27 @@ describe('unclassified changes carry their reason', () => {
 });
 
 describe('whole recorded universe', () => {
-  it('classifies all 654 recorded multiplier changes: 628 dividends, 9 splits, 17 unclassified', async () => {
+  it('classifies all 654 recorded multiplier changes: 630 dividends, 10 splits, 7 distributions, 1 identity change, 6 unclassified', async () => {
     const tally: Record<string, number> = {};
+    const actionTally: Record<string, number> = {};
     for (const symbol of mints.keys()) {
       for (const t of await transitionsFor(symbol)) {
-        const kind = classifyTransition(t, actions).kind;
-        tally[kind] = (tally[kind] ?? 0) + 1;
+        const c = classifyTransition(t, actions);
+        tally[c.kind] = (tally[c.kind] ?? 0) + 1;
+        actionTally[c.action] = (actionTally[c.action] ?? 0) + 1;
       }
     }
-    expect(tally).toEqual({ dividend: 628, split: 9, unclassified: 17 });
+    expect(tally).toEqual({ dividend: 630, split: 10, distribution: 7, identity_change: 1, unclassified: 6 });
+    expect(actionTally).toEqual({
+      cash_dividend: 628,
+      withholding_adjustment: 2,
+      forward_split: 8,
+      reverse_split: 1,
+      stock_dividend: 1,
+      spin_off: 6,
+      rights_distribution: 1,
+      identity_change: 1,
+      unknown: 6,
+    });
   });
 });

@@ -1,7 +1,10 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import Ajv from 'ajv';
 import { describe, expect, it } from 'vitest';
 import { schemas } from '@corpact/client';
 import type { Db, MonitoringSnapshot } from '@corpact/db';
+import { ACTION_KINDS, ACTION_KIND_SPECS, Rational } from '@corpact/domain';
 import { bitsFromFloat64 } from '@corpact/solana';
 import type { AccessStore, Scope } from './access';
 import { buildApp, type AppOptions } from './app';
@@ -132,9 +135,92 @@ const detailRow = {
 
 const assetRow = { mint: KOX, symbol: 'KOx', name: null, decimals: 8, registry_source: 'fixtures', verification_error: null, verified_slot: '446769450' };
 
+// API v2 rows. SCCOx 2026-08-12: the issuer revisions come from the recorded fixture; chain values are the recorded multipliers.
+const recorded = ['history', 'upcoming'].flatMap(
+  (feed) => JSON.parse(readFileSync(join(import.meta.dirname, `../../../fixtures/xstocks/recorded-20260913/corporate-actions-${feed}.json`), 'utf8')).nodes as Array<Record<string, any>>,
+);
+const sccoxRevisions = recorded
+  .filter((n) => String(n.eventId).startsWith('ed857d4c'))
+  .sort((a, b) => a.version - b.version)
+  .map((n) => ({
+    external_id: n.eventId,
+    revision: n.version,
+    kind: n.caType,
+    status: n.status,
+    effective_at: n.effectiveTimeUtc === null ? null : new Date(n.effectiveTimeUtc),
+    issuer_created_at: new Date(n.createdTimeUtc),
+    ingested_at: new Date('2026-09-13T12:00:00Z'),
+    notes: n.notes,
+    source: 'fixtures',
+    stored_payload_sha256: `${String(n.version).repeat(2)}`.padEnd(64, 'c'),
+  }));
+const SCCOX_ACTIVATION = '2026-08-12T00:30:00.000Z';
+const unix = (isoTime: string) => String(Date.parse(isoTime) / 1000);
+const sccoxFactor = Rational.fromFloat64(1.019224471246712).div(Rational.fromFloat64(1.003847883664));
+const actionRow = {
+  ...detailRow,
+  id: '21',
+  kind: 'split',
+  action_kind: 'stock_dividend',
+  symbol: 'SCCOx',
+  effective_unix: unix(SCCOX_ACTIVATION),
+  quantity_num: '15317',
+  quantity_den: '1000000',
+  split_factor_num: sccoxFactor.num.toString(),
+  split_factor_den: sccoxFactor.den.toString(),
+  usd: null,
+  valuation: null,
+  warnings: ['Issuer version 1 (Scheduled) stated 1:1.012; the delivered change is ×1.015318; booked on the delivered evidence'],
+  interpretation_revision: 1,
+  last_corrected_at: null,
+  distributed_fraction_num: null,
+  distributed_fraction_den: null,
+  proceeds_usd: null,
+  multiplier_version_id: '31',
+  scheduled_unix: unix(SCCOX_ACTIVATION),
+  version_effective_unix: unix(SCCOX_ACTIVATION),
+  old_multiplier_bits: bitsFromFloat64(1.003847883664),
+  new_multiplier_bits: bitsFromFloat64(1.019224471246712),
+  classifier_version: 'classify-v4',
+  classification: 'split',
+  classifier_status: 'validated',
+  external_id: sccoxRevisions[0]?.external_id,
+  revision: 5,
+  retention_rate: null,
+  refund_note: null,
+  from_underlying: null,
+  to_underlying: null,
+  publication_unix: unix('2026-08-11T21:00:00Z'),
+  first_observed_at: new Date('2026-08-12T00:30:40Z'),
+  corrected_at: null,
+};
+const identityRows = [
+  { id: '1', symbol: 'AZNx', underlying_symbol: 'NASDAQ:AZN (ADR)', underlying_isin: null, valid_from: new Date('2025-07-01T00:00:00Z'), issuer_event_id: 'c8815421', evidence: 'Held before 2026-02-02' },
+  { id: '2', symbol: 'AZNx', underlying_symbol: 'NYSE:AZN', underlying_isin: null, valid_from: new Date('2026-02-02T22:00:00Z'), issuer_event_id: 'c8815421', evidence: 'Stock Merger 0.5 NYSE:AZN for 1 NASDAQ:AZN (ADR)' },
+];
+const linkRows = [
+  {
+    id: '1', kind: 'identity_change', effective_at: new Date('2026-02-02T22:00:00Z'), issuer_event_id: 'c8815421', issuer_revision: 1, classifier_status: 'validated',
+    from_identity_id: '1', cash_basis_num: '0', cash_basis_den: '1', supersedes_id: null, from_underlying_symbol: 'NASDAQ:AZN (ADR)', superseded: false,
+  },
+];
+const successorRows = [{ link_id: '1', identity_id: '2', basis_num: '1', basis_den: '1', quantity_factor_num: '1', quantity_factor_den: '2', underlying_symbol: 'NYSE:AZN' }];
+
+function v2Rows(sql: string) {
+  if (sql.includes('publication_unix')) return [actionRow];
+  if (sql.includes('FROM corporate_actions WHERE issuer')) return sccoxRevisions;
+  if (sql.includes('SELECT payload FROM corporate_actions')) return [{ payload: { eventId: actionRow.external_id, caType: 'StockDividend' } }];
+  if (sql.includes('FROM lineage_successors')) return successorRows;
+  if (sql.includes('FROM lineage_links l')) return linkRows;
+  if (sql.includes('FROM instrument_identities WHERE mint')) return identityRows;
+  return null;
+}
+
 /** Answers the API's queries from canned rows; anything unexpected fails loudly. */
 async function fakeQuery(sql: string) {
   const text = sql.trim();
+  const v2 = v2Rows(sql);
+  if (v2) return { rows: v2, rowCount: v2.length };
   const rows =
     text === 'BEGIN' || text === 'COMMIT' || text === 'ROLLBACK'
       ? []
@@ -220,6 +306,7 @@ describe('API authentication', () => {
       expect.arrayContaining([
         '/v1/assets', '/v1/portfolio', '/v1/income', '/v1/income/{id}', '/v1/journal', '/v1/wallets', '/v1/wallets/sync', '/v1/wallets/{owner}/status',
         '/v1/yield', '/v1/export', '/v1/ops/status', '/v1/ops/metrics',
+        '/v2/taxonomy', '/v2/actions', '/v2/actions/{id}', '/v2/instruments/{mint}/lineage',
       ]),
     );
     expect(spec.paths['/v1/health'].get.security).toEqual([]);
@@ -265,6 +352,8 @@ describe('API scopes and tenancy', () => {
     [`/v1/yield?owner=${OTHER}`],
     [`/v1/export?owner=${OTHER}`],
     [`/v1/wallets/${OTHER}/status`],
+    [`/v2/actions?owner=${OTHER}`],
+    [`/v2/actions/21?owner=${OTHER}`],
   ])('answers 404 for a wallet the tenant has not registered: %s', async (url) => {
     const res = await (await app()).inject({ url, headers: full });
     expect(res.statusCode).toBe(404);
@@ -328,6 +417,10 @@ describe('API responses match the published contract', () => {
     ['GET', `/v1/journal?owner=${OWNER}`, undefined, schemas.journalResponse],
     ['GET', `/v1/yield?owner=${OWNER}`, undefined, schemas.yieldResponse],
     ['POST', '/v1/wallets/sync', { owner: OTHER }, schemas.syncRequestResponse],
+    ['GET', '/v2/taxonomy', undefined, schemas.taxonomyResponse],
+    ['GET', `/v2/actions?owner=${OWNER}`, undefined, schemas.actionsResponse],
+    ['GET', `/v2/actions/21?owner=${OWNER}`, undefined, schemas.actionDetail],
+    ['GET', `/v2/instruments/${OTHER}/lineage`, undefined, schemas.lineageResponse],
   ] as const;
 
   it.each(cases)('%s %s', async (method, url, payload, schema) => {
@@ -358,6 +451,89 @@ describe('API responses match the published contract', () => {
     const body = (await (await app()).inject({ url: `/v1/portfolio?owner=${OWNER}`, headers: full })).json();
     // The fixture floor is the recorded KOx floor rounded to 8 places, so availability is 1e-8 above the live 0.25861024.
     expect(body.positions[0]).toMatchObject({ protectedQuantity: '20.00766460', availableQuantity: '0.25861025', reconciled: true });
+  });
+});
+
+describe('API v1 keeps its semantics for kinds it never booked', () => {
+  const stockDividend = { ...incomeRow, id: '21', kind: 'split', action_kind: 'stock_dividend', split_factor_num: '3', split_factor_den: '2', quantity_num: '5', quantity_den: '1', usd: null, valuation: null, distributed_fraction_num: null, distributed_fraction_den: null };
+  const identity = { ...stockDividend, id: '22', kind: 'identity_change', action_kind: 'identity_change', split_factor_num: '1', split_factor_den: '2', quantity_num: '-10' };
+  const rights = { ...stockDividend, id: '23', kind: 'distribution', action_kind: 'rights_distribution', split_factor_num: null, split_factor_den: null, quantity_num: '1', quantity_den: '10', distributed_fraction_num: '1357', distributed_fraction_den: '100000' };
+  const compatQuery = async (sql: string) =>
+    sql.includes('ORDER BY e.effective_unix DESC, e.id DESC') && !sql.includes('publication_unix') ? { rows: [stockDividend, identity, rights], rowCount: 3 } : fakeQuery(sql);
+  const compatDb = { query: compatQuery, connect: async () => ({ query: compatQuery, release: () => {} }) } as unknown as Db;
+
+  it('presents stock dividends, identity changes and rights as unclassified adjustments, with the treatment in reasons and headline', async () => {
+    const body = (await (await app({ db: compatDb })).inject({ url: `/v1/income?owner=${OWNER}`, headers: full })).json();
+    const validate = new Ajv({ allErrors: true, strict: true, allowUnionTypes: true }).compile(schemas.incomeResponse);
+    expect(validate(body), JSON.stringify(validate.errors)).toBe(true);
+    expect(body.entries.map((e: { kind: string; splitFactor: string | null; usd: string | null }) => [e.kind, e.splitFactor, e.usd])).toEqual([
+      ['unclassified_adjustment', null, null],
+      ['unclassified_adjustment', null, null],
+      ['unclassified_adjustment', null, null],
+    ]);
+    const [sd, id, r] = body.entries;
+    expect(sd.reasons).toEqual(['Stock dividend booked as a quantity adjustment, not income: units ×1.500000, with cost basis spread across them']);
+    expect(id.reasons).toEqual(['Identity change of the underlying booked as a quantity adjustment, not income: units ×0.500000, all cost basis carried over']);
+    expect(r.reasons).toEqual(["Rights distribution booked as a basis allocation, not income: 1.36% of the position's value came from rights sold and reinvested"]);
+    for (const e of body.entries) expect(e.headline).toMatch(/No income recorded\.$/);
+  });
+});
+
+describe('API v2 corporate actions', () => {
+  it('publishes the full taxonomy, identical to the domain, with every zero-instance kind unvalidated or not built', async () => {
+    expect([...schemas.ACTION_TYPES]).toEqual([...ACTION_KINDS]);
+    const { kinds } = (await (await app()).inject({ url: '/v2/taxonomy', headers: readOnly })).json();
+    expect(kinds.map((k: { kind: string }) => k.kind)).toEqual([...ACTION_KINDS]);
+    for (const k of kinds) if (k.realInstances === 0) expect(k.classifier).not.toBe('validated');
+    expect(kinds.find((k: { kind: string }) => k.kind === 'seizure')).toEqual(ACTION_KIND_SPECS.seizure);
+  });
+
+  it('reports the type, treatment, validation status, lifecycle state and evidence hash of each action', async () => {
+    const body = (await (await app()).inject({ url: `/v2/actions?owner=${OWNER}`, headers: readOnly })).json();
+    expect(body.dataset.kind).toBe('mainnet');
+    expect(body.actions[0]).toMatchObject({
+      type: 'stock_dividend',
+      treatment: 'quantity_basis',
+      validation: { status: 'validated', realInstances: 1 },
+      lifecycle: { state: 'activated' },
+      usd: null,
+      // M_new ÷ M_old of two doubles need not terminate: exact to 18 places.
+      factor: sccoxFactor.toFixed(18),
+      evidence: { issuerEventId: actionRow.external_id, issuerRevision: 5, evidenceSha256: '55'.padEnd(64, 'c'), updateSignature: actionRow.update_signature },
+    });
+    expect(body.actions[0].headline).toMatch(/^SCCOx: stock dividend, units ×1\.015318 .*no income\.$/);
+  });
+
+  it('keeps every superseding issuer revision in the lifecycle, with distinct timestamps', async () => {
+    const detail = (await (await app()).inject({ url: `/v2/actions/21?owner=${OWNER}`, headers: readOnly })).json();
+    expect(detail.lifecycle.inconsistency).toBeNull();
+    expect(detail.lifecycle.steps.map((s: { state: string; revision: { version: number; supersedes: number | null } | null }) => [s.state, s.revision?.version ?? null, s.revision?.supersedes ?? null])).toEqual([
+      ['announced', 1, null],
+      ['announced', 2, 1],
+      ['announced', 3, 1],
+      ['announced', 4, null],
+      ['announced', 5, 4],
+      ['announced', 6, 4],
+      ['confirmed', null, null],
+      ['activated', null, null],
+    ]);
+    expect(detail.lifecycle.steps[1].reason).toMatch(/Will be a cash flow, not a unit change/);
+    expect(detail.evidence.issuerRevisions).toHaveLength(6);
+    expect(detail.timestamps).toEqual({
+      issuerEffectiveAt: SCCOX_ACTIVATION,
+      issuerCreatedAt: '2026-08-11T20:58:14.825Z',
+      configuredActivationAt: SCCOX_ACTIVATION,
+      publicationBlockTime: '2026-08-11T21:00:00.000Z',
+      firstObservedActiveAt: '2026-08-12T00:30:40.000Z',
+      ingestedAt: '2026-09-13T12:00:00.000Z',
+    });
+    expect(detail.evidence.classification).toMatchObject({ result: 'split', classifierVersion: 'classify-v4' });
+  });
+
+  it('traces lineage: all basis moves from the ADR identity to the ordinary share', async () => {
+    const body = (await (await app()).inject({ url: `/v2/instruments/${OTHER}/lineage`, headers: readOnly })).json();
+    expect(body.links[0]).toMatchObject({ kind: 'identity_change', cashBasisFraction: '0', successors: [{ identityId: '2', basisFraction: '1', quantityFactor: '0.5' }] });
+    expect(body.current).toEqual([{ identityId: '2', underlyingSymbol: 'NYSE:AZN', basisFraction: '1', terminated: false }]);
   });
 });
 

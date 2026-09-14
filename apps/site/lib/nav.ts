@@ -1,3 +1,5 @@
+import { ACTION_NAV } from './actions-nav.generated';
+
 export interface NavItem {
   title: string;
   /** Path under /docs; '' is the docs home. */
@@ -35,6 +37,11 @@ export const NAV: NavGroup[] = [
     ],
   },
   {
+    title: 'Corporate actions',
+    icon: 'concepts',
+    items: ACTION_NAV,
+  },
+  {
     title: 'Guides',
     icon: 'guides',
     items: [
@@ -60,6 +67,7 @@ export const NAV: NavGroup[] = [
     icon: 'reference',
     items: [
       { title: 'API reference', slug: 'api-reference' },
+      { title: 'API v1 → v2', slug: 'reference/api-v1-to-v2', badge: 'New' },
       { title: 'TypeScript client', slug: 'reference/client' },
       { title: 'Errors & limits', slug: 'reference/errors' },
     ],

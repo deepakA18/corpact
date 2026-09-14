@@ -1,4 +1,8 @@
 import type {
+  ActionDetail,
+  ActionsResponse,
+  LineageResponse,
+  TaxonomyResponse,
   AssetsResponse,
   ExportDataset,
   HealthResponse,
@@ -101,6 +105,13 @@ export function createCorpactClient(options: CorpactClientOptions) {
     exportUrl: (wallet: string, dataset: ExportDataset = 'journal') => url('/v1/export', { owner: wallet, dataset }),
     opsStatus: () => request<OpsStatusResponse>('GET', '/v1/ops/status'),
     opsMetrics: () => send('GET', '/v1/ops/metrics', { accept: 'text/plain' }),
+    v2: {
+      taxonomy: () => request<TaxonomyResponse>('GET', '/v2/taxonomy'),
+      actions: (wallet: string, page: { limit?: number; offset?: number } = {}) =>
+        request<ActionsResponse>('GET', '/v2/actions', { query: { owner: wallet, ...page } }),
+      action: (wallet: string, id: string) => request<ActionDetail>('GET', `/v2/actions/${encodeURIComponent(id)}`, { query: { owner: wallet } }),
+      lineage: (mint: string) => request<LineageResponse>('GET', `/v2/instruments/${encodeURIComponent(mint)}/lineage`),
+    },
   };
 }
 

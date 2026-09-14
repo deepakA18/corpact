@@ -49,7 +49,7 @@ The detail carries everything in the income entry, plus `history` and `evidence`
 }
 ```
 
-`result` is `dividend`, `split`, `unclassified` or `pending`. For `unclassified`, `reasons` says why (for example `Issuer action SpinOff (…) has no income policy`). For a qualified dividend, `warnings` says what was withheld (for example an implausible implied price).
+`result` is `dividend`, `split`, `unclassified` or `pending`. v1 reports spin-offs, rights, stock dividends and identity changes as `unclassified`, with the treatment in `reasons` (for example `Spin-off booked as a basis allocation, not income: 48.75% of the position's value was distributed and reinvested`). For a qualified dividend, `warnings` says what was withheld (for example an implausible implied price). For the action type itself, its lifecycle and every issuer revision, use `GET /v2/actions/{id}` (see [API v1 → v2](/docs/reference/api-v1-to-v2)).
 
 ## Issuer record
 

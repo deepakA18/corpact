@@ -13,12 +13,13 @@ import {
 import { isoOf, unixOf, type Context } from './context';
 import { hintSatisfied } from './hints';
 import { matchColumns, sameInterpretation, storedMatchFromRow } from './interpretation';
+import { recordIdentityChange } from './lineage';
 import { loadAllowlist } from './registry';
 import { ensureSignatures } from './signatures';
 import { loadOrFetchTransaction, resolveTransactionOrder } from './transactions';
 
 /** Recorded on each match. Bumping it alone writes nothing new; only a changed outcome supersedes a match. */
-export const CLASSIFIER_VERSION = 'classify-v2';
+export const CLASSIFIER_VERSION = 'classify-v4';
 
 // Issuer corporate-action records are created seconds to minutes before the chain write (UNHx: 3 s).
 const NARROW_BEFORE = 600n;
@@ -275,8 +276,9 @@ export async function classifyTransitions(ctx: Context, mint: string): Promise<n
   const actions = actionRows.map((r) => actionFromPayload(r.payload));
   const { rows: versions } = await ctx.db.query(
     `SELECT v.id, v.old_multiplier_bits, v.new_multiplier_bits, v.scheduled_unix,
-            m.id AS match_id, m.classification, m.external_id, m.revision, m.net_cash_per_share,
-            m.split_factor_num, m.split_factor_den, m.reasons, m.warnings
+            m.id AS match_id, m.classification, m.action_kind, m.classifier_status, m.external_id, m.revision, m.net_cash_per_share,
+            m.split_factor_num, m.split_factor_den, m.distributed_fraction_num, m.distributed_fraction_den, m.proceeds_per_share,
+            m.retention_rate, m.refund_note, m.from_underlying, m.to_underlying, m.reasons, m.warnings, v.effective_unix
        FROM multiplier_versions v
        LEFT JOIN action_matches m ON m.multiplier_version_id = v.id AND m.superseded_at IS NULL
       WHERE v.mint = $1 AND v.status IN ('active', 'orphaned')`,
@@ -290,9 +292,9 @@ export async function classifyTransitions(ctx: Context, mint: string): Promise<n
     for (const v of versions) {
       let c: Classification;
       if (v.old_multiplier_bits === null) {
-        c = { kind: 'unclassified', reasons: ['The multiplier before this change was never observed on chain'] };
+        c = { kind: 'unclassified', action: 'unknown', classifier: 'not_built', eventId: null, version: null, reasons: ['The multiplier before this change was never observed on chain'] };
       } else if (actions.length === 0) {
-        c = { kind: 'unclassified', reasons: [`No issuer corporate actions are loaded for ${symbol}`] };
+        c = { kind: 'unclassified', action: 'unknown', classifier: 'not_built', eventId: null, version: null, reasons: [`No issuer corporate actions are loaded for ${symbol}`] };
       } else {
         c = classifyTransition(
           {
@@ -306,13 +308,19 @@ export async function classifyTransitions(ctx: Context, mint: string): Promise<n
         );
       }
       const next = matchColumns(c);
+      if (c.kind === 'identity_change') {
+        const lineage = await recordIdentityChange(client, { mint, symbol, effectiveUnix: BigInt(v.effective_unix), classification: c });
+        if (lineage === 'recorded') ctx.log('info', 'lineage recorded', { mint, symbol, event: c.eventId, revision: c.version });
+      }
       if (v.match_id !== null && sameInterpretation(storedMatchFromRow(v), next)) continue;
       // Supersede, never overwrite: the previous interpretation stays as evidence of what was believed and when.
       if (v.match_id !== null) await client.query('UPDATE action_matches SET superseded_at = now() WHERE id = $1', [v.match_id]);
       const { rows: inserted } = await client.query(
         `INSERT INTO action_matches (multiplier_version_id, classifier_version, classification, issuer, external_id, revision,
-                                     net_cash_per_share, split_factor_num, split_factor_den, reasons, warnings)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+                                     net_cash_per_share, split_factor_num, split_factor_den, reasons, warnings, action_kind, classifier_status,
+                                     distributed_fraction_num, distributed_fraction_den, proceeds_per_share,
+                                     retention_rate, refund_note, from_underlying, to_underlying)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20)
          RETURNING id`,
         [
           v.id,
@@ -326,6 +334,15 @@ export async function classifyTransitions(ctx: Context, mint: string): Promise<n
           next.split_factor_den,
           JSON.stringify(next.reasons),
           JSON.stringify(next.warnings),
+          next.action_kind,
+          next.classifier_status,
+          next.distributed_fraction_num,
+          next.distributed_fraction_den,
+          next.proceeds_per_share,
+          next.retention_rate,
+          next.refund_note,
+          next.from_underlying,
+          next.to_underlying,
         ],
       );
       if (v.match_id !== null) {

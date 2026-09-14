@@ -1,4 +1,4 @@
-export { classifyTransition, latestVersions, sameF64 } from './classify';
+export { classifyTransition, latestVersions, sameF64, standingVersions } from './classify';
 export {
   splitBasisAfter,
   trailingDistributionPerShare,

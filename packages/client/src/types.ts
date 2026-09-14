@@ -20,3 +20,14 @@ export type JournalResponse = FromSchema<typeof s.journalResponse>;
 export type YieldResponse = FromSchema<typeof s.yieldResponse>;
 export type OpsStatusResponse = FromSchema<typeof s.opsStatusResponse>;
 export type ExportDataset = 'journal' | 'income';
+
+// API v2
+export type ActionType = (typeof s.ACTION_TYPES)[number];
+export type ActionKindSpec = FromSchema<typeof s.actionKindSpec>;
+export type TaxonomyResponse = FromSchema<typeof s.taxonomyResponse>;
+export type Action = FromSchema<typeof s.action>;
+export type ActionsResponse = FromSchema<typeof s.actionsResponse>;
+export type ActionDetail = FromSchema<typeof s.actionDetail>;
+export type JournalEntryV2 = FromSchema<typeof s.journalEntryV2>;
+export type LineageLink = FromSchema<typeof s.lineageLink>;
+export type LineageResponse = FromSchema<typeof s.lineageResponse>;

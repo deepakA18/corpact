@@ -6,7 +6,8 @@
   "scripts": {
     "test": "vitest run",
     "typecheck": "pnpm -r typecheck",
-    "fixtures:record": "node tools/record-fixtures.mjs"
+    "fixtures:record": "node tools/record-fixtures.mjs",
+    "demo": "tools/demo/run-demo.sh"
   },
   "devDependencies": {
     "@types/node": "26.5.1",

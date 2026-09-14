@@ -188,9 +188,9 @@ export async function runScenario(chain: DemoChain, log: (line: string) => void)
   );
   await scheduleAndActivate(
     ddiv,
-    { label: 'SP spin-off labelled "Dividend"', trap: 'Multiplier-history reason is not evidence (GMEx/HONx spin-offs labelled Dividend)', factor: 1.05, historyReason: 'Dividend' },
+    { label: 'SP spin-off labelled "Dividend"', trap: 'Multiplier-history reason is not evidence (GMEx/HONx spin-offs labelled Dividend); a spin-off is a basis allocation, not income', factor: 1.05, historyReason: 'Dividend' },
     { type: 'SpinOff' },
-    { firstSync: { kind: 'unclassified_adjustment', reason: 'no income policy' } },
+    { firstSync: { kind: 'unclassified_adjustment', reason: 'basis allocation, not income' } },
   );
   await scheduleAndActivate(
     ddiv,

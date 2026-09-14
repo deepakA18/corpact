@@ -4,7 +4,8 @@ import { Rational, displayedQuantity, type Classification } from '@corpact/domai
 import { TOKEN_2022_PROGRAM, bitsFromFloat64, float64FromBits, type TokenAccountSnapshot } from '@corpact/solana';
 import { isoOf, type Context } from './context';
 import { crossCheckBalances } from './crosscheck';
-import { journalValuesFromEntry, planJournal, type JournalValues, type OpenRecognition } from './journal';
+import { classificationFromStored, legacyActionKind, storedMatchFromRow } from './interpretation';
+import { journalValuesFromEntry, planJournal, recordedQuantity, type JournalValues, type OpenRecognition } from './journal';
 import { resolveTransactionOrder } from './transactions';
 
 export const LEDGER_VERSION = 'ledger-v1';
@@ -60,25 +61,7 @@ interface PositionResult {
 
 function classificationFromRow(r: Record<string, any>): Classification | null {
   if (r.match_id === null) return null;
-  if (r.classification === 'dividend') {
-    return {
-      kind: 'dividend',
-      eventId: r.external_id,
-      version: r.revision,
-      netCashUsdPerShare: r.net_cash_per_share === null ? null : Rational.fromDecimal(r.net_cash_per_share),
-      warnings: r.warnings,
-    };
-  }
-  if (r.classification === 'split') {
-    return {
-      kind: 'split',
-      eventId: r.external_id,
-      version: r.revision,
-      factor: Rational.of(BigInt(r.split_factor_num), BigInt(r.split_factor_den)),
-      warnings: r.warnings,
-    };
-  }
-  return { kind: 'unclassified', reasons: r.reasons };
+  return classificationFromStored(storedMatchFromRow(r));
 }
 
 async function buildPosition(
@@ -145,8 +128,9 @@ async function buildPosition(
 
   const { rows: versionRows } = await ctx.db.query(
     `SELECT v.id, v.effective_unix, v.immediate, v.status, v.old_multiplier_bits, v.new_multiplier_bits,
-            m.id AS match_id, m.classification, m.external_id, m.revision, m.net_cash_per_share,
-            m.split_factor_num, m.split_factor_den, m.reasons, m.warnings
+            m.id AS match_id, m.classification, m.action_kind, m.classifier_status, m.external_id, m.revision, m.net_cash_per_share,
+            m.split_factor_num, m.split_factor_den, m.distributed_fraction_num, m.distributed_fraction_den, m.proceeds_per_share,
+            m.retention_rate, m.refund_note, m.from_underlying, m.to_underlying, m.reasons, m.warnings
        FROM multiplier_versions v
        LEFT JOIN action_matches m ON m.multiplier_version_id = v.id AND m.superseded_at IS NULL
       WHERE v.mint = $1 AND v.status IN ('active', 'orphaned') AND v.effective_unix <= $2
@@ -242,7 +226,14 @@ async function buildPosition(
         if (version.oldBits === null) {
           throw new LedgerInvariantError(`The multiplier change at ${isoOf(version.effectiveUnix)} starts from an unobserved value`);
         }
-        const classification = version.classification ?? { kind: 'unclassified' as const, reasons: ['Classification pending'] };
+        const classification: Classification = version.classification ?? {
+          kind: 'unclassified',
+          action: 'unknown',
+          classifier: 'not_built',
+          eventId: null,
+          version: null,
+          reasons: ['Classification pending'],
+        };
         const before = state.entries.length;
         const event: LedgerEvent = {
           type: 'transition',
@@ -332,11 +323,15 @@ async function openRecognitions(client: DbClient, owner: string, mint: string): 
     id: String(r.id),
     multiplierVersionId: String(r.multiplier_version_id),
     kind: r.kind,
+    action: r.action_kind ?? legacyActionKind(r.kind, r.split_factor_num, r.split_factor_den),
     effectiveUnix: BigInt(r.effective_unix),
     quantity: Rational.of(BigInt(r.quantity_num), BigInt(r.quantity_den)),
     splitFactor: r.split_factor_num === null ? null : Rational.of(BigInt(r.split_factor_num), BigInt(r.split_factor_den)),
     usd: r.usd === null ? null : Rational.fromDecimal(r.usd),
     valuation: r.valuation,
+    distributedFraction:
+      r.distributed_fraction_num === null ? null : Rational.of(BigInt(r.distributed_fraction_num), BigInt(r.distributed_fraction_den)),
+    proceedsUsd: r.proceeds_usd === null ? null : Rational.fromDecimal(r.proceeds_usd),
     actionMatchId: r.action_match_id === null ? null : String(r.action_match_id),
     issuerEventId: r.issuer_event_id,
     issuerRevision: r.issuer_revision,
@@ -364,14 +359,17 @@ async function appendJournal(client: DbClient, owner: string, r: PositionResult)
     await client.query(
       `INSERT INTO ledger_journal (owner, mint, multiplier_version_id, entry_type, kind, effective_unix, quantity_num, quantity_den,
                                    split_factor_num, split_factor_den, usd, valuation, action_match_id, issuer_event_id,
-                                   issuer_revision, reverses_id, change_reason, change_detail)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)`,
+                                   issuer_revision, reverses_id, change_reason, change_detail, action_kind,
+                                   distributed_fraction_num, distributed_fraction_den, proceeds_usd)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22)`,
       [
         owner, r.mint, v.multiplierVersionId, step.type, v.kind, v.effectiveUnix.toString(),
         v.quantity.num.toString(), v.quantity.den.toString(),
         v.splitFactor?.num.toString() ?? null, v.splitFactor?.den.toString() ?? null,
         v.usd ? v.usd.toTerminatingDecimal() : null, v.valuation, v.actionMatchId, v.issuerEventId, v.issuerRevision,
-        step.type === 'reversal' ? step.reverses.id : null, step.reason, step.detail,
+        step.type === 'reversal' ? step.reverses.id : null, step.reason, step.detail, v.action,
+        v.distributedFraction?.num.toString() ?? null, v.distributedFraction?.den.toString() ?? null,
+        v.proceedsUsd ? v.proceedsUsd.toTerminatingDecimal() : null,
       ],
     );
   }
@@ -465,24 +463,30 @@ export async function rebuildPositions(ctx: Context, owner: string) {
       let seq = 0;
       for (const [index, entry] of r.state.entries.entries()) {
         const link = r.links.get(index);
-        if (!link || (entry.type !== 'dividend' && entry.type !== 'split' && entry.type !== 'unclassified_adjustment')) continue;
-        const quantity = entry.type === 'dividend' ? entry.quantity : entry.type === 'unclassified_adjustment' ? entry.quantityDelta : Rational.ZERO;
+        if (!link || entry.type === 'deposit' || entry.type === 'withdrawal') continue;
+        const quantity = recordedQuantity(entry);
+        const factor = entry.type === 'split' || entry.type === 'identity_change' ? entry.factor : null;
         await client.query(
           `INSERT INTO income_entries (position_epoch_id, seq, kind, multiplier_version_id, action_match_id, effective_unix,
                                        quantity_num, quantity_den, split_factor_num, split_factor_den, usd, valuation, warnings, reasons,
-                                       interpretation_revision, last_corrected_at)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)`,
+                                       interpretation_revision, last_corrected_at, action_kind,
+                                       distributed_fraction_num, distributed_fraction_den, proceeds_usd)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20)`,
           [
             epochId, seq++, entry.type, link.versionId, link.matchId, link.effectiveUnix.toString(),
             quantity.num.toString(), quantity.den.toString(),
-            entry.type === 'split' ? entry.factor.num.toString() : null,
-            entry.type === 'split' ? entry.factor.den.toString() : null,
+            factor?.num.toString() ?? null,
+            factor?.den.toString() ?? null,
             entry.type === 'dividend' && entry.usd ? entry.usd.toTerminatingDecimal() : null,
             entry.type === 'dividend' ? entry.valuation : null,
-            JSON.stringify(entry.type === 'dividend' ? entry.warnings : []),
+            JSON.stringify(entry.type === 'dividend' || entry.type === 'distribution' ? entry.warnings : []),
             JSON.stringify(entry.type === 'unclassified_adjustment' ? entry.reasons : []),
             revisions.get(link.versionId)?.revision ?? 1,
             revisions.get(link.versionId)?.lastCorrectedAt ?? null,
+            entry.action,
+            entry.type === 'distribution' ? entry.distributedFraction.num.toString() : null,
+            entry.type === 'distribution' ? entry.distributedFraction.den.toString() : null,
+            entry.type === 'distribution' && entry.proceedsUsd ? entry.proceedsUsd.toTerminatingDecimal() : null,
           ],
         );
       }

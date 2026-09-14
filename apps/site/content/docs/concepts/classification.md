@@ -5,29 +5,34 @@ description: Why every multiplier change is matched to an issuer record, and wha
 
 ## The rule
 
-A multiplier change is booked as income **only** when it matches a published issuer corporate action. A match needs all of these:
+A multiplier change is booked **only** when it matches a published issuer corporate action. A match needs all of these:
 
-- the action's status is `Initial` or `Corrected` (the latest version of the event);
+- the version **stands**: it is `Initial` or `Corrected`, and no later cancellation names it. `Scheduled` announcements are never evidence. A cancellation voids only the version it names, so SCCOx's "[CANCELLED v4]" after delivery leaves the delivered v5 standing. A `Corrected` version delivered as a follow-on change, starting where the original ended, stands alongside the original (the LINx and NVOx withholding refunds);
 - its `multiplierOld` and `multiplierNew` equal the chain values (within 4ε);
 - its effective time equals the on-chain activation **to the second**;
 - exactly one action matches.
 
-What happens next depends on the action type.
+Then the issuer's **evidence**, not its type label, decides the action type. Each type has its own page under [Corporate actions](/docs/actions) listing the evidence it needs.
 
-| Issuer action | Outcome |
+| Evidence | Outcome |
 |---|---|
-| `CashDividend` | **Dividend.** The value comes from issuer net cash, when trustworthy |
-| `ForwardSplit`, `ReverseSplit`, `UnitSplit` | **Split,** if the unit ratio reconciles with the multipliers |
-| `SpinOff`, `StockDividend`, `StockMerger`, … | **Unclassified adjustment:** no income policy, not booked as income |
+| `CashDividend` | **Cash dividend:** income, valued from issuer net cash when trustworthy |
+| `CashDividend` with zero gross, positive net and a note saying withholding was wrongly applied | **Withholding refund:** income, distinguishable from a new dividend |
+| `ForwardSplit`, `ReverseSplit` whose unit ratio reconciles | **Split:** units rescaled, no income |
+| `StockDividend`, delivered | **Stock dividend:** units rescaled, basis spread, no income |
+| `SpinOff` | **Basis allocation:** (M_new − M_old) ÷ M_new of the position's value as principal, no income |
+| `UnitSplit` 1:1 that cannot explain the change, with cash and a note naming warrants | **Rights distribution:** basis allocation, no income |
+| `StockMerger` exchanging one listing of a company for another of the same company | **Identity change:** units rescaled, all basis carried over, lineage written |
+| A type with no real instance (mergers, redemptions, delistings, name changes, …) | **Unclassified adjustment,** labelled unvalidated |
 | No matching action | **Unclassified adjustment:** no published issuer action matches |
 
-An unclassified adjustment is visible in income with its reason. It adds nothing to income and makes nothing available to convert.
+An unclassified adjustment is visible with its reason. It adds nothing to income and makes nothing available to convert.
 
 ## Why not trust the obvious signals
 
-**The size of the change.** "Any increase is income" is wrong 24 times in the recorded data set. Some are splits of up to +900%, some are spin-offs (HONx: +95.11%), some are stock dividends, and 8 are changes the issuer never explained.
+**The size of the change.** "Any increase is a dividend" is wrong 22 times in the recorded data set. Some are splits of up to +900%, some are spin-offs (HONx: +95.11%), one is a stock dividend, one a rights sale, and 6 are changes the issuer never explained. The largest real dividend is +2.93%, and 4 of the 6 spin-offs fall below it.
 
-**The label.** The multiplier-history `reason` field says "Dividend" for spin-offs on GMEx, HONx, DFDVx and OPENx, and "ReverseSplit" for the AZNx merger. Across 654 changes, issuer evidence contradicts the label 14 times.
+**The label.** The multiplier-history `reason` field says "Dividend" for spin-offs on GMEx, HONx, DFDVx and OPENx and for SCCOx's stock dividend, and "ReverseSplit" for the AZNx ADR conversion. The issuer's own corporate-action type says `UnitSplit` for KRAQx's rights sale. Across 654 changes, issuer evidence contradicts the history label 12 times.
 
 ## Valuing a dividend
 

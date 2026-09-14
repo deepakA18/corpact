@@ -9,7 +9,17 @@ export interface IntegrityResult {
 }
 
 /** Evidence and journal tables whose rows may only be inserted. */
-export const APPEND_ONLY_TABLES = ['chain_observations', 'multiplier_writes', 'corporate_actions', 'balance_movements', 'ledger_journal', 'provider_checks'] as const;
+export const APPEND_ONLY_TABLES = [
+  'chain_observations',
+  'multiplier_writes',
+  'corporate_actions',
+  'balance_movements',
+  'ledger_journal',
+  'provider_checks',
+  'instrument_identities',
+  'lineage_links',
+  'lineage_successors',
+] as const;
 
 const STORED_HASH = `encode(sha256(convert_to(payload::text, 'UTF8')), 'hex')`;
 const MIGRATIONS_DIR = join(import.meta.dirname, 'migrations');

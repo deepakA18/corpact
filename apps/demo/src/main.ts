@@ -6,9 +6,9 @@ import { createDemoChain } from './chain';
 import { check, createChecker, type Check } from './checks';
 import { writeIssuerFixtures } from './fixtures';
 import { startLocalnet, type ValidatorKind } from './localnet';
-import { recordedCasesMarkdown } from './present';
+import { recordedCases, recordedCasesMarkdown } from './present';
 import { startProviderProxy } from './proxy';
-import { honxSpinOff, loadRecorded, strcxImplausibleCash } from './recorded';
+import { loadRecorded } from './recorded';
 import { DEFAULT_ADMIN_DATABASE_URL, DEMO_DATABASE, REPO_ROOT, recreateDemoDatabase, runWorker } from './runner';
 import { runScenario } from './scenario';
 import { runWalkthrough } from './walkthrough';
@@ -16,7 +16,7 @@ import { runWalkthrough } from './walkthrough';
 /**
  * One command, three parts:
  *   1. Walkthrough of PLAN §8 on a local network (synthetic): position → no-transfer dividend → entry → split → correction.
- *   2. The recorded HONx and STRCx cases beside the naive reading (recorded issuer data, offline).
+ *   2. Six recorded cases beside the naive reading: HONx, STRCx, KRAQx, SCCOx, LINx, AZNx (recorded issuer data, offline).
  *   3. The synthetic trap regression suite, including the independent-provider disagreement.
  * The worker and API run unmodified. Output: console, walkthrough.md and report.json in apps/demo/out/<run>/.
  */
@@ -68,11 +68,14 @@ async function main() {
       log(`\n[${elapsed()}] Part 2: recorded cases`);
       const recorded = await loadRecorded();
       say(recordedCasesMarkdown(recorded));
-      const honx = honxSpinOff(recorded);
-      const strcx = strcxImplausibleCash(recorded);
+      const { honx, strcx, kraqx, sccox, linx, aznx } = recordedCases(recorded);
       add('recorded issuer data', [
-        check('HONx spin-off books no income; the naive reading books +95%', honx.corpact.outcome.startsWith('Unclassified') && honx.naive.reading.includes('95.11%'), honx.corpact.reason, 'Multiplier-history reason and size are not evidence'),
+        check('HONx spin-off books a basis allocation, no income; the naive reading books +95%', honx.corpact.outcome.startsWith('Spin-off') && honx.naive.reading.includes('95.11%'), honx.corpact.reason, 'Multiplier-history reason and size are not evidence'),
         check('STRCx keeps the dividend but refuses the $953k/share valuation', strcx.corpact.outcome === 'Dividend recognized — USD unknown' && strcx.impliedPriceUsd.startsWith('953'), strcx.corpact.reason, 'Issuer cash that does not match shares delivered'),
+        check('KRAQx rights sale labelled UnitSplit books a basis allocation, not a split or income', kraqx.corpact.outcome.startsWith('Rights distribution'), kraqx.corpact.reason, "The issuer's action type is not evidence"),
+        check('SCCOx resolves on the delivered record through six revisions, reporting the superseded 1:1.012', sccox.corpact.outcome.startsWith('Stock dividend') && sccox.corpact.reason.includes('stated 1:1.012'), sccox.corpact.reason, 'Type churn before delivery'),
+        check('LINx withholding refund is not a new dividend, and withholding is deducted once', linx.corpact.outcome.startsWith('Withholding refund') && linx.corpact.reading.includes('= 1.6 gross'), linx.corpact.reading, 'Withholding refunds arrive as new dividends'),
+        check('AZNx ADR conversion is an identity change, not the reverse split its label says', aznx.corpact.outcome.startsWith('Identity change') && aznx.historyReason === 'ReverseSplit', aznx.corpact.reason, 'Same ratio as a reverse split; only the issuer note separates them'),
       ]);
 
       log(`\n[${elapsed()}] Part 3: seeding the trap regression suite`);

@@ -16,13 +16,25 @@ const tx = (before: number, after: number): ObservedTransition => ({
 });
 const dividend = (net: string | null): Classification => ({
   kind: 'dividend',
+  action: 'cash_dividend',
+  classifier: 'validated',
   eventId: 'div',
   version: 1,
   netCashUsdPerShare: net === null ? null : Rational.fromDecimal(net),
+  retentionRate: null,
+  refundNote: null,
   warnings: [],
 });
-const split = (factor: Rational): Classification => ({ kind: 'split', eventId: 'split', version: 1, factor, warnings: [] });
-const unclassified: Classification = { kind: 'unclassified', reasons: ['test'] };
+const split = (factor: Rational): Classification => ({
+  kind: 'split',
+  action: factor.compare(Rational.ONE) >= 0 ? 'forward_split' : 'reverse_split',
+  classifier: 'validated',
+  eventId: 'split',
+  version: 1,
+  factor,
+  warnings: [],
+});
+const unclassified: Classification = { kind: 'unclassified', action: 'unknown', classifier: 'not_built', eventId: null, version: null, reasons: ['test'] };
 const q = (text: string) => Rational.fromDecimal(text);
 
 describe('ledger — worked example (dyadic multipliers so every value is exact)', () => {

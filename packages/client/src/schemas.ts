@@ -560,3 +560,317 @@ export const incomeEventParams = {
   required: ['id'],
   properties: { id: { type: 'string', pattern: '^\\d+$' } },
 } as const;
+
+// ─── API v2: corporate actions ────────────────────────────────────────────────────────────────────────────────────
+
+/** Mirrors ACTION_KINDS in @corpact/domain; a contract test keeps them equal. */
+export const ACTION_TYPES = [
+  'cash_dividend', 'withholding_adjustment', 'stock_dividend', 'cash_and_stock_dividend', 'forward_split', 'reverse_split', 'unit_split',
+  'cash_in_lieu', 'spin_off', 'rights_distribution', 'stock_merger', 'cash_merger', 'mixed_merger', 'identity_change', 'redemption',
+  'delisting', 'seizure', 'unknown',
+] as const;
+
+const actionType = { type: 'string', enum: ACTION_TYPES } as const;
+const classifierStatus = {
+  type: 'string',
+  enum: ['validated', 'unvalidated', 'not_built'],
+  description: 'validated: confirmed against real recorded instances. unvalidated: no real instance has confirmed it; never booked. not_built: recognised only',
+} as const;
+const bookedTreatment = {
+  type: 'string',
+  enum: ['income', 'quantity_basis', 'basis_allocation', 'identity', 'not_booked'],
+  description:
+    'income: units added are income. quantity_basis: units rescaled, basis spread across them. basis_allocation: units added are principal bought with distributed value. identity: same position in a new underlying form. not_booked: recognised, not booked; conversion disabled',
+} as const;
+const lifecycleState = { type: ['string', 'null'], enum: ['announced', 'confirmed', 'activated', 'corrected', 'reversed', 'superseded', null] } as const;
+const ledgerKind = { type: 'string', enum: ['dividend', 'split', 'distribution', 'identity_change', 'unclassified_adjustment'] } as const;
+
+export const actionKindSpec = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['kind', 'label', 'category', 'treatment', 'classifier', 'realInstances', 'evidence'],
+  properties: {
+    kind: actionType,
+    label: str,
+    category: { type: 'string', enum: ['income', 'basis', 'identity', 'termination', 'custody', 'unknown'] },
+    treatment: { type: 'string', enum: ['income', 'quantity_basis', 'basis_allocation', 'identity', 'termination', 'custody_transfer', 'not_booked'] },
+    classifier: classifierStatus,
+    realInstances: { type: 'integer', minimum: 0, description: 'Real instances in the recorded issuer data and on-chain scans' },
+    evidence: str,
+  },
+} as const;
+
+export const taxonomyResponse = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['kinds'],
+  properties: { kinds: { type: 'array', items: actionKindSpec } },
+} as const;
+
+const validation = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['status', 'realInstances'],
+  properties: { status: classifierStatus, realInstances: { type: 'integer', minimum: 0 } },
+} as const;
+
+const evidenceSummary = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['issuerEventId', 'issuerRevision', 'evidenceSha256', 'updateSignature'],
+  properties: {
+    issuerEventId: nullableStr,
+    issuerRevision: { type: ['integer', 'null'] },
+    evidenceSha256: { ...nullableStr, description: 'SHA-256 of the matched issuer record exactly as stored; recomputable from the database' },
+    updateSignature: str,
+  },
+} as const;
+
+const actionProperties = {
+  id: str,
+  mint: str,
+  symbol: str,
+  effectiveAt: str,
+  type: actionType,
+  treatment: bookedTreatment,
+  validation,
+  lifecycle: { type: 'object', additionalProperties: false, required: ['state'], properties: { state: lifecycleState } },
+  quantity: { ...decimal, description: 'Units added (negative: removed). Zero for an ordinary split' },
+  quantityDisplay: decimal,
+  factor: { ...nullableDecimal, description: 'New units per old unit, for splits, stock dividends and identity changes' },
+  distributedFraction: { ...nullableDecimal, description: "Share of the position's value delivered by a spin-off or rights distribution: (M_new − M_old) ÷ M_new" },
+  usd: { ...nullableDecimal, description: 'Income value; only for income. Null means unknown, never zero' },
+  proceedsUsd: { ...nullableDecimal, description: 'Issuer proceeds for a distribution, when published and plausible. Never income' },
+  valuation,
+  retentionRate: { ...nullableDecimal, description: 'A currency retention the issuer published in its withholding field; not tax, already reflected in net cash' },
+  refundNote: { ...nullableStr, description: "For a withholding refund: the issuer's explanation" },
+  underlying: {
+    anyOf: [
+      { type: 'object', additionalProperties: false, required: ['from', 'to'], properties: { from: nullableStr, to: nullableStr } },
+      { type: 'null' },
+    ],
+  },
+  headline: str,
+  warnings: strings,
+  reasons: strings,
+  revision: { type: 'integer', minimum: 1 },
+  correctedAt: nullableStr,
+  evidence: evidenceSummary,
+} as const;
+
+const actionRequired = Object.keys(actionProperties) as Array<keyof typeof actionProperties>;
+
+export const action = {
+  type: 'object',
+  additionalProperties: false,
+  required: actionRequired,
+  properties: actionProperties,
+} as const;
+
+export const actionsResponse = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['owner', 'dataset', 'actions', 'nextOffset'],
+  properties: { owner: str, dataset, actions: { type: 'array', items: action }, nextOffset: { type: ['integer', 'null'] } },
+} as const;
+
+const lifecycleStep = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['state', 'at', 'reason', 'evidence', 'revision'],
+  properties: {
+    state: { type: 'string', enum: ['announced', 'confirmed', 'activated', 'corrected', 'reversed', 'superseded'] },
+    at: str,
+    reason: str,
+    evidence: {
+      anyOf: [
+        {
+          type: 'object',
+          additionalProperties: false,
+          required: ['source', 'reference', 'sha256'],
+          properties: { source: { type: 'string', enum: ['issuer', 'chain', 'ledger'] }, reference: str, sha256: nullableStr },
+        },
+        { type: 'null' },
+      ],
+    },
+    revision: {
+      anyOf: [
+        {
+          type: 'object',
+          additionalProperties: false,
+          required: ['version', 'status', 'type', 'supersedes'],
+          properties: { version: int, status: str, type: str, supersedes: { type: ['integer', 'null'] } },
+        },
+        { type: 'null' },
+      ],
+    },
+  },
+} as const;
+
+export const journalEntryV2 = {
+  type: 'object',
+  additionalProperties: false,
+  required: [
+    'id', 'recordedAt', 'entryType', 'kind', 'type', 'effectiveAt', 'quantity', 'factor', 'usd', 'valuation', 'distributedFraction', 'proceedsUsd',
+    'issuerEventId', 'issuerRevision', 'reversesId', 'changeReason', 'changeDetail',
+  ],
+  properties: {
+    id: str,
+    recordedAt: str,
+    entryType: { type: 'string', enum: ['recognition', 'reversal'] },
+    kind: ledgerKind,
+    type: actionType,
+    effectiveAt: str,
+    quantity: decimal,
+    factor: nullableDecimal,
+    usd: nullableDecimal,
+    valuation,
+    distributedFraction: nullableDecimal,
+    proceedsUsd: nullableDecimal,
+    issuerEventId: nullableStr,
+    issuerRevision: { type: ['integer', 'null'] },
+    reversesId: nullableStr,
+    changeReason: journalEntry.properties.changeReason,
+    changeDetail: nullableStr,
+  },
+} as const;
+
+const lineageSuccessor = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['identityId', 'underlyingSymbol', 'basisFraction', 'quantityFactor'],
+  properties: { identityId: str, underlyingSymbol: nullableStr, basisFraction: decimal, quantityFactor: nullableDecimal },
+} as const;
+
+export const lineageLink = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['id', 'kind', 'effectiveAt', 'issuerEventId', 'issuerRevision', 'classifierStatus', 'fromIdentityId', 'fromUnderlyingSymbol', 'cashBasisFraction', 'supersedesId', 'successors'],
+  properties: {
+    id: str,
+    kind: { type: 'string', enum: ['identity_change', 'transform', 'spin_off', 'terminate'] },
+    effectiveAt: str,
+    issuerEventId: nullableStr,
+    issuerRevision: { type: ['integer', 'null'] },
+    classifierStatus,
+    fromIdentityId: str,
+    fromUnderlyingSymbol: nullableStr,
+    cashBasisFraction: { ...decimal, description: 'Share of basis that left the lineage as cash' },
+    supersedesId: nullableStr,
+    successors: { type: 'array', items: lineageSuccessor, description: 'Basis fractions plus cashBasisFraction sum to exactly 1' },
+  },
+} as const;
+
+export const actionDetail = {
+  type: 'object',
+  additionalProperties: false,
+  required: [...actionRequired, 'owner', 'dataset', 'timestamps', 'history', 'lineage'],
+  properties: {
+    ...actionProperties,
+    owner: str,
+    dataset,
+    lifecycle: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['state', 'steps', 'inconsistency'],
+      properties: {
+        state: lifecycleState,
+        steps: { type: 'array', items: lifecycleStep, description: 'Append-only: every issuer revision and chain event, oldest first; superseded revisions are kept' },
+        inconsistency: { ...nullableStr, description: 'Set when the stored evidence cannot form a valid lifecycle; state and steps are then empty' },
+      },
+    },
+    timestamps: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['issuerEffectiveAt', 'issuerCreatedAt', 'configuredActivationAt', 'publicationBlockTime', 'firstObservedActiveAt', 'ingestedAt'],
+      properties: {
+        issuerEffectiveAt: { ...nullableStr, description: 'Effective time on the matched issuer record' },
+        issuerCreatedAt: { ...nullableStr, description: 'When the issuer created the matched record' },
+        configuredActivationAt: { ...nullableStr, description: 'Activation timestamp written to the mint' },
+        publicationBlockTime: { ...nullableStr, description: 'Block time of the transaction that wrote it' },
+        firstObservedActiveAt: { ...nullableStr, description: 'First stored mint-state observation at or after activation' },
+        ingestedAt: { ...nullableStr, description: 'When Corpact stored the matched issuer record' },
+      },
+    },
+    evidence: {
+      type: 'object',
+      additionalProperties: false,
+      required: [...evidenceSummary.required, 'issuerRevisions', 'chain', 'classification', 'issuerRecord'],
+      properties: {
+        ...evidenceSummary.properties,
+        issuerRevisions: {
+          type: 'array',
+          description: 'Every stored revision of the issuer event, including cancelled and superseded ones',
+          items: {
+            type: 'object',
+            additionalProperties: false,
+            required: ['version', 'type', 'status', 'effectiveAt', 'createdAt', 'ingestedAt', 'notes', 'source', 'storedPayloadSha256'],
+            properties: {
+              version: int,
+              type: str,
+              status: { type: 'string', enum: ['Initial', 'Corrected', 'Cancelled', 'Scheduled'] },
+              effectiveAt: nullableStr,
+              createdAt: str,
+              ingestedAt: str,
+              notes: nullableStr,
+              source: { type: 'string', enum: ['fixtures', 'live'] },
+              storedPayloadSha256: nullableStr,
+            },
+          },
+        },
+        chain: incomeDetail.properties.evidence.properties.chain,
+        classification: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['result', 'classifierVersion', 'reasons', 'warnings'],
+          properties: {
+            result: { type: 'string', enum: ['dividend', 'split', 'distribution', 'identity_change', 'unclassified', 'pending'] },
+            classifierVersion: nullableStr,
+            reasons: strings,
+            warnings: strings,
+          },
+        },
+        issuerRecord: { anyOf: [{ type: 'object' }, { type: 'null' }], description: 'The matched issuer record exactly as stored' },
+      },
+    },
+    history: { type: 'array', items: journalEntryV2, description: 'Every recognition and reversal of this action, oldest first' },
+    lineage: { anyOf: [lineageLink, { type: 'null' }], description: 'The lineage link this action wrote, for identity changes' },
+  },
+} as const;
+
+export const mintParams = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['mint'],
+  properties: { mint: { type: 'string', pattern: OWNER_PATTERN, description: 'Token mint address (base58)' } },
+} as const;
+
+export const lineageResponse = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['mint', 'dataset', 'identities', 'links', 'current'],
+  properties: {
+    mint: str,
+    dataset,
+    identities: {
+      type: 'array',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        required: ['id', 'symbol', 'underlyingSymbol', 'underlyingIsin', 'validFrom', 'issuerEventId', 'evidence'],
+        properties: { id: str, symbol: str, underlyingSymbol: nullableStr, underlyingIsin: nullableStr, validFrom: str, issuerEventId: nullableStr, evidence: str },
+      },
+    },
+    links: { type: 'array', items: lineageLink, description: 'Append-only; a corrected link names the link it supersedes' },
+    current: {
+      type: 'array',
+      description: 'Where the basis of the earliest recorded identity is now, traced through every link that is not superseded. Empty when no identity change is recorded',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        required: ['identityId', 'underlyingSymbol', 'basisFraction', 'terminated'],
+        properties: { identityId: nullableStr, underlyingSymbol: nullableStr, basisFraction: decimal, terminated: bool },
+      },
+    },
+  },
+} as const;

@@ -9,3 +9,41 @@ export {
   type IssuerCorporateAction,
   type ObservedTransition,
 } from './actions';
+export {
+  ACTION_KINDS,
+  ACTION_KIND_SPECS,
+  actionKindForIssuerType,
+  type ActionCategory,
+  type ActionKind,
+  type ActionKindSpec,
+  type ClassifierStatus,
+  type LedgerTreatment,
+} from './taxonomy';
+export {
+  LIFECYCLE_STATES,
+  LifecycleError,
+  appendLifecycle,
+  canTransition,
+  currentState,
+  deriveLifecycle,
+  isTerminal,
+  supersededRevisions,
+  type ActionTimestamps,
+  type EvidenceRef,
+  type IssuerRevision,
+  type LifecycleEvidence,
+  type LifecycleState,
+  type LifecycleStep,
+} from './lifecycle';
+export {
+  LineageError,
+  identityChangeLink,
+  reinvestedDistributionFraction,
+  reinvestedSpinOffLink,
+  traceLineage,
+  validateLink,
+  type InstrumentRef,
+  type LineageLink,
+  type LineageLinkKind,
+  type LineageSuccessor,
+} from './lineage';

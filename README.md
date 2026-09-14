@@ -7,7 +7,8 @@ Tokenized stocks such as xStocks pay dividends, split and spin off by rewriting 
 Corpact turns those multiplier changes into evidence-backed accounting, which exchanges, collateral protocols, portfolio trackers and tax tools can build on:
 
 - **Timeline:** every multiplier change for a mint, rebuilt from chain data and verified against live mint state.
-- **Classification:** dividend, split or unclassified, matched to the issuer's corporate-action record, with the reason kept for every result.
+- **Classification:** 18 corporate-action types (cash dividends, withholding refunds, splits, stock dividends, spin-offs, rights, identity changes and more), each matched to the issuer's corporate-action evidence and never to the size or label of the change. Every type states whether real data has validated it; unvalidated types are recognised and never booked ([corporate actions](apps/site/content/docs/actions.md), [ADR-0006](docs/adr/0006-zero-instance-action-types.md)).
+- **Lifecycle and lineage:** each action's append-only lifecycle (announced → confirmed → activated → corrected, reversed or superseded), with every issuer revision kept, and a position lineage that carries basis exactly across identity changes.
 - **Ledger:** dividend quantity and USD value per position, a protected-principal floor, the amount convertible now, and exact reconciliation against on-chain balances.
 - **Coverage:** where history is complete, partial or unsupported. It never guesses, and never reports unknown as zero.
 
@@ -17,8 +18,8 @@ Corpact turns those multiplier changes into evidence-backed accounting, which ex
 
 | Package | What it does |
 |---|---|
-| `@corpact/domain` | Exact `Rational` arithmetic, units, corporate-action types |
-| `@corpact/accounting` | Evidence classifier and protected-floor ledger reducer (pure, deterministic) |
+| `@corpact/domain` | Exact `Rational` arithmetic, units, the action taxonomy, lifecycle state machine and position lineage |
+| `@corpact/accounting` | Evidence classifier and ledger reducer: income, quantity-basis, basis-allocation and identity treatments (pure, deterministic) |
 | `@corpact/solana` | Token-2022 mint decoding, the multiplier timeline (mirrors the program's processor), the transaction parser, a kit-based chain reader |
 | `@corpact/issuers` | Issuer adapters behind `IssuerSource`: recorded fixtures (default) or live |
 | `@corpact/db` | Postgres schema, migrations, outbox, immutable observations |
@@ -60,13 +61,13 @@ Checks: `pnpm test` and `pnpm typecheck` from the root, plus `pnpm --filter @cor
 
 **Website and docs.** `apps/site` is the homepage and developer documentation: guides, concepts, operations, and an API reference generated from the OpenAPI document. Run it with `pnpm --filter @corpact/site dev` at http://localhost:3700. Pages are Markdown files in `apps/site/content/docs`.
 
-**Demo.** `pnpm --filter @corpact/demo demo` needs Surfpool 1.0 and takes about 4½ minutes. It runs three parts:
+**Demo.** From a fresh clone, `pnpm demo` (`tools/demo/run-demo.sh`) checks prerequisites, installs, starts Postgres and runs the demo. It needs Node 24, pnpm 10, Docker and Surfpool 1.0 (or pass `solana-test-validator`), and takes about 5 minutes. The demo creates its own database, tenant, keys and local network, and needs no `.env` or RPC key. It runs three parts:
 
 1. A narrated walkthrough on a local network: position, a dividend with no transfer, the entry, a split that isn't income, and an issuer correction.
-2. The recorded HONx spin-off and STRCx implausible-cash cases, beside the naive reading.
+2. Six recorded cases beside the naive reading: HONx spin-off, STRCx implausible cash, KRAQx rights labelled UnitSplit, SCCOx type churn, LINx withholding refund, AZNx ADR conversion.
 3. The full synthetic trap regression suite.
 
-Synthetic data is labelled in every API response, export and dashboard view. See [docs/demo.md](docs/demo.md). The one-page leave-behind is [docs/findings/what-this-catches.md](docs/findings/what-this-catches.md), regenerated with `pnpm --filter @corpact/demo catches`.
+Synthetic data is labelled in every API response, export and dashboard view. See [docs/demo.md](docs/demo.md). The one mainnet check, the AZNx identity change verified end to end on a real wallet, is scripted separately. `pnpm --filter @corpact/demo lineage-check` needs `SOLANA_RPC_URL` and runs in a scratch database. The one-page leave-behind is [docs/findings/what-this-catches.md](docs/findings/what-this-catches.md), regenerated with `pnpm --filter @corpact/demo catches`.
 
 ## API access
 
@@ -83,6 +84,7 @@ Synthetic data is labelled in every API response, export and dashboard view. See
 - **Monitoring.** `GET /v1/ops/status` (JSON checks) and `GET /v1/ops/metrics` (Prometheus) need `ops:read`; `pnpm cli check` in `apps/worker` runs the same checks. See the [monitoring runbook](docs/ops/monitoring.md).
 - **Independent provider.** Set `RECONCILIATION_RPC_URL` to a second RPC provider, and the worker cross-checks wallet balances and held mints' multiplier state against it. A disagreement pauses conversion for the affected positions and turns monitoring critical, without touching the ledger ([ADR-0004](docs/adr/0004-independent-reconciliation-provider.md)).
 - **Backups.** `tools/ops/restore-drill.sh` dumps the database, restores it into a scratch database, bounds the row counts, and runs `pnpm cli verify-integrity` on the copy. That command checks stored evidence hashes, the append-only guards, and that the journal matches published income. See the [backup and restore runbook](docs/ops/backup-restore.md).
+- **API v2: corporate actions.** `GET /v2/actions?owner=` reports every action applied to a wallet with its type, ledger treatment, validation status and lifecycle state. `GET /v2/actions/{id}` adds the full lifecycle, six distinct timestamps, every issuer revision with its stored hash, and lineage. `GET /v2/taxonomy` lists every type, and `GET /v2/instruments/{mint}/lineage` traces identity changes. v1 keeps its behaviour; the differences are in [API v1 → v2](apps/site/content/docs/reference/api-v1-to-v2.md).
 - **Contract.** The OpenAPI 3.1 document is served at `/v1/openapi.json` and committed at [packages/client/openapi.json](packages/client/openapi.json). The API, that document and the `@corpact/client` types all come from one set of schemas, and a contract test checks real responses against them.
 - **Client.**
 

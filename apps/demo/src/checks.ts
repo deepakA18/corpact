@@ -1,4 +1,4 @@
-import type { IncomeEntry, IncomeResponse, JournalResponse, OpsStatusResponse, Portfolio, YieldResponse } from '@corpact/client';
+import type { ActionsResponse, IncomeEntry, IncomeResponse, JournalResponse, OpsStatusResponse, Portfolio, YieldResponse } from '@corpact/client';
 import { Rational } from '@corpact/domain';
 import type { DemoApi } from './api';
 import type { ExpectedEntry, Scenario, TrapEvent } from './scenario';
@@ -146,7 +146,7 @@ export async function createChecker(api: DemoApi, scenario: Scenario) {
           'DDIVx income is exactly the valued dividends: the split, spin-off and unmatched change add nothing',
           ddiv !== undefined && Rational.fromDecimal(ddiv.dividendIncomeUsd).eq(sum),
           `position income ${ddiv?.dividendIncomeUsd} vs ${valued.length} valued dividends summing to ${sum.toTerminatingDecimal()}`,
-          '"Any increase is income" is wrong: 24 of the recorded increases were not cash dividends',
+          '"Any increase is income" is wrong: 22 of the recorded increases were not cash dividends',
         ),
       );
       checks.push(
@@ -176,6 +176,31 @@ export async function createChecker(api: DemoApi, scenario: Scenario) {
             yields.positions.find((x) => x.symbol === 'DDIVx')?.windows.some((w) => w.window === 'tracked' && w.shareYield !== null && w.excluded === null) === true,
           `DPARx windows: ${dparYield?.windows.map((w) => `${w.window}=${w.excluded?.code ?? w.shareYield}`).join(', ')}`,
           'Partial history is excluded from yield claims',
+        ),
+      );
+
+      // The same spin-off through API v2: the type, treatment and validation v1 can only state in its reasons.
+      const spinOffEvent = scenario.events.find((e) => e.label.startsWith('SP'))!;
+      const v2 = await api.get<ActionsResponse>(`/v2/actions?owner=${owner}&limit=200`);
+      const spinOff = v2.actions.filter((a) => a.symbol === spinOffEvent.symbol && a.type === 'spin_off');
+      checks.push(
+        check(
+          `${spinOffEvent.symbol} SP through API v2: a validated spin-off booked as a basis allocation, activated, with no income`,
+          spinOff.length === 1 &&
+            spinOff[0]!.treatment === 'basis_allocation' &&
+            spinOff[0]!.validation.status === 'validated' &&
+            spinOff[0]!.lifecycle.state === 'activated' &&
+            spinOff[0]!.distributedFraction !== null &&
+            spinOff[0]!.usd === null,
+          spinOff[0] ? `${spinOff[0].type}, ${spinOff[0].treatment}, ${spinOff[0].validation.status}, ${spinOff[0].lifecycle.state}, distributed ${spinOff[0].distributedFraction}` : `${spinOff.length} spin-off actions`,
+          'API v2 reports the action type; v1 keeps showing it as an unclassified adjustment',
+        ),
+      );
+      checks.push(
+        check(
+          'Every v2 action states its validation status and lifecycle, and v2 lists exactly the v1 entries',
+          v2.actions.length === entries.length && v2.actions.every((a) => a.validation.status !== undefined && a.lifecycle.state !== null),
+          `${v2.actions.length} v2 actions, ${entries.length} v1 entries; states ${[...new Set(v2.actions.map((a) => a.lifecycle.state))].join(', ')}`,
         ),
       );
 

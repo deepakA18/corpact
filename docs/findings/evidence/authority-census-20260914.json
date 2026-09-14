@@ -1,0 +1,61 @@
+{
+  "investigated": "2026-09-14",
+  "network": "solana-mainnet",
+  "commitment": "finalized",
+  "source": "fixtures/xstocks/recorded-20260913/assets.json (Solana deployments)",
+  "mints": 832,
+  "extensions": {
+    "MetadataPointer": 832,
+    "PermanentDelegate": 832,
+    "DefaultAccountState": 832,
+    "ScaledUiAmount": 832,
+    "Pausable": 832,
+    "ConfidentialTransferMint": 832,
+    "TransferHook": 832,
+    "TokenMetadata": 832
+  },
+  "permanentDelegates": {
+    "5aMNNLQJwAEeoemTEMkv5NVjqKwvvefRYCQ5Z67HFvEq": 832
+  },
+  "freezeAuthorities": {
+    "JDq14BWvqCRFNu1krb12bcRpbGtJZ1FLEakMw6FdxJNs": 832
+  },
+  "mintAuthorities": {
+    "7pt9tkctJPK7PPNQJ77GKg8ZffSF6QxoMiCFYHxrtaCj": 832
+  },
+  "tradingHaltedAssets": [
+    "CKAHx",
+    "CKHUTx",
+    "CITICx",
+    "JPSTx"
+  ],
+  "delegateHistoryScan": {
+    "delegate": "5aMNNLQJwAEeoemTEMkv5NVjqKwvvefRYCQ5Z67HFvEq",
+    "successfulTransactionsScanned": 1685,
+    "range": [
+      "2025-06-10",
+      "2026-09-03"
+    ],
+    "truncated": false,
+    "tokenInstructionTypes": {
+      "initializeMetadataPointer": 1327,
+      "initializePermanentDelegate": 1327,
+      "initializeDefaultAccountState": 1327,
+      "initializeScaledUiAmountConfig": 1327,
+      "initializePausableConfig": 1327,
+      "initializeConfidentialTransferMint": 1327,
+      "initializeTransferHook": 1327,
+      "initializeMint": 1327,
+      "initializeTokenMetadata": 1327,
+      "setAuthority": 2655,
+      "updateTransferHook": 1327,
+      "transfer": 1,
+      "getAccountDataSize": 3,
+      "initializeImmutableOwner": 3,
+      "initializeAccount3": 3,
+      "mintTo": 4,
+      "transferChecked": 1
+    },
+    "transfersOrBurnsOutOfThirdPartyAccounts": 0
+  }
+}
