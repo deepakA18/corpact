@@ -27,6 +27,14 @@ export function truncateDecimal(decimal: string, places: number): string {
   return fraction === undefined ? decimal : `${whole}.${fraction.slice(0, places)}`;
 }
 
+/** Display a decimal ratio string as a percentage, cut toward zero, without floating point. */
+export function formatPercent(decimal: string, places = 2): string {
+  const negative = decimal.startsWith('-');
+  const [whole = '0', fraction = ''] = (negative ? decimal.slice(1) : decimal).split('.');
+  const units = `${whole}${fraction.padEnd(2, '0').slice(0, 2)}`.replace(/^0+(?=\d)/, '');
+  return `${negative ? '-' : ''}${units}.${fraction.slice(2).padEnd(places, '0').slice(0, places)}%`;
+}
+
 /** Trim trailing zeros of a decimal quantity string for display. */
 export function formatQuantity(decimal: string): string {
   if (!decimal.includes('.')) return decimal;

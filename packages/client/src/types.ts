@@ -17,3 +17,6 @@ export type IncomeResponse = FromSchema<typeof s.incomeResponse>;
 export type IncomeDetail = FromSchema<typeof s.incomeDetail>;
 export type JournalEntry = FromSchema<typeof s.journalEntry>;
 export type JournalResponse = FromSchema<typeof s.journalResponse>;
+export type YieldResponse = FromSchema<typeof s.yieldResponse>;
+export type OpsStatusResponse = FromSchema<typeof s.opsStatusResponse>;
+export type ExportDataset = 'journal' | 'income';

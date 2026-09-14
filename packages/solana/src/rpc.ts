@@ -85,25 +85,32 @@ export function createChainReader(options: ChainReaderOptions) {
   const base64 = getBase64Encoder();
   const addressDecoder = getAddressDecoder();
 
+  // Infrastructure budget (PLAN §14): what this process has spent on the provider.
+  const stats = { requests: 0, retries: 0, failures: 0 };
+
   async function call<T>(label: string, request: () => Promise<T>): Promise<T> {
     let lastError: unknown;
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
       try {
+        stats.requests++;
         return await limit(request);
       } catch (err) {
         lastError = err;
         if (attempt === maxAttempts) break;
         options.onRetry?.(label, attempt, err);
+        stats.retries++;
         // Provider quotas refill over seconds; back off much harder on 429 than on transient network errors.
         const base = isRateLimited(err) ? 2_000 : 500;
         await sleep(Math.min(60_000, base * 2 ** (attempt - 1)) * (0.5 + Math.random() / 2));
       }
     }
+    stats.failures++;
     throw new ChainReadError(label, `failed after ${maxAttempts} attempts`, { cause: lastError });
   }
 
   return {
     rpcUrl: options.rpcUrl,
+    stats: () => ({ ...stats }),
 
     /** Latest finalized slot and its Clock timestamp. Settlement evidence — never local wall-clock time. */
     async finalizedClock(): Promise<{ slot: bigint; unixTime: bigint }> {

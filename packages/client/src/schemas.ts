@@ -393,6 +393,99 @@ export const journalResponse = {
   },
 } as const;
 
+const yieldWindow = {
+  type: 'object',
+  additionalProperties: false,
+  required: [
+    'window', 'start', 'end', 'days', 'partial', 'coveredStart', 'incomeUsd', 'valuedDividends', 'unvaluedDividends',
+    'dividendQuantity', 'averageQuantity', 'shareYield',
+  ],
+  properties: {
+    window: { type: 'string', enum: ['trailing_30d', 'trailing_365d', 'tracked'] },
+    start: str,
+    end: str,
+    days: int,
+    partial: { ...bool, description: 'Coverage begins after the window starts; figures cover only the tracked part' },
+    coveredStart: str,
+    incomeUsd: { ...decimal, description: 'Valued dividends only; unvalued ones are counted separately' },
+    valuedDividends: int,
+    unvaluedDividends: int,
+    dividendQuantity: { ...decimal, description: 'Current split basis' },
+    averageQuantity: { ...nullableDecimal, description: 'Time-weighted, current split basis' },
+    shareYield: { ...nullableDecimal, description: 'Shares gained ÷ average shares held; not annualized' },
+  },
+} as const;
+
+export const yieldResponse = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['owner', 'definitions', 'positions'],
+  properties: {
+    owner: str,
+    definitions: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['shareYield', 'trailingNetDistributionPerShare', 'distributionYield'],
+      properties: { shareYield: str, trailingNetDistributionPerShare: str, distributionYield: str },
+    },
+    positions: {
+      type: 'array',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        required: ['mint', 'symbol', 'status', 'asOf', 'windows', 'trailingDistribution', 'distributionYield'],
+        properties: {
+          mint: str,
+          symbol: str,
+          status: { type: 'string', enum: ['complete', 'partial', 'unsupported'] },
+          asOf: nullableStr,
+          windows: { type: 'array', items: yieldWindow },
+          trailingDistribution: {
+            type: 'object',
+            additionalProperties: false,
+            required: ['windowStart', 'windowEnd', 'netPerShare', 'distributions', 'missingNetCash', 'partial'],
+            properties: {
+              windowStart: str,
+              windowEnd: str,
+              netPerShare: nullableDecimal,
+              distributions: int,
+              missingNetCash: int,
+              partial: bool,
+            },
+          },
+          distributionYield: {
+            type: 'object',
+            additionalProperties: false,
+            required: ['value', 'reason'],
+            properties: { value: { type: 'null' }, reason: str },
+          },
+        },
+      },
+    },
+  },
+} as const;
+
+const checkStatus = { type: 'string', enum: ['ok', 'warn', 'critical'] } as const;
+
+export const opsStatusResponse = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['status', 'checkedAt', 'checks'],
+  properties: {
+    status: checkStatus,
+    checkedAt: str,
+    checks: {
+      type: 'array',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        required: ['name', 'status', 'value', 'threshold', 'message'],
+        properties: { name: str, status: checkStatus, value: { type: ['number', 'null'] }, threshold: str, message: str },
+      },
+    },
+  },
+} as const;
+
 export const ownerQuery = {
   type: 'object',
   additionalProperties: false,
@@ -410,6 +503,21 @@ export const incomeQuery = {
     owner,
     limit: { type: 'integer', minimum: 1, maximum: 200, default: 50 },
     offset: { type: 'integer', minimum: 0, default: 0 },
+  },
+} as const;
+
+export const exportQuery = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['owner'],
+  properties: {
+    owner,
+    dataset: {
+      type: 'string',
+      enum: ['journal', 'income'],
+      default: 'journal',
+      description: 'journal: every recognition and reversal (accounting-grade); income: current entries with revisions',
+    },
   },
 } as const;
 

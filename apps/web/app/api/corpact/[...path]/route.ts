@@ -5,7 +5,8 @@ import type { NextRequest } from 'next/server';
  * environment; the browser never sees it. Only the routes the dashboard needs pass.
  */
 const API_URL = (process.env.CORPACT_API_URL ?? 'http://127.0.0.1:4600').replace(/\/+$/, '');
-const ALLOWED = /^v1\/(assets|portfolio|income|income\/\d+|wallets|wallets\/sync|wallets\/[1-9A-HJ-NP-Za-km-z]{32,44}\/status)$/;
+const ALLOWED = /^v1\/(assets|portfolio|income|income\/\d+|yield|export|wallets|wallets\/sync|wallets\/[1-9A-HJ-NP-Za-km-z]{32,44}\/status)$/;
+const FORWARDED_HEADERS = ['retry-after', 'content-disposition'];
 
 type Context = { params: Promise<{ path: string[] }> };
 
@@ -25,7 +26,7 @@ async function forward(request: NextRequest, context: Context, method: 'GET' | '
       method,
       headers: {
         authorization: `Bearer ${apiKey}`,
-        accept: 'application/json',
+        accept: request.headers.get('accept') ?? 'application/json',
         ...(method === 'POST' ? { 'content-type': 'application/json' } : {}),
       },
       body: method === 'POST' ? await request.text() : undefined,
@@ -40,7 +41,7 @@ async function forward(request: NextRequest, context: Context, method: 'GET' | '
     headers: {
       'content-type': upstream.headers.get('content-type') ?? 'application/json',
       'cache-control': 'no-store',
-      ...(upstream.headers.get('retry-after') ? { 'retry-after': upstream.headers.get('retry-after')! } : {}),
+      ...Object.fromEntries(FORWARDED_HEADERS.flatMap((name) => (upstream.headers.has(name) ? [[name, upstream.headers.get(name)!]] : []))),
     },
   });
 }

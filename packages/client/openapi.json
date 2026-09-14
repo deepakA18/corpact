@@ -2418,6 +2418,970 @@
         }
       }
     },
+    "/v1/yield": {
+      "get": {
+        "summary": "Income and share yield per window, and trailing net distribution per share, with coverage",
+        "tags": [
+          "ledger"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+            },
+            "in": "query",
+            "name": "owner",
+            "required": true,
+            "description": "Solana wallet address (base58)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "owner",
+                    "definitions",
+                    "positions"
+                  ],
+                  "properties": {
+                    "owner": {
+                      "type": "string"
+                    },
+                    "definitions": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "shareYield",
+                        "trailingNetDistributionPerShare",
+                        "distributionYield"
+                      ],
+                      "properties": {
+                        "shareYield": {
+                          "type": "string"
+                        },
+                        "trailingNetDistributionPerShare": {
+                          "type": "string"
+                        },
+                        "distributionYield": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "positions": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "mint",
+                          "symbol",
+                          "status",
+                          "asOf",
+                          "windows",
+                          "trailingDistribution",
+                          "distributionYield"
+                        ],
+                        "properties": {
+                          "mint": {
+                            "type": "string"
+                          },
+                          "symbol": {
+                            "type": "string"
+                          },
+                          "status": {
+                            "type": "string",
+                            "enum": [
+                              "complete",
+                              "partial",
+                              "unsupported"
+                            ]
+                          },
+                          "asOf": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "windows": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "window",
+                                "start",
+                                "end",
+                                "days",
+                                "partial",
+                                "coveredStart",
+                                "incomeUsd",
+                                "valuedDividends",
+                                "unvaluedDividends",
+                                "dividendQuantity",
+                                "averageQuantity",
+                                "shareYield"
+                              ],
+                              "properties": {
+                                "window": {
+                                  "type": "string",
+                                  "enum": [
+                                    "trailing_30d",
+                                    "trailing_365d",
+                                    "tracked"
+                                  ]
+                                },
+                                "start": {
+                                  "type": "string"
+                                },
+                                "end": {
+                                  "type": "string"
+                                },
+                                "days": {
+                                  "type": "integer"
+                                },
+                                "partial": {
+                                  "type": "boolean",
+                                  "description": "Coverage begins after the window starts; figures cover only the tracked part"
+                                },
+                                "coveredStart": {
+                                  "type": "string"
+                                },
+                                "incomeUsd": {
+                                  "type": "string",
+                                  "pattern": "^-?\\d+(\\.\\d+)?$",
+                                  "description": "Valued dividends only; unvalued ones are counted separately"
+                                },
+                                "valuedDividends": {
+                                  "type": "integer"
+                                },
+                                "unvaluedDividends": {
+                                  "type": "integer"
+                                },
+                                "dividendQuantity": {
+                                  "type": "string",
+                                  "pattern": "^-?\\d+(\\.\\d+)?$",
+                                  "description": "Current split basis"
+                                },
+                                "averageQuantity": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ],
+                                  "pattern": "^-?\\d+(\\.\\d+)?$",
+                                  "description": "Time-weighted, current split basis"
+                                },
+                                "shareYield": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ],
+                                  "pattern": "^-?\\d+(\\.\\d+)?$",
+                                  "description": "Shares gained ÷ average shares held; not annualized"
+                                }
+                              }
+                            }
+                          },
+                          "trailingDistribution": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "windowStart",
+                              "windowEnd",
+                              "netPerShare",
+                              "distributions",
+                              "missingNetCash",
+                              "partial"
+                            ],
+                            "properties": {
+                              "windowStart": {
+                                "type": "string"
+                              },
+                              "windowEnd": {
+                                "type": "string"
+                              },
+                              "netPerShare": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "pattern": "^-?\\d+(\\.\\d+)?$"
+                              },
+                              "distributions": {
+                                "type": "integer"
+                              },
+                              "missingNetCash": {
+                                "type": "integer"
+                              },
+                              "partial": {
+                                "type": "boolean"
+                              }
+                            }
+                          },
+                          "distributionYield": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "value",
+                              "reason"
+                            ],
+                            "properties": {
+                              "value": {
+                                "type": "null"
+                              },
+                              "reason": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/export": {
+      "get": {
+        "summary": "CSV export: the append-only journal (default) or current income entries, with confidence fields",
+        "tags": [
+          "ledger"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+            },
+            "in": "query",
+            "name": "owner",
+            "required": true,
+            "description": "Solana wallet address (base58)"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "journal",
+                "income"
+              ],
+              "default": "journal"
+            },
+            "in": "query",
+            "name": "dataset",
+            "required": false,
+            "description": "journal: every recognition and reversal (accounting-grade); income: current entries with revisions"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "CSV (RFC 4180, CRLF line endings)",
+            "content": {
+              "text/csv": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ops/status": {
+      "get": {
+        "summary": "Monitoring checks with thresholds (PLAN §14)",
+        "tags": [
+          "ops"
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "status",
+                    "checkedAt",
+                    "checks"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "ok",
+                        "warn",
+                        "critical"
+                      ]
+                    },
+                    "checkedAt": {
+                      "type": "string"
+                    },
+                    "checks": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "name",
+                          "status",
+                          "value",
+                          "threshold",
+                          "message"
+                        ],
+                        "properties": {
+                          "name": {
+                            "type": "string"
+                          },
+                          "status": {
+                            "type": "string",
+                            "enum": [
+                              "ok",
+                              "warn",
+                              "critical"
+                            ]
+                          },
+                          "value": {
+                            "type": [
+                              "number",
+                              "null"
+                            ]
+                          },
+                          "threshold": {
+                            "type": "string"
+                          },
+                          "message": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ops/metrics": {
+      "get": {
+        "summary": "Prometheus metrics (scrape with the key as a bearer token)",
+        "tags": [
+          "ops"
+        ],
+        "responses": {
+          "200": {
+            "description": "Prometheus text exposition 0.0.4",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/journal": {
       "get": {
         "summary": "Append-only audit trail: every recognition and reversal of income, newest first",

@@ -2,12 +2,13 @@ import cors from '@fastify/cors';
 import rateLimit from '@fastify/rate-limit';
 import swagger from '@fastify/swagger';
 import Fastify, { type FastifyRequest, type FastifyServerOptions } from 'fastify';
-import { positionView } from '@corpact/accounting';
+import { positionView, trailingDistributionPerShare, windowMetrics } from '@corpact/accounting';
 import { schemas } from '@corpact/client';
-import { enqueueJob, withTransaction, type Db } from '@corpact/db';
+import { collectSnapshot, enqueueJob, evaluateChecks, toPrometheus, withTransaction, type Db, type MonitoringSnapshot } from '@corpact/db';
 import { Rational } from '@corpact/domain';
 import { float64FromBits, isAddress } from '@corpact/solana';
 import type { AccessStore, Scope } from './access';
+import { toCsv } from './csv';
 import { hashApiKey, type ApiKeyIdentity, type ApiKeyStore } from './keys';
 
 export const API_VERSION = '0.1.0';
@@ -16,6 +17,30 @@ export const DEFAULT_DATABASE_URL = 'postgres://parityfi:parityfi-dev@127.0.0.1:
 const PUBLIC_ROUTES = new Set(['/v1/health', '/v1/openapi.json']);
 const CONVERSION_NOT_ENABLED = 'Conversion is not enabled in this release';
 const NO_PRICE_SOURCE = 'No event-time price source is configured; USD values come only from issuer net cash';
+const EXPORT_ROW_LIMIT = 50_000;
+const DAY = 86_400n;
+
+const YIELD_DEFINITIONS = {
+  shareYield:
+    'Dividend-attributed shares gained ÷ time-weighted average shares held over the covered part of the window, in the current split basis. Not annualized. Needs no price; it approximates net dividend yield at the prices the issuer reinvested at. Windows starting before coverage are marked partial.',
+  trailingNetDistributionPerShare:
+    "Sum of issuer-verified net cash per share over the trailing 365 days, normalized to today's split basis. Null when any distribution lacks issuer net cash; partial when chain history does not reach the window start.",
+  distributionYield: 'Trailing net distribution per share ÷ current share price. Unavailable: no price source is configured.',
+} as const;
+
+const JOURNAL_CSV_COLUMNS = [
+  'recorded_at', 'entry_type', 'sign', 'owner', 'symbol', 'mint', 'effective_at', 'kind', 'quantity', 'quantity_display', 'split_factor', 'usd',
+  'usd_rounded', 'valuation', 'issuer_event_id', 'issuer_revision', 'journal_id', 'reverses_journal_id', 'change_reason', 'change_detail', 'position_status',
+  'position_reconciled', 'coverage_start',
+] as const;
+
+const INCOME_CSV_COLUMNS = [
+  'effective_at', 'symbol', 'mint', 'kind', 'quantity', 'quantity_display', 'split_factor', 'usd', 'usd_rounded', 'valuation', 'revision', 'corrected_at', 'warnings',
+  'reasons', 'position_status', 'position_reconciled', 'coverage_start',
+] as const;
+
+const ratio = (num: string, den: string) => Rational.of(BigInt(num), BigInt(den));
+const isoOfDate = (value: unknown) => (value == null ? null : new Date(value as string | Date).toISOString());
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -36,6 +61,8 @@ export interface AppOptions {
   authFailuresPerMinute: number;
   /** Only needed when a browser calls the API directly; the demo dashboard goes through its own server. */
   corsOrigin?: string | undefined;
+  /** Injectable for tests; defaults to reading the ledger database. */
+  collectMonitoring?: (db: Db) => Promise<MonitoringSnapshot>;
   logger?: FastifyServerOptions['logger'];
 }
 
@@ -582,6 +609,222 @@ export async function buildApp(options: AppOptions) {
           issuerRecord: r.action_payload ? { source: r.action_source, evidenceSha256: r.evidence_sha256, record: r.action_payload } : null,
         },
       };
+    },
+  );
+
+  app.get(
+    '/v1/yield',
+    {
+      config: { scope: 'ledger:read' },
+      schema: {
+        tags: ['ledger'],
+        summary: 'Income and share yield per window, and trailing net distribution per share, with coverage',
+        querystring: schemas.ownerQuery,
+        response: { 200: schemas.yieldResponse, ...errors },
+      },
+    },
+    async (request) => {
+      const owner = await authorizeWallet(request, (request.query as { owner: string }).owner);
+      const { rows: positionRows } = await db.query(
+        `SELECT p.id, p.mint, p.status, p.coverage_start_unix, p.coverage_end_unix, a.symbol
+           FROM position_epochs p JOIN assets a ON a.mint = p.mint
+          WHERE p.owner = $1
+          ORDER BY a.symbol`,
+        [owner],
+      );
+
+      const positions = [];
+      for (const p of positionRows) {
+        const [samples, dividends, splits, actions, cursor] = await Promise.all([
+          db.query('SELECT effective_unix, quantity_num, quantity_den FROM position_quantity_samples WHERE position_epoch_id = $1 ORDER BY seq', [p.id]),
+          db.query(`SELECT effective_unix, quantity_num, quantity_den, usd FROM income_entries WHERE position_epoch_id = $1 AND kind = 'dividend'`, [p.id]),
+          db.query(`SELECT effective_unix, split_factor_num, split_factor_den FROM income_entries WHERE position_epoch_id = $1 AND kind = 'split'`, [p.id]),
+          db.query(
+            `SELECT v.effective_unix, m.classification, m.net_cash_per_share, m.split_factor_num, m.split_factor_den
+               FROM multiplier_versions v JOIN action_matches m ON m.multiplier_version_id = v.id AND m.superseded_at IS NULL
+              WHERE v.mint = $1 AND v.status IN ('active', 'orphaned') AND m.classification IN ('dividend', 'split')`,
+            [p.mint],
+          ),
+          db.query('SELECT state FROM sync_cursors WHERE stream = $1', [`multiplier-timeline:${p.mint}`]),
+        ]);
+
+        const end = BigInt(p.coverage_end_unix);
+        const coverageStart = p.status === 'unsupported' || p.coverage_start_unix === null ? null : BigInt(p.coverage_start_unix);
+        const quantitySamples = samples.rows.map((r) => ({ unix: BigInt(r.effective_unix), quantity: ratio(r.quantity_num, r.quantity_den) }));
+        const dividendPoints = dividends.rows.map((r) => ({
+          unix: BigInt(r.effective_unix),
+          quantity: ratio(r.quantity_num, r.quantity_den),
+          usd: r.usd === null ? null : Rational.fromDecimal(r.usd),
+        }));
+        const splitPoints = splits.rows.map((r) => ({ unix: BigInt(r.effective_unix), factor: ratio(r.split_factor_num, r.split_factor_den) }));
+
+        const specs: Array<{ window: 'trailing_30d' | 'trailing_365d' | 'tracked'; start: bigint }> = [
+          { window: 'trailing_30d', start: end - 30n * DAY },
+          { window: 'trailing_365d', start: end - 365n * DAY },
+          ...(coverageStart !== null && coverageStart < end ? [{ window: 'tracked' as const, start: coverageStart }] : []),
+        ];
+        const windows =
+          p.status === 'unsupported'
+            ? []
+            : specs.map(({ window, start }) => {
+                const m = windowMetrics({ samples: quantitySamples, dividends: dividendPoints, splits: splitPoints, coverageStart, window: { start, end } });
+                return {
+                  window,
+                  start: iso(start.toString()),
+                  end: iso(end.toString()),
+                  days: Number((end - start) / DAY),
+                  partial: m.partial,
+                  coveredStart: iso(m.coveredStart.toString()),
+                  incomeUsd: exact(m.incomeUsd),
+                  valuedDividends: m.valuedDividends,
+                  unvaluedDividends: m.unvaluedDividends,
+                  dividendQuantity: exact(m.dividendQuantity),
+                  averageQuantity: m.averageQuantity ? m.averageQuantity.toFixed(8) : null,
+                  shareYield: m.shareYield ? m.shareYield.toFixed(10) : null,
+                };
+              });
+
+        const assetSplits = actions.rows
+          .filter((r) => r.classification === 'split')
+          .map((r) => ({ unix: BigInt(r.effective_unix), factor: ratio(r.split_factor_num, r.split_factor_den) }));
+        const distributions = actions.rows
+          .filter((r) => r.classification === 'dividend')
+          .map((r) => ({ unix: BigInt(r.effective_unix), netCashPerShare: r.net_cash_per_share === null ? null : Rational.fromDecimal(r.net_cash_per_share) }));
+        const knownFrom = cursor.rows[0]?.state?.knownFrom?.unixTime as string | undefined;
+        const ttmStart = end - 365n * DAY;
+        const ttm = trailingDistributionPerShare({
+          distributions,
+          splits: assetSplits,
+          knownFrom: knownFrom === undefined ? null : BigInt(knownFrom),
+          window: { start: ttmStart, end },
+        });
+
+        positions.push({
+          mint: p.mint,
+          symbol: p.symbol,
+          status: p.status,
+          asOf: iso(p.coverage_end_unix),
+          windows,
+          trailingDistribution: {
+            windowStart: iso(ttmStart.toString()),
+            windowEnd: iso(end.toString()),
+            netPerShare: ttm.perShare ? exact(ttm.perShare) : null,
+            distributions: ttm.distributions,
+            missingNetCash: ttm.missingNetCash,
+            partial: ttm.partial,
+          },
+          distributionYield: { value: null, reason: 'No price source is configured' },
+        });
+      }
+      return { owner, definitions: YIELD_DEFINITIONS, positions };
+    },
+  );
+
+  app.get(
+    '/v1/export',
+    {
+      config: { scope: 'ledger:read' },
+      schema: {
+        tags: ['ledger'],
+        summary: 'CSV export: the append-only journal (default) or current income entries, with confidence fields',
+        querystring: schemas.exportQuery,
+        response: {
+          200: { description: 'CSV (RFC 4180, CRLF line endings)', content: { 'text/csv': { schema: { type: 'string' } } } },
+          422: schemas.errorResponse,
+          ...errors,
+        },
+      },
+    },
+    async (request, reply) => {
+      const q = request.query as { owner: string; dataset: 'journal' | 'income' };
+      const owner = await authorizeWallet(request, q.owner);
+      // Exact values for reconciliation, then rounded ones a spreadsheet can hold (it keeps ~15 significant digits).
+      const amounts = (r: Record<string, any>) => {
+        const quantity = ratio(r.quantity_num, r.quantity_den);
+        const usd = r.usd === null ? null : Rational.fromDecimal(r.usd);
+        return [
+          exact(quantity),
+          towardZero(quantity, Number(r.decimals)),
+          r.split_factor_num === null ? null : exact(ratio(r.split_factor_num, r.split_factor_den)),
+          usd === null ? null : exact(usd),
+          usd === null ? null : usd.toFixed(2),
+        ];
+      };
+      let csv: string;
+      if (q.dataset === 'journal') {
+        const { rows } = await db.query(
+          `SELECT j.*, a.symbol, a.decimals, p.status AS position_status, p.reconciled, p.coverage_start_unix
+             FROM ledger_journal j JOIN assets a ON a.mint = j.mint
+             LEFT JOIN position_epochs p ON p.owner = j.owner AND p.mint = j.mint
+            WHERE j.owner = $1
+            ORDER BY j.id
+            LIMIT $2`,
+          [owner, EXPORT_ROW_LIMIT + 1],
+        );
+        if (rows.length > EXPORT_ROW_LIMIT) throw new HttpError(422, `Export exceeds ${EXPORT_ROW_LIMIT} rows; page through /v1/journal instead`);
+        csv = toCsv(
+          JOURNAL_CSV_COLUMNS,
+          rows.map((r) => [
+            isoOfDate(r.recorded_at), r.entry_type, r.entry_type === 'reversal' ? '-1' : '1', r.owner, r.symbol, r.mint, iso(r.effective_unix), r.kind,
+            ...amounts(r),
+            r.valuation, r.issuer_event_id, r.issuer_revision, String(r.id), r.reverses_id === null ? null : String(r.reverses_id),
+            r.change_reason, r.change_detail, r.position_status ?? null, r.reconciled ?? null, iso(r.coverage_start_unix ?? null),
+          ]),
+        );
+      } else {
+        const { rows } = await db.query(
+          `SELECT e.*, p.mint, p.status AS position_status, p.reconciled, p.coverage_start_unix, a.symbol, a.decimals
+             FROM income_entries e JOIN position_epochs p ON p.id = e.position_epoch_id JOIN assets a ON a.mint = p.mint
+            WHERE p.owner = $1
+            ORDER BY e.effective_unix, e.id
+            LIMIT $2`,
+          [owner, EXPORT_ROW_LIMIT + 1],
+        );
+        if (rows.length > EXPORT_ROW_LIMIT) throw new HttpError(422, `Export exceeds ${EXPORT_ROW_LIMIT} rows; page through /v1/income instead`);
+        csv = toCsv(
+          INCOME_CSV_COLUMNS,
+          rows.map((r) => [
+            iso(r.effective_unix), r.symbol, r.mint, r.kind,
+            ...amounts(r),
+            r.valuation, r.interpretation_revision, isoOfDate(r.last_corrected_at),
+            ((r.warnings as string[] | null) ?? []).join(' | '), ((r.reasons as string[] | null) ?? []).join(' | '),
+            r.position_status, r.reconciled, iso(r.coverage_start_unix),
+          ]),
+        );
+      }
+      const filename = `corpact-${q.dataset}-${owner.slice(0, 8)}-${new Date().toISOString().slice(0, 10)}.csv`;
+      return reply.type('text/csv; charset=utf-8').header('content-disposition', `attachment; filename="${filename}"`).send(csv);
+    },
+  );
+
+  const collect = options.collectMonitoring ?? ((database: Db) => collectSnapshot(database));
+
+  app.get(
+    '/v1/ops/status',
+    {
+      config: { scope: 'ops:read' },
+      schema: { tags: ['ops'], summary: 'Monitoring checks with thresholds (PLAN §14)', response: { 200: schemas.opsStatusResponse, ...errors } },
+    },
+    async () => {
+      const snapshot = await collect(db);
+      const result = evaluateChecks(snapshot);
+      return { status: result.status, checkedAt: new Date(snapshot.nowUnix * 1000).toISOString(), checks: result.checks };
+    },
+  );
+
+  app.get(
+    '/v1/ops/metrics',
+    {
+      config: { scope: 'ops:read' },
+      schema: {
+        tags: ['ops'],
+        summary: 'Prometheus metrics (scrape with the key as a bearer token)',
+        response: { 200: { description: 'Prometheus text exposition 0.0.4', content: { 'text/plain': { schema: { type: 'string' } } } }, ...errors },
+      },
+    },
+    async (_request, reply) => {
+      const snapshot = await collect(db);
+      return reply.type('text/plain; version=0.0.4; charset=utf-8').send(toPrometheus(snapshot, evaluateChecks(snapshot)));
     },
   );
 

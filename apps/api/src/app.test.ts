@@ -1,7 +1,7 @@
 import Ajv from 'ajv';
 import { describe, expect, it } from 'vitest';
 import { schemas } from '@corpact/client';
-import type { Db } from '@corpact/db';
+import type { Db, MonitoringSnapshot } from '@corpact/db';
 import { bitsFromFloat64 } from '@corpact/solana';
 import type { AccessStore, Scope } from './access';
 import { buildApp, type AppOptions } from './app';
@@ -12,6 +12,7 @@ const OTHER = '9Eis2fKZpAcZyVSbDdnuBZJ2f74SkSjAC7dx1GsAhNwz';
 const KOX = 'XsaBXg8dU5cPM6ehmVctMkVqoiRG2ZjMo1cyBJ3AykQ';
 const FULL_KEY = 'cpk_test_full_access_key_for_unit_tests';
 const READ_KEY = 'cpk_test_read_only_key_for_unit_tests';
+const OPS_KEY = 'cpk_test_operations_key_for_unit_tests';
 const full = { authorization: `Bearer ${FULL_KEY}` };
 const readOnly = { authorization: `Bearer ${READ_KEY}` };
 
@@ -100,6 +101,7 @@ const journalRow = {
   change_detail: 'dividend per issuer action ee3e95e7 revision 1 → dividend per issuer action ee3e95e7 revision 2',
   recorded_at: new Date('2026-09-13T20:00:00Z'),
   symbol: 'KOx',
+  decimals: 8,
 };
 
 const detailRow = {
@@ -140,6 +142,16 @@ async function fakeQuery(sql: string) {
         ? [{ status: 'queued' }]
         : sql.includes('INSERT INTO jobs_outbox')
           ? [{}]
+          : sql.includes('FROM position_quantity_samples')
+            ? [{ effective_unix: '1761239067', quantity_num: '1990144560', quantity_den: '100000000' }]
+          : sql.includes("FROM income_entries WHERE position_epoch_id = $1 AND kind = 'dividend'")
+            ? [{ effective_unix: '1781481300', quantity_num: '9059763073', quantity_den: '100000000000', usd: '7.4851762504' }]
+          : sql.includes("FROM income_entries WHERE position_epoch_id = $1 AND kind = 'split'")
+            ? []
+          : sql.includes('FROM multiplier_versions v JOIN action_matches')
+            ? [{ effective_unix: '1781481300', classification: 'dividend', net_cash_per_share: '0.371', split_factor_num: null, split_factor_den: null }]
+          : sql.includes('FROM sync_cursors')
+            ? [{ state: { knownFrom: { unixTime: '1759353351' } } }]
           : sql.includes('FROM ledger_journal')
             ? [journalRow]
           : sql.includes('JOIN multiplier_versions')
@@ -172,7 +184,9 @@ const keyStore: ApiKeyStore = {
       ? { id: '1', name: 'full', tenantId: '7', tenant: 'acme', scopes: ALL }
       : hash === hashApiKey(READ_KEY)
         ? { id: '2', name: 'read', tenantId: '7', tenant: 'acme', scopes: ['assets:read', 'ledger:read'] }
-        : null,
+        : hash === hashApiKey(OPS_KEY)
+          ? { id: '3', name: 'ops', tenantId: '7', tenant: 'acme', scopes: ['ops:read'] }
+          : null,
   markUsed: async () => {},
 };
 
@@ -203,6 +217,7 @@ describe('API authentication', () => {
     expect(Object.keys(spec.paths)).toEqual(
       expect.arrayContaining([
         '/v1/assets', '/v1/portfolio', '/v1/income', '/v1/income/{id}', '/v1/journal', '/v1/wallets', '/v1/wallets/sync', '/v1/wallets/{owner}/status',
+        '/v1/yield', '/v1/export', '/v1/ops/status', '/v1/ops/metrics',
       ]),
     );
     expect(spec.paths['/v1/health'].get.security).toEqual([]);
@@ -245,6 +260,8 @@ describe('API scopes and tenancy', () => {
     [`/v1/income?owner=${OTHER}`],
     [`/v1/income/10?owner=${OTHER}`],
     [`/v1/journal?owner=${OTHER}`],
+    [`/v1/yield?owner=${OTHER}`],
+    [`/v1/export?owner=${OTHER}`],
     [`/v1/wallets/${OTHER}/status`],
   ])('answers 404 for a wallet the tenant has not registered: %s', async (url) => {
     const res = await (await app()).inject({ url, headers: full });
@@ -307,6 +324,7 @@ describe('API responses match the published contract', () => {
     ['GET', `/v1/income?owner=${OWNER}`, undefined, schemas.incomeResponse],
     ['GET', `/v1/income/10?owner=${OWNER}`, undefined, schemas.incomeDetail],
     ['GET', `/v1/journal?owner=${OWNER}`, undefined, schemas.journalResponse],
+    ['GET', `/v1/yield?owner=${OWNER}`, undefined, schemas.yieldResponse],
     ['POST', '/v1/wallets/sync', { owner: OTHER }, schemas.syncRequestResponse],
   ] as const;
 
@@ -338,6 +356,91 @@ describe('API responses match the published contract', () => {
     const body = (await (await app()).inject({ url: `/v1/portfolio?owner=${OWNER}`, headers: full })).json();
     // The fixture floor is the recorded KOx floor rounded to 8 places, so availability is 1e-8 above the live 0.25861024.
     expect(body.positions[0]).toMatchObject({ protectedQuantity: '20.00766460', availableQuantity: '0.25861025', reconciled: true });
+  });
+});
+
+describe('API yield and export', () => {
+  it('reports share yield over the covered part of each window, marking windows that start before coverage', async () => {
+    const body = (await (await app()).inject({ url: `/v1/yield?owner=${OWNER}`, headers: readOnly })).json();
+    const [kox] = body.positions;
+    const byWindow = Object.fromEntries(kox.windows.map((w: { window: string }) => [w.window, w]));
+    expect(Object.keys(byWindow)).toEqual(['trailing_30d', 'trailing_365d', 'tracked']);
+    // 0.09059763073 dividend shares over 19.9014456 held since coverage began.
+    expect(byWindow.trailing_365d).toMatchObject({ partial: true, coveredStart: '2025-10-23T17:04:27.000Z', valuedDividends: 1, unvaluedDividends: 0 });
+    expect(byWindow.trailing_365d.shareYield).toMatch(/^0\.0045/);
+    expect(byWindow.trailing_30d).toMatchObject({ partial: false, valuedDividends: 0, incomeUsd: '0' });
+    expect(kox.trailingDistribution).toMatchObject({ netPerShare: '0.371', distributions: 1, missingNetCash: 0, partial: true });
+    expect(kox.distributionYield.value).toBeNull();
+  });
+
+  it('exports the journal as CSV with confidence fields and a download filename', async () => {
+    const res = await (await app()).inject({ url: `/v1/export?owner=${OWNER}`, headers: readOnly });
+    expect(res.statusCode).toBe(200);
+    expect(res.headers['content-type']).toMatch(/^text\/csv/);
+    expect(res.headers['content-disposition']).toMatch(/^attachment; filename="corpact-journal-6kn8Vj9Y-\d{4}-\d{2}-\d{2}\.csv"$/);
+    const [header, row, trailer] = res.body.split('\r\n');
+    expect(header!.split(',').slice(0, 3)).toEqual(['recorded_at', 'entry_type', 'sign']);
+    expect(header).toContain('position_reconciled');
+    expect(row).toMatch(/^2026-09-13T20:00:00\.000Z,reversal,-1,6kn8Vj9Y/);
+    // Exact values for reconciliation, then spreadsheet-friendly ones.
+    expect(row).toContain(',0.09059763073,0.09059763,,7.4851762504,7.49,issuer_net_cash,');
+    expect(row).toContain('issuer_correction');
+    expect(trailer).toBe('');
+  });
+
+  it('exports current income entries on request and rejects unknown datasets', async () => {
+    const api = await app();
+    const income = await api.inject({ url: `/v1/export?owner=${OWNER}&dataset=income`, headers: readOnly });
+    expect(income.statusCode).toBe(200);
+    const [header, row] = income.body.split('\r\n');
+    expect(header).toMatch(/^effective_at,symbol,mint,kind,quantity,quantity_display,split_factor,usd,usd_rounded,/);
+    expect(row).toContain(',KOx,');
+    expect(row).toContain(',0.09059763073,0.09059763,,7.4851762504,7.49,');
+    expect((await api.inject({ url: `/v1/export?owner=${OWNER}&dataset=prices`, headers: readOnly })).statusCode).toBe(400);
+  });
+});
+
+describe('API operations endpoints', () => {
+  const snapshot: MonitoringSnapshot = {
+    nowUnix: 1_789_324_000,
+    workers: [{ workerId: 'worker-1', lastSeenUnix: 1_789_323_990, mintPollSeconds: 45, rpcRequests: 12, rpcRetries: 1, rpcFailures: 0 }],
+    lastMintPoll: { polledUnix: 1_789_323_980, clockUnix: 1_789_323_970, slot: '446774795', mints: 5 },
+    overdueActivations: 0,
+    pendingOverdueJobs: 0,
+    failedJobs24h: 0,
+    unreconciledPositions: 1,
+    partialPositions: 2,
+    failedWalletSyncs: 0,
+    mintsWithTimelineGaps: 0,
+    issuerFeed: { source: 'fixtures', lastIngestedUnix: 1_789_000_000 },
+  };
+  const ops = { authorization: `Bearer ${OPS_KEY}` };
+  const opsApp = () => app({ collectMonitoring: async () => snapshot });
+
+  it('requires the ops:read scope, which grants no ledger access', async () => {
+    const api = await opsApp();
+    expect((await api.inject({ url: '/v1/ops/status', headers: full })).json().code).toBe('missing_scope');
+    expect((await api.inject({ url: `/v1/portfolio?owner=${OWNER}`, headers: ops })).statusCode).toBe(403);
+  });
+
+  it('grades checks against thresholds and reports the worst status', async () => {
+    const res = await (await opsApp()).inject({ url: '/v1/ops/status', headers: ops });
+    const body = res.json();
+    const validate = new Ajv({ allErrors: true, strict: true, allowUnionTypes: true }).compile(schemas.opsStatusResponse);
+    expect(validate(body), JSON.stringify(validate.errors)).toBe(true);
+    expect(body.status).toBe('critical');
+    const byName = Object.fromEntries(body.checks.map((c: { name: string }) => [c.name, c]));
+    expect(byName.balance_reconciliation).toMatchObject({ status: 'critical', value: 1 });
+    expect(byName.worker_heartbeat).toMatchObject({ status: 'ok', value: 10 });
+    expect(byName.issuer_feed.status).toBe('ok');
+  });
+
+  it('serves Prometheus metrics', async () => {
+    const res = await (await opsApp()).inject({ url: '/v1/ops/metrics', headers: ops });
+    expect(res.headers['content-type']).toMatch(/^text\/plain; version=0\.0\.4/);
+    expect(res.body).toContain('# TYPE corpact_check_status gauge');
+    expect(res.body).toContain('corpact_check_status{check="balance_reconciliation"} 2');
+    expect(res.body).toContain('corpact_rpc_requests_total{worker="worker-1"} 12');
   });
 });
 

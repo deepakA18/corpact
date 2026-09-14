@@ -2,8 +2,10 @@
 
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
-import { CorpactApiError, api, type IncomeEntry, type Portfolio, type SyncStatus } from '../lib/api';
-import { formatDate, formatDateTime, formatQuantity, formatUsd, shortAddress } from '../lib/format';
+import { CorpactApiError, api, type IncomeEntry, type Portfolio, type SyncStatus, type YieldResponse } from '../lib/api';
+import { formatDate, formatDateTime, formatPercent, formatQuantity, formatUsd, shortAddress } from '../lib/format';
+
+type PositionYield = YieldResponse['positions'][number];
 import { EventDrawer } from './EventDrawer';
 
 const ACTIVE: ReadonlyArray<SyncStatus['status']> = ['queued', 'running'];
@@ -27,12 +29,15 @@ export function Dashboard({ owner }: { owner: string }) {
   const [selected, setSelected] = useState<string | null>(null);
   const [requesting, setRequesting] = useState(false);
   const [notRegistered, setNotRegistered] = useState(false);
+  const [yields, setYields] = useState<YieldResponse | null>(null);
 
   const load = useCallback(async () => {
     try {
       const [p, i] = await Promise.all([api.portfolio(owner), api.income(owner)]);
       setPortfolio(p);
       setEntries(i.entries);
+      // Supplementary: a yield failure should not hide the ledger.
+      setYields(await api.yield(owner).catch(() => null));
       setSync(p.dataStatus);
       setNotRegistered(false);
       setError(null);
@@ -124,8 +129,8 @@ export function Dashboard({ owner }: { owner: string }) {
         <>
           <CoverageBanner portfolio={portfolio} />
           <PrimaryValues portfolio={portfolio} />
-          <Positions portfolio={portfolio} />
-          <Events entries={entries} onSelect={setSelected} />
+          <Positions portfolio={portfolio} yields={yields} />
+          <Events owner={owner} entries={entries} onSelect={setSelected} />
         </>
       )}
 
@@ -227,10 +232,27 @@ function PrimaryValues({ portfolio }: { portfolio: Portfolio }) {
   );
 }
 
-function Positions({ portfolio }: { portfolio: Portfolio }) {
+function YieldCell({ position }: { position: PositionYield | undefined }) {
+  const window = position?.windows.find((w) => w.window === 'trailing_365d');
+  if (!window || window.shareYield === null) return <span className="muted">—</span>;
+  return (
+    <>
+      {formatPercent(window.shareYield)}
+      {window.partial && (
+        <div className="muted" style={{ fontSize: 12 }} title={`Covers ${formatDate(window.coveredStart)} onward`}>
+          since {formatDate(window.coveredStart)}
+        </div>
+      )}
+    </>
+  );
+}
+
+function Positions({ portfolio, yields }: { portfolio: Portfolio; yields: YieldResponse | null }) {
+  const yieldByMint = new Map(yields?.positions.map((p) => [p.mint, p]));
   return (
     <section>
       <h2>Positions</h2>
+      {yields && <p className="muted">Share yield: {yields.definitions.shareYield}</p>}
       <div className="table-wrap">
         <table>
           <thead>
@@ -240,6 +262,7 @@ function Positions({ portfolio }: { portfolio: Portfolio }) {
               <th>Protected</th>
               <th>Available to convert</th>
               <th>Dividend income</th>
+              <th>Share yield (365d)</th>
               <th>Status</th>
             </tr>
           </thead>
@@ -268,6 +291,9 @@ function Positions({ portfolio }: { portfolio: Portfolio }) {
                   {formatUsd(p.dividendIncomeUsd)}
                   {p.unvaluedDividendEvents > 0 && <div className="muted">+{p.unvaluedDividendEvents} unvalued</div>}
                 </td>
+                <td className="num">
+                  <YieldCell position={yieldByMint.get(p.mint)} />
+                </td>
                 <td>
                   <span className={`badge ${p.status === 'complete' ? 'verified' : 'caution'}`}>{p.status}</span>
                   {!p.reconciled && p.status !== 'unsupported' && (
@@ -285,10 +311,20 @@ function Positions({ portfolio }: { portfolio: Portfolio }) {
   );
 }
 
-function Events({ entries, onSelect }: { entries: IncomeEntry[]; onSelect: (id: string) => void }) {
+function Events({ owner, entries, onSelect }: { owner: string; entries: IncomeEntry[]; onSelect: (id: string) => void }) {
   return (
     <section>
-      <h2>Balance adjustments</h2>
+      <div className="row spread">
+        <h2>Balance adjustments</h2>
+        <div className="row">
+          <a className="button" href={api.exportUrl(owner, 'journal')} title="Every recognition and reversal, for accounting">
+            Journal CSV
+          </a>
+          <a className="button" href={api.exportUrl(owner, 'income')} title="Current income entries with revisions">
+            Income CSV
+          </a>
+        </div>
+      </div>
       {entries.length === 0 ? (
         <p className="muted">No multiplier changes affected these positions during the covered period.</p>
       ) : (

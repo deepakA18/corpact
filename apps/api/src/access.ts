@@ -1,6 +1,6 @@
 import { withTransaction, type Db, type Queryable } from '@corpact/db';
 
-export const SCOPES = ['assets:read', 'ledger:read', 'wallets:sync'] as const;
+export const SCOPES = ['assets:read', 'ledger:read', 'wallets:sync', 'ops:read'] as const;
 export type Scope = (typeof SCOPES)[number];
 export const DEFAULT_KEY_SCOPES: readonly Scope[] = ['assets:read', 'ledger:read'];
 

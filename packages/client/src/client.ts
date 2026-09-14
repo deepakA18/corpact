@@ -1,13 +1,16 @@
 import type {
   AssetsResponse,
+  ExportDataset,
   HealthResponse,
   IncomeDetail,
   IncomeResponse,
   JournalResponse,
+  OpsStatusResponse,
   Portfolio,
   SyncRequestResponse,
   SyncStatusResponse,
   WalletsResponse,
+  YieldResponse,
 } from './types';
 
 export class CorpactApiError extends Error {
@@ -35,35 +38,45 @@ export function createCorpactClient(options: CorpactClientOptions) {
   const base = options.baseUrl.replace(/\/+$/, '');
   const fetchImpl = options.fetch ?? ((input: Parameters<typeof fetch>[0], init?: RequestInit) => fetch(input, init));
 
-  async function request<T>(method: 'GET' | 'POST', path: string, init: { query?: Query; body?: unknown } = {}): Promise<T> {
+  const url = (path: string, query: Query = {}) => {
     const params = new URLSearchParams();
-    for (const [key, value] of Object.entries(init.query ?? {})) {
+    for (const [key, value] of Object.entries(query)) {
       if (value !== undefined) params.set(key, String(value));
     }
     const qs = params.toString();
-    const headers: Record<string, string> = { accept: 'application/json' };
+    return `${base}${path}${qs ? `?${qs}` : ''}`;
+  };
+
+  async function send(method: 'GET' | 'POST', path: string, init: { query?: Query; body?: unknown; accept: string }) {
+    const headers: Record<string, string> = { accept: init.accept };
     if (options.apiKey) headers.authorization = `Bearer ${options.apiKey}`;
     if (init.body !== undefined) headers['content-type'] = 'application/json';
-
-    const res = await fetchImpl(`${base}${path}${qs ? `?${qs}` : ''}`, {
+    const res = await fetchImpl(url(path, init.query), {
       method,
       headers,
       body: init.body === undefined ? undefined : JSON.stringify(init.body),
     });
     const text = await res.text();
-    let parsed: unknown = undefined;
-    if (text) {
-      try {
-        parsed = JSON.parse(text);
-      } catch {
-        if (res.ok) throw new CorpactApiError(res.status, `Expected JSON from ${path}`, text);
-      }
-    }
     if (!res.ok) {
+      let parsed: unknown;
+      try {
+        parsed = text ? JSON.parse(text) : undefined;
+      } catch {
+        parsed = undefined;
+      }
       const message = (parsed as { error?: unknown } | undefined)?.error;
       throw new CorpactApiError(res.status, typeof message === 'string' ? message : `HTTP ${res.status} from ${path}`, parsed ?? text);
     }
-    return parsed as T;
+    return text;
+  }
+
+  async function request<T>(method: 'GET' | 'POST', path: string, init: { query?: Query; body?: unknown } = {}): Promise<T> {
+    const text = await send(method, path, { ...init, accept: 'application/json' });
+    try {
+      return (text ? JSON.parse(text) : undefined) as T;
+    } catch {
+      throw new CorpactApiError(200, `Expected JSON from ${path}`, text);
+    }
   }
 
   const owner = (value: string) => encodeURIComponent(value);
@@ -81,6 +94,13 @@ export function createCorpactClient(options: CorpactClientOptions) {
       request<JournalResponse>('GET', '/v1/journal', { query: { owner: wallet, ...page } }),
     incomeEvent: (wallet: string, id: string) =>
       request<IncomeDetail>('GET', `/v1/income/${encodeURIComponent(id)}`, { query: { owner: wallet } }),
+    yieldMetrics: (wallet: string) => request<YieldResponse>('GET', '/v1/yield', { query: { owner: wallet } }),
+    /** The CSV body. For a browser download, link to `exportUrl` on a same-origin proxy instead. */
+    exportCsv: (wallet: string, dataset: ExportDataset = 'journal') =>
+      send('GET', '/v1/export', { query: { owner: wallet, dataset }, accept: 'text/csv' }),
+    exportUrl: (wallet: string, dataset: ExportDataset = 'journal') => url('/v1/export', { owner: wallet, dataset }),
+    opsStatus: () => request<OpsStatusResponse>('GET', '/v1/ops/status'),
+    opsMetrics: () => send('GET', '/v1/ops/metrics', { accept: 'text/plain' }),
   };
 }
 

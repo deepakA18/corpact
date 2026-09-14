@@ -1,6 +1,6 @@
 import { LedgerInvariantError, applyEvent, openPosition, type LedgerEvent, type PositionState } from '@corpact/accounting';
 import { withTransaction, type DbClient } from '@corpact/db';
-import { Rational, type Classification } from '@corpact/domain';
+import { Rational, displayedQuantity, type Classification } from '@corpact/domain';
 import { TOKEN_2022_PROGRAM, bitsFromFloat64, float64FromBits, type TokenAccountSnapshot } from '@corpact/solana';
 import { isoOf, type Context } from './context';
 import { journalValuesFromEntry, planJournal, type JournalValues, type OpenRecognition } from './journal';
@@ -53,6 +53,8 @@ interface PositionResult {
   links: Map<number, EntryLink>;
   checks: Array<{ account: string | null; chainRaw: bigint; ledgerRaw: bigint; matched: boolean }>;
   disabledReasons: string[];
+  /** Holdings over time (displayed units at each instant), for time-weighted yield. */
+  samples: Array<{ unix: bigint; quantity: Rational }>;
 }
 
 function classificationFromRow(r: Record<string, any>): Classification | null {
@@ -176,6 +178,7 @@ async function buildPosition(
       replayComplete: false,
       checks: [],
       disabledReasons,
+      samples: [],
     };
   }
 
@@ -211,6 +214,10 @@ async function buildPosition(
   const activeBits = versions.filter((v) => v.effectiveUnix <= start).at(-1)?.newBits ?? knownFrom.multiplierBits;
   let state = openPosition(mint, asset.decimals, float64FromBits(activeBits));
   if (opening > 0n) state = applyEvent(state, { type: 'deposit', at: new Date(Number(start) * 1000), raw: opening });
+  const samples: PositionResult['samples'] = [];
+  const sample = (unix: bigint) =>
+    samples.push({ unix, quantity: displayedQuantity(state.raw, asset.decimals, Rational.fromFloat64(state.multiplier)) });
+  sample(start);
 
   const links = new Map<number, EntryLink>();
   const pendingSteps = steps.filter((s) => s.blockTime >= start && s.delta !== 0n);
@@ -247,6 +254,7 @@ async function buildPosition(
           classification,
         };
         state = applyEvent(state, event);
+        sample(version.effectiveUnix);
         if (state.entries.length > before) {
           links.set(state.entries.length - 1, {
             versionId: version.id,
@@ -260,6 +268,7 @@ async function buildPosition(
         si++;
         const at = new Date(Number(step.blockTime) * 1000);
         state = applyEvent(state, step.delta > 0n ? { type: 'deposit', at, raw: step.delta } : { type: 'withdrawal', at, raw: -step.delta });
+        sample(step.blockTime);
       }
     }
   } catch (err) {
@@ -303,6 +312,7 @@ async function buildPosition(
     links,
     checks,
     disabledReasons,
+    samples,
   };
 }
 
@@ -455,6 +465,19 @@ export async function rebuildPositions(ctx: Context, owner: string) {
             JSON.stringify(entry.type === 'unclassified_adjustment' ? entry.reasons : []),
             revisions.get(link.versionId)?.revision ?? 1,
             revisions.get(link.versionId)?.lastCorrectedAt ?? null,
+          ],
+        );
+      }
+      if (r.samples.length > 0) {
+        await client.query(
+          `INSERT INTO position_quantity_samples (position_epoch_id, seq, effective_unix, quantity_num, quantity_den)
+           SELECT $1, * FROM unnest($2::int[], $3::bigint[], $4::numeric[], $5::numeric[])`,
+          [
+            epochId,
+            r.samples.map((_, i) => i),
+            r.samples.map((s) => s.unix.toString()),
+            r.samples.map((s) => s.quantity.num.toString()),
+            r.samples.map((s) => s.quantity.den.toString()),
           ],
         );
       }

@@ -65,9 +65,12 @@ Checks: `pnpm test` and `pnpm typecheck` from the root, plus `pnpm --filter @cor
   - `pnpm keys create <name> --tenant <slug> [--scopes …]`
   - `pnpm keys list`
   - `pnpm keys revoke <id>`
-- **Scopes.** Each key holds a subset of `assets:read`, `ledger:read` and `wallets:sync`, and new keys default to read-only. Calling a route without its scope returns `403 missing_scope`.
+- **Scopes.** Each key holds a subset of `assets:read`, `ledger:read`, `wallets:sync` and `ops:read`, and new keys default to read-only (`assets:read`, `ledger:read`). `ops:read` covers only the monitoring routes. Calling a route without its scope returns `403 missing_scope`.
 - **Tenancy.** A key reads only wallets its tenant has registered. `POST /v1/wallets/sync` registers a wallet within the tenant's quota (`403 wallet_quota_exceeded` beyond it). Any other wallet answers `404 wallet_not_registered`, so one customer cannot learn which wallets another tracks. `GET /v1/wallets` lists a tenant's wallets. The chain data itself is shared across tenants; only access is scoped.
 - **Limits.** Each key is allowed `RATE_LIMIT_PER_MINUTE` requests per minute (default 120), with `429` and `retry-after` beyond that. After `AUTH_FAILURES_PER_MINUTE` failed key attempts (default 20), further attempts from that address are refused for the minute. Limits are held in memory per API instance.
+- **Yield.** `GET /v1/yield?owner=` reports, per position, income and share yield for trailing 30 days, trailing 365 days and the tracked period. Share yield is dividend shares gained ÷ time-weighted shares held, in the current split basis, needs no price, and is not annualized. It also reports trailing net distribution per share from issuer-verified cash. Windows that start before coverage are marked `partial`. Distribution yield stays null until a price source exists.
+- **Export.** `GET /v1/export?owner=&dataset=journal|income` returns RFC 4180 CSV, capped at 50,000 rows. `journal` (the default) is the append-only recognition/reversal trail for accountants; `income` is current entries with revisions. Rows carry position status, reconciliation and coverage start, and unknown USD is an empty cell, never `0`.
+- **Monitoring.** `GET /v1/ops/status` (JSON checks) and `GET /v1/ops/metrics` (Prometheus) need `ops:read`; `pnpm cli check` in `apps/worker` runs the same checks. See the [monitoring runbook](docs/ops/monitoring.md).
 - **Contract.** The OpenAPI 3.1 document is served at `/v1/openapi.json` and committed at [packages/client/openapi.json](packages/client/openapi.json). The API, that document and the `@corpact/client` types all come from one set of schemas, and a contract test checks real responses against them.
 - **Client.**
 

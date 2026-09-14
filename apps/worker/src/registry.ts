@@ -90,9 +90,12 @@ export async function pollMintState(ctx: Context): Promise<void> {
       WHERE a.verification_error IS NULL
         AND EXISTS (SELECT 1 FROM balance_movements m WHERE m.mint = a.mint)`,
   );
-  if (rows.length === 0) return;
-  const mints = rows.map((r) => r.mint as string);
   const clock = await ctx.chain.finalizedClock();
+  if (rows.length === 0) {
+    await recordMintPoll(ctx.db, clock, 0);
+    return;
+  }
+  const mints = rows.map((r) => r.mint as string);
   const { slot, accounts } = await ctx.chain.accounts(mints);
 
   for (const mint of mints) {
@@ -124,6 +127,19 @@ export async function pollMintState(ctx: Context): Promise<void> {
       }
     });
   }
+  await recordMintPoll(ctx.db, clock, mints.length);
+}
+
+/** Freshness and finalized-clock lag of the chain-only poll, read by monitoring. */
+async function recordMintPoll(q: Queryable, clock: { slot: bigint; unixTime: bigint }, mints: number) {
+  await q.query(
+    `INSERT INTO sync_cursors (stream, finalized_slot, state) VALUES ('mint-poll', $1, $2)
+     ON CONFLICT (stream) DO UPDATE SET finalized_slot = EXCLUDED.finalized_slot, state = EXCLUDED.state, updated_at = now()`,
+    [
+      clock.slot.toString(),
+      JSON.stringify({ polledUnix: Math.floor(Date.now() / 1000), clockUnix: Number(clock.unixTime), slot: clock.slot.toString(), mints }),
+    ],
+  );
 }
 
 export async function loadAllowlist(q: Queryable): Promise<Set<string>> {
