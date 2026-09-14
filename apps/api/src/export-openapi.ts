@@ -15,6 +15,11 @@ const offlineDb = {
 const app = await buildApp({
   db: offlineDb,
   keys: { findActiveByHash: async () => null, markUsed: async () => {} },
+  access: {
+    isRegistered: async () => false,
+    register: async () => 'quota_exceeded',
+    list: async () => ({ tenant: 'offline', maxWallets: 1, wallets: [] }),
+  },
   rateLimitPerMinute: 1,
   authFailuresPerMinute: 1,
 });

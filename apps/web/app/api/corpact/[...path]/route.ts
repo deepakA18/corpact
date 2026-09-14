@@ -5,7 +5,7 @@ import type { NextRequest } from 'next/server';
  * environment; the browser never sees it. Only the routes the dashboard needs pass.
  */
 const API_URL = (process.env.CORPACT_API_URL ?? 'http://127.0.0.1:4600').replace(/\/+$/, '');
-const ALLOWED = /^v1\/(assets|portfolio|income|income\/\d+|wallets\/sync|wallets\/[1-9A-HJ-NP-Za-km-z]{32,44}\/status)$/;
+const ALLOWED = /^v1\/(assets|portfolio|income|income\/\d+|wallets|wallets\/sync|wallets\/[1-9A-HJ-NP-Za-km-z]{32,44}\/status)$/;
 
 type Context = { params: Promise<{ path: string[] }> };
 

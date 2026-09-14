@@ -2,13 +2,16 @@
 
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
-import { api, type IncomeEntry, type Portfolio, type SyncStatus } from '../lib/api';
+import { CorpactApiError, api, type IncomeEntry, type Portfolio, type SyncStatus } from '../lib/api';
 import { formatDate, formatDateTime, formatQuantity, formatUsd, shortAddress } from '../lib/format';
 import { EventDrawer } from './EventDrawer';
 
 const ACTIVE: ReadonlyArray<SyncStatus['status']> = ['queued', 'running'];
 /** A job queued this long without being claimed almost always means no worker is running. */
 const WORKER_STALL_MS = 20_000;
+
+const isUnregistered = (err: unknown) =>
+  err instanceof CorpactApiError && err.status === 404 && (err.body as { code?: string } | null)?.code === 'wallet_not_registered';
 
 const KIND_LABEL: Record<IncomeEntry['kind'], { text: string; tone: string }> = {
   dividend: { text: 'Verified dividend', tone: 'verified' },
@@ -23,6 +26,7 @@ export function Dashboard({ owner }: { owner: string }) {
   const [error, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
   const [requesting, setRequesting] = useState(false);
+  const [notRegistered, setNotRegistered] = useState(false);
 
   const load = useCallback(async () => {
     try {
@@ -30,8 +34,17 @@ export function Dashboard({ owner }: { owner: string }) {
       setPortfolio(p);
       setEntries(i.entries);
       setSync(p.dataStatus);
+      setNotRegistered(false);
       setError(null);
     } catch (err) {
+      if (isUnregistered(err)) {
+        // Not an error: this tenant simply has not synced the wallet yet.
+        setPortfolio(null);
+        setEntries([]);
+        setNotRegistered(true);
+        setError(null);
+        return;
+      }
       setError(err instanceof Error ? err.message : String(err));
     }
   }, [owner]);
@@ -100,10 +113,10 @@ export function Dashboard({ owner }: { owner: string }) {
           </span>
         </div>
       )}
-      {portfolio && !hasData && !syncing && !sync && (
+      {notRegistered && !syncing && (
         <div className="banner">
           <strong>Not synced yet</strong>
-          <span className="muted">Sync this address to reconstruct its xStock holdings from chain history.</span>
+          <span className="muted">Sync this address to register it with the ledger and reconstruct its xStock holdings from chain history.</span>
         </div>
       )}
 

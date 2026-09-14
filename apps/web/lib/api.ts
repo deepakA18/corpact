@@ -1,5 +1,7 @@
 import { createCorpactClient } from '@corpact/client';
 
+export { CorpactApiError } from '@corpact/client';
+
 export type { EntryKind, IncomeDetail, IncomeEntry, Portfolio, Position, SyncStatus } from '@corpact/client';
 
 // The browser calls this app's own server route, which holds the API key.

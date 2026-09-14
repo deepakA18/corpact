@@ -1,5 +1,6 @@
 import { createDb } from '@corpact/db';
 import { DEFAULT_DATABASE_URL, buildApp } from './app';
+import { dbAccessStore } from './access';
 import { dbKeyStore } from './keys';
 
 function positiveInt(name: string, fallback: number): number {
@@ -14,6 +15,7 @@ const db = createDb(process.env.DATABASE_URL ?? DEFAULT_DATABASE_URL);
 const app = await buildApp({
   db,
   keys: dbKeyStore(db),
+  access: dbAccessStore(db),
   rateLimitPerMinute: positiveInt('RATE_LIMIT_PER_MINUTE', 120),
   authFailuresPerMinute: positiveInt('AUTH_FAILURES_PER_MINUTE', 20),
   corsOrigin: process.env.CORS_ORIGIN,

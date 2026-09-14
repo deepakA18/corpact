@@ -166,6 +166,15 @@
                   "properties": {
                     "error": {
                       "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
                     }
                   }
                 }
@@ -185,6 +194,71 @@
                   "properties": {
                     "error": {
                       "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
                     }
                   }
                 }
@@ -204,6 +278,15 @@
                   "properties": {
                     "error": {
                       "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
                     }
                   }
                 }
@@ -215,7 +298,7 @@
     },
     "/v1/wallets/sync": {
       "post": {
-        "summary": "Request an idempotent historical sync for a wallet",
+        "summary": "Register a wallet to the caller's tenant and request an idempotent historical sync",
         "tags": [
           "wallets"
         ],
@@ -250,12 +333,21 @@
                   "additionalProperties": false,
                   "required": [
                     "owner",
+                    "registration",
                     "status",
                     "job"
                   ],
                   "properties": {
                     "owner": {
                       "type": "string"
+                    },
+                    "registration": {
+                      "type": "string",
+                      "enum": [
+                        "registered",
+                        "already_registered"
+                      ],
+                      "description": "Whether this request added the wallet to the caller's tenant"
                     },
                     "status": {
                       "type": "string",
@@ -289,6 +381,15 @@
                   "properties": {
                     "error": {
                       "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
                     }
                   }
                 }
@@ -308,6 +409,71 @@
                   "properties": {
                     "error": {
                       "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
                     }
                   }
                 }
@@ -327,6 +493,208 @@
                   "properties": {
                     "error": {
                       "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/wallets": {
+      "get": {
+        "summary": "Wallets registered to the caller's tenant",
+        "tags": [
+          "wallets"
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "tenant",
+                    "maxWallets",
+                    "wallets"
+                  ],
+                  "properties": {
+                    "tenant": {
+                      "type": "string"
+                    },
+                    "maxWallets": {
+                      "type": "integer"
+                    },
+                    "wallets": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "owner",
+                          "addedAt"
+                        ],
+                        "properties": {
+                          "owner": {
+                            "type": "string"
+                          },
+                          "addedAt": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
                     }
                   }
                 }
@@ -481,6 +849,15 @@
                   "properties": {
                     "error": {
                       "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
                     }
                   }
                 }
@@ -500,6 +877,71 @@
                   "properties": {
                     "error": {
                       "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
                     }
                   }
                 }
@@ -519,6 +961,15 @@
                   "properties": {
                     "error": {
                       "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
                     }
                   }
                 }
@@ -941,6 +1392,15 @@
                   "properties": {
                     "error": {
                       "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
                     }
                   }
                 }
@@ -960,6 +1420,71 @@
                   "properties": {
                     "error": {
                       "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
                     }
                   }
                 }
@@ -979,6 +1504,15 @@
                   "properties": {
                     "error": {
                       "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
                     }
                   }
                 }
@@ -1163,6 +1697,15 @@
                   "properties": {
                     "error": {
                       "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
                     }
                   }
                 }
@@ -1182,6 +1725,71 @@
                   "properties": {
                     "error": {
                       "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
                     }
                   }
                 }
@@ -1201,6 +1809,15 @@
                   "properties": {
                     "error": {
                       "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
                     }
                   }
                 }
@@ -1531,6 +2148,15 @@
                   "properties": {
                     "error": {
                       "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
                     }
                   }
                 }
@@ -1550,6 +2176,43 @@
                   "properties": {
                     "error": {
                       "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
                     }
                   }
                 }
@@ -1569,6 +2232,15 @@
                   "properties": {
                     "error": {
                       "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
                     }
                   }
                 }
@@ -1588,6 +2260,15 @@
                   "properties": {
                     "error": {
                       "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
                     }
                   }
                 }

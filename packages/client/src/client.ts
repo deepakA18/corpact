@@ -6,6 +6,7 @@ import type {
   Portfolio,
   SyncRequestResponse,
   SyncStatusResponse,
+  WalletsResponse,
 } from './types';
 
 export class CorpactApiError extends Error {
@@ -70,6 +71,7 @@ export function createCorpactClient(options: CorpactClientOptions) {
     health: () => request<HealthResponse>('GET', '/v1/health'),
     assets: () => request<AssetsResponse>('GET', '/v1/assets'),
     requestSync: (wallet: string) => request<SyncRequestResponse>('POST', '/v1/wallets/sync', { body: { owner: wallet } }),
+    wallets: () => request<WalletsResponse>('GET', '/v1/wallets'),
     syncStatus: (wallet: string) => request<SyncStatusResponse>('GET', `/v1/wallets/${owner(wallet)}/status`),
     portfolio: (wallet: string) => request<Portfolio>('GET', '/v1/portfolio', { query: { owner: wallet } }),
     income: (wallet: string, page: { limit?: number; offset?: number } = {}) =>

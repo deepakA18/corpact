@@ -45,7 +45,8 @@ pnpm cli import-issuer-actions               # corporate actions from fixtures (
 pnpm start                                   # worker: job queue + chain-only mint polling
 
 cd ../api
-pnpm keys create demo-dashboard              # prints the key once; only its hash is stored
+pnpm tenants create demo "Demo dashboard"
+pnpm keys create dashboard --tenant demo --scopes assets:read,ledger:read,wallets:sync   # printed once
 PORT=4600 pnpm start
 
 cd ../web
@@ -59,7 +60,13 @@ Checks: `pnpm test` and `pnpm typecheck` from the root, plus `pnpm --filter @cor
 
 ## API access
 
-- **Keys.** Every route except `/v1/health` and `/v1/openapi.json` needs `Authorization: Bearer <key>`. Keys are issued with `pnpm keys create <name>`, listed with `pnpm keys list` and revoked with `pnpm keys revoke <id>`, all in `apps/api`. Only a SHA-256 of each key is stored.
+- **Keys.** Every route except `/v1/health` and `/v1/openapi.json` needs `Authorization: Bearer <key>`. Only a SHA-256 of each key is stored. In `apps/api`:
+  - `pnpm tenants create <slug> <name> [--max-wallets N]`
+  - `pnpm keys create <name> --tenant <slug> [--scopes …]`
+  - `pnpm keys list`
+  - `pnpm keys revoke <id>`
+- **Scopes.** Each key holds a subset of `assets:read`, `ledger:read` and `wallets:sync`, and new keys default to read-only. Calling a route without its scope returns `403 missing_scope`.
+- **Tenancy.** A key reads only wallets its tenant has registered. `POST /v1/wallets/sync` registers a wallet within the tenant's quota (`403 wallet_quota_exceeded` beyond it). Any other wallet answers `404 wallet_not_registered`, so one customer cannot learn which wallets another tracks. `GET /v1/wallets` lists a tenant's wallets. The chain data itself is shared across tenants; only access is scoped.
 - **Limits.** Each key is allowed `RATE_LIMIT_PER_MINUTE` requests per minute (default 120), with `429` and `retry-after` beyond that. After `AUTH_FAILURES_PER_MINUTE` failed key attempts (default 20), further attempts from that address are refused for the minute. Limits are held in memory per API instance.
 - **Contract.** The OpenAPI 3.1 document is served at `/v1/openapi.json` and committed at [packages/client/openapi.json](packages/client/openapi.json). The API, that document and the `@corpact/client` types all come from one set of schemas, and a contract test checks real responses against them.
 - **Client.**

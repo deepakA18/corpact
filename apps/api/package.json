@@ -6,9 +6,10 @@
   "scripts": {
     "typecheck": "tsc -p .",
     "start": "tsx --env-file-if-exists=../../.env src/main.ts",
-    "keys": "tsx --env-file-if-exists=../../.env src/cli.ts",
+    "keys": "tsx --env-file-if-exists=../../.env src/cli.ts keys",
     "openapi:export": "tsx src/export-openapi.ts",
-    "openapi:check": "tsx src/export-openapi.ts --check"
+    "openapi:check": "tsx src/export-openapi.ts --check",
+    "tenants": "tsx --env-file-if-exists=../../.env src/cli.ts tenants"
   },
   "dependencies": {
     "@corpact/accounting": "workspace:*",

@@ -23,7 +23,14 @@ export const errorResponse = {
   type: 'object',
   additionalProperties: false,
   required: ['error'],
-  properties: { error: str },
+  properties: {
+    error: str,
+    code: {
+      type: 'string',
+      enum: ['missing_scope', 'wallet_not_registered', 'wallet_quota_exceeded'],
+      description: 'Machine-readable reason, when a client should branch on it',
+    },
+  },
 } as const;
 
 export const healthResponse = {
@@ -102,11 +109,35 @@ export const syncRequestBody = {
 export const syncRequestResponse = {
   type: 'object',
   additionalProperties: false,
-  required: ['owner', 'status', 'job'],
+  required: ['owner', 'registration', 'status', 'job'],
   properties: {
     owner: str,
+    registration: {
+      type: 'string',
+      enum: ['registered', 'already_registered'],
+      description: "Whether this request added the wallet to the caller's tenant",
+    },
     status: { type: 'string', enum: ['queued', 'running'] },
     job: { type: 'string', enum: ['enqueued', 'already_pending'] },
+  },
+} as const;
+
+export const walletsResponse = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['tenant', 'maxWallets', 'wallets'],
+  properties: {
+    tenant: str,
+    maxWallets: int,
+    wallets: {
+      type: 'array',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        required: ['owner', 'addedAt'],
+        properties: { owner: str, addedAt: str },
+      },
+    },
   },
 } as const;
 

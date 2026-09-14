@@ -3,13 +3,17 @@ import { describe, expect, it } from 'vitest';
 import { schemas } from '@corpact/client';
 import type { Db } from '@corpact/db';
 import { bitsFromFloat64 } from '@corpact/solana';
+import type { AccessStore, Scope } from './access';
 import { buildApp, type AppOptions } from './app';
 import { generateApiKey, hashApiKey, type ApiKeyStore } from './keys';
 
 const OWNER = '6kn8Vj9YkvNLo8peW2fzebQdSLtX33A3TkRJwXqMCy1U';
+const OTHER = '9Eis2fKZpAcZyVSbDdnuBZJ2f74SkSjAC7dx1GsAhNwz';
 const KOX = 'XsaBXg8dU5cPM6ehmVctMkVqoiRG2ZjMo1cyBJ3AykQ';
-const VALID_KEY = 'cpk_test_valid_key_for_unit_tests_only';
-const bearer = { authorization: `Bearer ${VALID_KEY}` };
+const FULL_KEY = 'cpk_test_full_access_key_for_unit_tests';
+const READ_KEY = 'cpk_test_read_only_key_for_unit_tests';
+const full = { authorization: `Bearer ${FULL_KEY}` };
+const readOnly = { authorization: `Bearer ${READ_KEY}` };
 
 const syncRow = {
   owner: OWNER,
@@ -101,34 +105,65 @@ const detailRow = {
 const assetRow = { mint: KOX, symbol: 'KOx', name: null, decimals: 8, registry_source: 'fixtures', verification_error: null, verified_slot: '446769450' };
 
 /** Answers the API's queries from canned rows; anything unexpected fails loudly. */
+async function fakeQuery(sql: string) {
+  const text = sql.trim();
+  const rows =
+    text === 'BEGIN' || text === 'COMMIT' || text === 'ROLLBACK'
+      ? []
+      : sql.includes('INSERT INTO wallet_syncs')
+        ? [{ status: 'queued' }]
+        : sql.includes('INSERT INTO jobs_outbox')
+          ? [{}]
+          : sql.includes('JOIN multiplier_versions')
+            ? [detailRow]
+            : sql.includes('ORDER BY e.effective_unix')
+              ? [incomeRow]
+              : sql.includes('FROM position_epochs p JOIN assets')
+                ? [positionRow]
+                : sql.includes('FROM wallet_syncs')
+                  ? [syncRow]
+                  : sql.includes('FROM assets ORDER BY symbol')
+                    ? [assetRow]
+                    : text === 'SELECT 1'
+                      ? [{ '?column?': 1 }]
+                      : null;
+  if (rows === null) throw new Error(`Unexpected query in test: ${sql.slice(0, 80)}`);
+  return { rows, rowCount: rows.length };
+}
+
 const fakeDb = {
-  query: async (sql: string) => {
-    const rows = sql.includes('JOIN multiplier_versions')
-      ? [detailRow]
-      : sql.includes('ORDER BY e.effective_unix')
-        ? [incomeRow]
-        : sql.includes('FROM position_epochs p JOIN assets')
-          ? [positionRow]
-          : sql.includes('FROM wallet_syncs')
-            ? [syncRow]
-            : sql.includes('FROM assets ORDER BY symbol')
-              ? [assetRow]
-              : sql.trim() === 'SELECT 1'
-                ? [{ '?column?': 1 }]
-                : null;
-    if (rows === null) throw new Error(`Unexpected query in test: ${sql.slice(0, 80)}`);
-    return { rows, rowCount: rows.length };
-  },
+  query: fakeQuery,
+  connect: async () => ({ query: fakeQuery, release: () => {} }),
 } as unknown as Db;
 
-const keyStore = (revoked: string[] = []): ApiKeyStore => ({
+const ALL: Scope[] = ['assets:read', 'ledger:read', 'wallets:sync'];
+
+const keyStore: ApiKeyStore = {
   findActiveByHash: async (hash) =>
-    hash === hashApiKey(VALID_KEY) ? { id: '1', name: 'test' } : revoked.some((k) => hashApiKey(k) === hash) ? null : null,
+    hash === hashApiKey(FULL_KEY)
+      ? { id: '1', name: 'full', tenantId: '7', tenant: 'acme', scopes: ALL }
+      : hash === hashApiKey(READ_KEY)
+        ? { id: '2', name: 'read', tenantId: '7', tenant: 'acme', scopes: ['assets:read', 'ledger:read'] }
+        : null,
   markUsed: async () => {},
-});
+};
+
+function memoryAccess(registered: string[] = [OWNER], maxWallets = 10): AccessStore {
+  const wallets = new Map(registered.map((owner) => [owner, new Date('2026-09-13T18:00:00Z')]));
+  return {
+    isRegistered: async (_tenant, owner) => wallets.has(owner),
+    register: async (_tenant, owner) => {
+      if (wallets.has(owner)) return 'already_registered';
+      if (wallets.size >= maxWallets) return 'quota_exceeded';
+      wallets.set(owner, new Date());
+      return 'registered';
+    },
+    list: async () => ({ tenant: 'acme', maxWallets, wallets: [...wallets].map(([owner, addedAt]) => ({ owner, addedAt })) }),
+  };
+}
 
 const app = (overrides: Partial<AppOptions> = {}) =>
-  buildApp({ db: fakeDb, keys: keyStore(), rateLimitPerMinute: 100, authFailuresPerMinute: 100, ...overrides });
+  buildApp({ db: fakeDb, keys: keyStore, access: memoryAccess(), rateLimitPerMinute: 100, authFailuresPerMinute: 100, ...overrides });
 
 describe('API authentication', () => {
   it('serves health and the OpenAPI document without a key', async () => {
@@ -138,7 +173,7 @@ describe('API authentication', () => {
     expect(spec.openapi).toBe('3.1.0');
     expect(spec.components.securitySchemes.apiKey).toMatchObject({ type: 'http', scheme: 'bearer' });
     expect(Object.keys(spec.paths)).toEqual(
-      expect.arrayContaining(['/v1/assets', '/v1/portfolio', '/v1/income', '/v1/income/{id}', '/v1/wallets/sync', '/v1/wallets/{owner}/status']),
+      expect.arrayContaining(['/v1/assets', '/v1/portfolio', '/v1/income', '/v1/income/{id}', '/v1/wallets', '/v1/wallets/sync', '/v1/wallets/{owner}/status']),
     );
     expect(spec.paths['/v1/health'].get.security).toEqual([]);
   });
@@ -155,8 +190,8 @@ describe('API authentication', () => {
 
   it('accepts a valid key as a bearer token or x-api-key header', async () => {
     const api = await app();
-    expect((await api.inject({ url: '/v1/assets', headers: bearer })).statusCode).toBe(200);
-    expect((await api.inject({ url: '/v1/assets', headers: { 'x-api-key': VALID_KEY } })).statusCode).toBe(200);
+    expect((await api.inject({ url: '/v1/assets', headers: full })).statusCode).toBe(200);
+    expect((await api.inject({ url: '/v1/assets', headers: { 'x-api-key': FULL_KEY } })).statusCode).toBe(200);
   });
 
   it('stops accepting key guesses from an address after repeated failures, even for a valid key', async () => {
@@ -164,17 +199,56 @@ describe('API authentication', () => {
     for (let i = 0; i < 3; i++) {
       expect((await api.inject({ url: '/v1/assets', headers: { authorization: `Bearer cpk_guess_${i}` } })).statusCode).toBe(401);
     }
-    const blocked = await api.inject({ url: '/v1/assets', headers: bearer });
-    expect(blocked.statusCode).toBe(429);
+    expect((await api.inject({ url: '/v1/assets', headers: full })).statusCode).toBe(429);
+  });
+});
+
+describe('API scopes and tenancy', () => {
+  it('refuses a route whose scope the key lacks', async () => {
+    const res = await (await app()).inject({ method: 'POST', url: '/v1/wallets/sync', headers: readOnly, payload: { owner: OWNER } });
+    expect(res.statusCode).toBe(403);
+    expect(res.json()).toEqual({ error: 'This API key lacks the "wallets:sync" scope', code: 'missing_scope' });
+  });
+
+  it.each([
+    [`/v1/portfolio?owner=${OTHER}`],
+    [`/v1/income?owner=${OTHER}`],
+    [`/v1/income/10?owner=${OTHER}`],
+    [`/v1/wallets/${OTHER}/status`],
+  ])('answers 404 for a wallet the tenant has not registered: %s', async (url) => {
+    const res = await (await app()).inject({ url, headers: full });
+    expect(res.statusCode).toBe(404);
+    expect(res.json().code).toBe('wallet_not_registered');
+  });
+
+  it('registers a wallet on sync, after which the tenant can read it', async () => {
+    const api = await app();
+    const sync = await api.inject({ method: 'POST', url: '/v1/wallets/sync', headers: full, payload: { owner: OTHER } });
+    expect(sync.statusCode).toBe(202);
+    expect(sync.json()).toEqual({ owner: OTHER, registration: 'registered', status: 'queued', job: 'enqueued' });
+    expect((await api.inject({ url: `/v1/portfolio?owner=${OTHER}`, headers: full })).statusCode).toBe(200);
+    const again = await api.inject({ method: 'POST', url: '/v1/wallets/sync', headers: full, payload: { owner: OTHER } });
+    expect(again.json().registration).toBe('already_registered');
+  });
+
+  it('enforces the tenant wallet quota', async () => {
+    const res = await (await app({ access: memoryAccess([OWNER], 1) })).inject({
+      method: 'POST',
+      url: '/v1/wallets/sync',
+      headers: full,
+      payload: { owner: OTHER },
+    });
+    expect(res.statusCode).toBe(403);
+    expect(res.json().code).toBe('wallet_quota_exceeded');
   });
 });
 
 describe('API limits and validation', () => {
   it('rate-limits per key with a 429 and retry headers', async () => {
     const api = await app({ rateLimitPerMinute: 2 });
-    expect((await api.inject({ url: '/v1/assets', headers: bearer })).statusCode).toBe(200);
-    expect((await api.inject({ url: '/v1/assets', headers: bearer })).statusCode).toBe(200);
-    const limited = await api.inject({ url: '/v1/assets', headers: bearer });
+    expect((await api.inject({ url: '/v1/assets', headers: full })).statusCode).toBe(200);
+    expect((await api.inject({ url: '/v1/assets', headers: full })).statusCode).toBe(200);
+    const limited = await api.inject({ url: '/v1/assets', headers: full });
     expect(limited.statusCode).toBe(429);
     expect(limited.json().error).toMatch(/Rate limit of 2 requests per minute/);
     expect(limited.headers['retry-after']).toBeDefined();
@@ -182,37 +256,44 @@ describe('API limits and validation', () => {
 
   it('rejects malformed input before touching the ledger', async () => {
     const api = await app();
-    expect((await api.inject({ url: '/v1/portfolio?owner=not-an-address', headers: bearer })).statusCode).toBe(400);
-    expect((await api.inject({ url: `/v1/income?owner=${OWNER}&limit=500`, headers: bearer })).statusCode).toBe(400);
-    expect((await api.inject({ url: `/v1/income/abc?owner=${OWNER}`, headers: bearer })).statusCode).toBe(400);
+    expect((await api.inject({ url: '/v1/portfolio?owner=not-an-address', headers: full })).statusCode).toBe(400);
+    expect((await api.inject({ url: `/v1/income?owner=${OWNER}&limit=500`, headers: full })).statusCode).toBe(400);
+    expect((await api.inject({ url: `/v1/income/abc?owner=${OWNER}`, headers: full })).statusCode).toBe(400);
   });
 
   it('marks every response as uncacheable', async () => {
-    const api = await app();
-    expect((await api.inject({ url: '/v1/health' })).headers['cache-control']).toBe('no-store');
+    expect((await (await app()).inject({ url: '/v1/health' })).headers['cache-control']).toBe('no-store');
   });
 });
 
 describe('API responses match the published contract', () => {
   const ajv = new Ajv({ allErrors: true, strict: true, allowUnionTypes: true });
   const cases = [
-    ['/v1/assets', schemas.assetsResponse],
-    [`/v1/wallets/${OWNER}/status`, schemas.syncStatusResponse],
-    [`/v1/portfolio?owner=${OWNER}`, schemas.portfolioResponse],
-    [`/v1/income?owner=${OWNER}`, schemas.incomeResponse],
-    [`/v1/income/10?owner=${OWNER}`, schemas.incomeDetail],
+    ['GET', '/v1/assets', undefined, schemas.assetsResponse],
+    ['GET', '/v1/wallets', undefined, schemas.walletsResponse],
+    ['GET', `/v1/wallets/${OWNER}/status`, undefined, schemas.syncStatusResponse],
+    ['GET', `/v1/portfolio?owner=${OWNER}`, undefined, schemas.portfolioResponse],
+    ['GET', `/v1/income?owner=${OWNER}`, undefined, schemas.incomeResponse],
+    ['GET', `/v1/income/10?owner=${OWNER}`, undefined, schemas.incomeDetail],
+    ['POST', '/v1/wallets/sync', { owner: OTHER }, schemas.syncRequestResponse],
   ] as const;
 
-  it.each(cases)('%s', async (url, schema) => {
-    const res = await (await app()).inject({ url, headers: bearer });
-    expect(res.statusCode).toBe(200);
+  it.each(cases)('%s %s', async (method, url, payload, schema) => {
+    const res = await (await app()).inject({ method, url, headers: full, ...(payload ? { payload } : {}) });
+    expect(res.statusCode).toBeLessThan(300);
     const validate = ajv.compile(schema);
     const body = res.json();
     expect(validate(body), JSON.stringify(validate.errors)).toBe(true);
   });
 
+  it('error bodies match the error schema', async () => {
+    const validate = ajv.compile(schemas.errorResponse);
+    const res = await (await app()).inject({ url: `/v1/portfolio?owner=${OTHER}`, headers: full });
+    expect(validate(res.json()), JSON.stringify(validate.errors)).toBe(true);
+  });
+
   it('derives protected and convertible exposure from the stored floor, rounding toward zero', async () => {
-    const body = (await (await app()).inject({ url: `/v1/portfolio?owner=${OWNER}`, headers: bearer })).json();
+    const body = (await (await app()).inject({ url: `/v1/portfolio?owner=${OWNER}`, headers: full })).json();
     // The fixture floor is the recorded KOx floor rounded to 8 places, so availability is 1e-8 above the live 0.25861024.
     expect(body.positions[0]).toMatchObject({ protectedQuantity: '20.00766460', availableQuantity: '0.25861025', reconciled: true });
   });

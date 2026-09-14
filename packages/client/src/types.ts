@@ -8,6 +8,7 @@ export type AssetsResponse = FromSchema<typeof s.assetsResponse>;
 export type SyncStatus = FromSchema<typeof s.syncStatus>;
 export type SyncStatusResponse = FromSchema<typeof s.syncStatusResponse>;
 export type SyncRequestResponse = FromSchema<typeof s.syncRequestResponse>;
+export type WalletsResponse = FromSchema<typeof s.walletsResponse>;
 export type Position = FromSchema<typeof s.position>;
 export type Portfolio = FromSchema<typeof s.portfolioResponse>;
 export type IncomeEntry = FromSchema<typeof s.incomeEntry>;

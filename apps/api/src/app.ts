@@ -1,12 +1,13 @@
 import cors from '@fastify/cors';
 import rateLimit from '@fastify/rate-limit';
 import swagger from '@fastify/swagger';
-import Fastify, { type FastifyServerOptions } from 'fastify';
+import Fastify, { type FastifyRequest, type FastifyServerOptions } from 'fastify';
 import { positionView } from '@corpact/accounting';
 import { schemas } from '@corpact/client';
 import { enqueueJob, withTransaction, type Db } from '@corpact/db';
 import { Rational } from '@corpact/domain';
 import { float64FromBits, isAddress } from '@corpact/solana';
+import type { AccessStore, Scope } from './access';
 import { hashApiKey, type ApiKeyIdentity, type ApiKeyStore } from './keys';
 
 export const API_VERSION = '0.1.0';
@@ -20,11 +21,16 @@ declare module 'fastify' {
   interface FastifyRequest {
     apiKey?: ApiKeyIdentity;
   }
+  interface FastifyContextConfig {
+    /** Scope a key must hold to call the route. */
+    scope?: Scope;
+  }
 }
 
 export interface AppOptions {
   db: Db;
   keys: ApiKeyStore;
+  access: AccessStore;
   rateLimitPerMinute: number;
   /** Failed key presentations tolerated per client IP per minute before refusing further attempts. */
   authFailuresPerMinute: number;
@@ -37,6 +43,8 @@ class HttpError extends Error {
   constructor(
     readonly statusCode: number,
     message: string,
+    /** Machine-readable reason, for clients that branch on it. */
+    readonly code?: string,
   ) {
     super(message);
   }
@@ -114,7 +122,13 @@ function createFailureLimiter(maxPerMinute: number) {
   };
 }
 
-const errors = { 400: schemas.errorResponse, 401: schemas.errorResponse, 429: schemas.errorResponse } as const;
+const errors = {
+  400: schemas.errorResponse,
+  401: schemas.errorResponse,
+  403: schemas.errorResponse,
+  404: schemas.errorResponse,
+  429: schemas.errorResponse,
+} as const;
 
 export async function buildApp(options: AppOptions) {
   const { db } = options;
@@ -153,6 +167,10 @@ export async function buildApp(options: AppOptions) {
     }
     request.apiKey = identity;
     options.keys.markUsed(identity.id).catch((err: unknown) => request.log.warn({ err }, 'could not record API key use'));
+    const required = request.routeOptions.config?.scope;
+    if (required && !identity.scopes.includes(required)) {
+      throw new HttpError(403, `This API key lacks the "${required}" scope`, 'missing_scope');
+    }
   });
 
   await app.register(rateLimit, {
@@ -176,12 +194,22 @@ export async function buildApp(options: AppOptions) {
     const status = error instanceof HttpError ? error.statusCode : typeof record.statusCode === 'number' ? record.statusCode : 500;
     if (status >= 500) request.log.error(error);
     const message = typeof record.message === 'string' ? record.message : String(error);
-    reply.code(status).send({ error: status >= 500 ? 'Internal error' : message });
+    const code = error instanceof HttpError ? error.code : undefined;
+    reply.code(status).send(status >= 500 ? { error: 'Internal error' } : { error: message, ...(code ? { code } : {}) });
   });
 
   function requireOwner(value: string): string {
     if (!isAddress(value)) throw new HttpError(400, 'owner must be a base58 Solana address');
     return value;
+  }
+
+  /** A tenant reads only wallets it registered; anything else is indistinguishable from not existing. */
+  async function authorizeWallet(request: FastifyRequest, value: string): Promise<string> {
+    const owner = requireOwner(value);
+    if (!(await options.access.isRegistered(request.apiKey!.tenantId, owner))) {
+      throw new HttpError(404, 'This wallet is not registered for your tenant; request a sync to register it', 'wallet_not_registered');
+    }
+    return owner;
   }
 
   async function syncStatus(owner: string) {
@@ -216,7 +244,10 @@ export async function buildApp(options: AppOptions) {
 
   app.get(
     '/v1/assets',
-    { schema: { tags: ['assets'], summary: 'Supported mints and their verification status', response: { 200: schemas.assetsResponse, ...errors } } },
+    {
+      config: { scope: 'assets:read' },
+      schema: { tags: ['assets'], summary: 'Supported mints and their verification status', response: { 200: schemas.assetsResponse, ...errors } },
+    },
     async () => {
       const { rows } = await db.query(
         `SELECT mint, symbol, name, decimals, registry_source, verification_error, verified_slot FROM assets ORDER BY symbol`,
@@ -240,15 +271,20 @@ export async function buildApp(options: AppOptions) {
   app.post(
     '/v1/wallets/sync',
     {
+      config: { scope: 'wallets:sync' },
       schema: {
         tags: ['wallets'],
-        summary: 'Request an idempotent historical sync for a wallet',
+        summary: "Register a wallet to the caller's tenant and request an idempotent historical sync",
         body: schemas.syncRequestBody,
         response: { 202: schemas.syncRequestResponse, ...errors },
       },
     },
     async (request, reply) => {
       const owner = requireOwner((request.body as { owner: string }).owner);
+      const registration = await options.access.register(request.apiKey!.tenantId, owner);
+      if (registration === 'quota_exceeded') {
+        throw new HttpError(403, 'Wallet limit reached for your tenant; contact Corpact to raise it', 'wallet_quota_exceeded');
+      }
       const result = await withTransaction(db, async (client) => {
         const { rows } = await client.query(
           `INSERT INTO wallet_syncs (owner, status, requested_at) VALUES ($1, 'queued', now())
@@ -260,13 +296,26 @@ export async function buildApp(options: AppOptions) {
         const job = await enqueueJob(client, { kind: 'sync_wallet', businessKey: `sync_wallet:${owner}`, payload: { owner }, maxAttempts: 3 });
         return { status: rows[0].status as string, job };
       });
-      reply.code(202).send({ owner, ...result });
+      reply.code(202).send({ owner, registration, ...result });
+    },
+  );
+
+  app.get(
+    '/v1/wallets',
+    {
+      config: { scope: 'ledger:read' },
+      schema: { tags: ['wallets'], summary: "Wallets registered to the caller's tenant", response: { 200: schemas.walletsResponse, ...errors } },
+    },
+    async (request) => {
+      const { tenant, maxWallets, wallets } = await options.access.list(request.apiKey!.tenantId);
+      return { tenant, maxWallets, wallets };
     },
   );
 
   app.get(
     '/v1/wallets/:owner/status',
     {
+      config: { scope: 'ledger:read' },
       schema: {
         tags: ['wallets'],
         summary: 'Progress and result of the latest sync',
@@ -275,7 +324,7 @@ export async function buildApp(options: AppOptions) {
       },
     },
     async (request) => {
-      const owner = requireOwner((request.params as { owner: string }).owner);
+      const owner = await authorizeWallet(request, (request.params as { owner: string }).owner);
       return { sync: await syncStatus(owner) };
     },
   );
@@ -283,6 +332,7 @@ export async function buildApp(options: AppOptions) {
   app.get(
     '/v1/portfolio',
     {
+      config: { scope: 'ledger:read' },
       schema: {
         tags: ['ledger'],
         summary: 'Positions, dividend income, convertible exposure and coverage for a wallet',
@@ -291,7 +341,7 @@ export async function buildApp(options: AppOptions) {
       },
     },
     async (request) => {
-      const owner = requireOwner((request.query as { owner: string }).owner);
+      const owner = await authorizeWallet(request, (request.query as { owner: string }).owner);
       const { rows } = await db.query(
         `SELECT p.*, a.symbol, a.name,
                 (SELECT count(*) FROM income_entries e WHERE e.position_epoch_id = p.id AND e.kind = 'dividend')::int AS dividend_count,
@@ -386,6 +436,7 @@ export async function buildApp(options: AppOptions) {
   app.get(
     '/v1/income',
     {
+      config: { scope: 'ledger:read' },
       schema: {
         tags: ['ledger'],
         summary: 'Dividend, split and unclassified entries, newest first',
@@ -395,7 +446,7 @@ export async function buildApp(options: AppOptions) {
     },
     async (request) => {
       const q = request.query as { owner: string; limit: number; offset: number };
-      const owner = requireOwner(q.owner);
+      const owner = await authorizeWallet(request, q.owner);
       const { rows } = await db.query(
         `SELECT e.id, e.kind, e.effective_unix, e.quantity_num, e.quantity_den, e.split_factor_num, e.split_factor_den,
                 e.usd, e.valuation, e.warnings, e.reasons, p.mint, a.symbol, a.decimals
@@ -430,17 +481,18 @@ export async function buildApp(options: AppOptions) {
   app.get(
     '/v1/income/:id',
     {
+      config: { scope: 'ledger:read' },
       schema: {
         tags: ['ledger'],
         summary: 'One entry with its chain, classification and issuer evidence',
         params: schemas.incomeEventParams,
         querystring: schemas.ownerQuery,
-        response: { 200: schemas.incomeDetail, 404: schemas.errorResponse, ...errors },
+        response: { 200: schemas.incomeDetail, ...errors },
       },
     },
     async (request) => {
       const { id } = request.params as { id: string };
-      const owner = requireOwner((request.query as { owner: string }).owner);
+      const owner = await authorizeWallet(request, (request.query as { owner: string }).owner);
       const { rows } = await db.query(
         `SELECT e.*, p.owner, p.mint, a.symbol, a.decimals,
                 v.update_signature, v.observed_slot, v.observed_instruction_path, v.scheduled_unix, v.effective_unix AS version_effective_unix,
