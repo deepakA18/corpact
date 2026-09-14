@@ -310,6 +310,11 @@ function Events({ entries, onSelect }: { entries: IncomeEntry[]; onSelect: (id: 
                   <td>{e.symbol}</td>
                   <td>
                     <span className={`badge ${KIND_LABEL[e.kind].tone}`}>{KIND_LABEL[e.kind].text}</span>
+                    {e.revision > 1 && (
+                      <span className="badge caution" title={`Corrected ${formatDateTime(e.correctedAt)}`} style={{ marginLeft: 6 }}>
+                        corrected
+                      </span>
+                    )}
                   </td>
                   <td className="num">
                     {e.kind === 'split' ? `×${formatQuantity(e.splitFactor ?? '')}` : formatQuantity(e.quantityDisplay)}

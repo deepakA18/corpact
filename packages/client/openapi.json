@@ -1596,7 +1596,9 @@
                           "valuation",
                           "warnings",
                           "reasons",
-                          "headline"
+                          "headline",
+                          "revision",
+                          "correctedAt"
                         ],
                         "properties": {
                           "id": {
@@ -1669,6 +1671,18 @@
                           },
                           "headline": {
                             "type": "string"
+                          },
+                          "revision": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "description": "How many times this entry has been recognized; above 1 means it was corrected"
+                          },
+                          "correctedAt": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "description": "When the entry was last corrected, if ever"
                           }
                         }
                       }
@@ -1876,6 +1890,9 @@
                     "reasons",
                     "headline",
                     "effectiveAt",
+                    "revision",
+                    "correctedAt",
+                    "history",
                     "evidence"
                   ],
                   "properties": {
@@ -1942,6 +1959,129 @@
                     },
                     "effectiveAt": {
                       "type": "string"
+                    },
+                    "revision": {
+                      "type": "integer",
+                      "minimum": 1
+                    },
+                    "correctedAt": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "history": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "id",
+                          "recordedAt",
+                          "entryType",
+                          "kind",
+                          "effectiveAt",
+                          "quantity",
+                          "splitFactor",
+                          "usd",
+                          "valuation",
+                          "issuerEventId",
+                          "issuerRevision",
+                          "reversesId",
+                          "changeReason",
+                          "changeDetail"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "recordedAt": {
+                            "type": "string"
+                          },
+                          "entryType": {
+                            "type": "string",
+                            "enum": [
+                              "recognition",
+                              "reversal"
+                            ]
+                          },
+                          "kind": {
+                            "type": "string",
+                            "enum": [
+                              "dividend",
+                              "split",
+                              "unclassified_adjustment"
+                            ]
+                          },
+                          "effectiveAt": {
+                            "type": "string"
+                          },
+                          "quantity": {
+                            "type": "string",
+                            "pattern": "^-?\\d+(\\.\\d+)?$"
+                          },
+                          "splitFactor": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "pattern": "^-?\\d+(\\.\\d+)?$"
+                          },
+                          "usd": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "pattern": "^-?\\d+(\\.\\d+)?$"
+                          },
+                          "valuation": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "enum": [
+                              "issuer_net_cash",
+                              "market_estimate",
+                              null
+                            ]
+                          },
+                          "issuerEventId": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "issuerRevision": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ]
+                          },
+                          "reversesId": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "changeReason": {
+                            "type": "string",
+                            "enum": [
+                              "initial",
+                              "issuer_correction",
+                              "balance_history_changed",
+                              "valuation_changed",
+                              "no_longer_applicable"
+                            ]
+                          },
+                          "changeDetail": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          }
+                        }
+                      },
+                      "description": "Every recognition and reversal of this entry, oldest first"
                     },
                     "evidence": {
                       "type": "object",
@@ -2129,6 +2269,336 @@
                           ]
                         }
                       }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "error"
+                  ],
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "missing_scope",
+                        "wallet_not_registered",
+                        "wallet_quota_exceeded"
+                      ],
+                      "description": "Machine-readable reason, when a client should branch on it"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/journal": {
+      "get": {
+        "summary": "Append-only audit trail: every recognition and reversal of income, newest first",
+        "tags": [
+          "ledger"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+            },
+            "in": "query",
+            "name": "owner",
+            "required": true,
+            "description": "Solana wallet address (base58)"
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200,
+              "default": 50
+            },
+            "in": "query",
+            "name": "limit",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            },
+            "in": "query",
+            "name": "offset",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "owner",
+                    "entries",
+                    "nextOffset"
+                  ],
+                  "properties": {
+                    "owner": {
+                      "type": "string"
+                    },
+                    "entries": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "id",
+                          "recordedAt",
+                          "entryType",
+                          "kind",
+                          "effectiveAt",
+                          "quantity",
+                          "splitFactor",
+                          "usd",
+                          "valuation",
+                          "issuerEventId",
+                          "issuerRevision",
+                          "reversesId",
+                          "changeReason",
+                          "changeDetail",
+                          "mint",
+                          "symbol"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "recordedAt": {
+                            "type": "string"
+                          },
+                          "entryType": {
+                            "type": "string",
+                            "enum": [
+                              "recognition",
+                              "reversal"
+                            ]
+                          },
+                          "kind": {
+                            "type": "string",
+                            "enum": [
+                              "dividend",
+                              "split",
+                              "unclassified_adjustment"
+                            ]
+                          },
+                          "effectiveAt": {
+                            "type": "string"
+                          },
+                          "quantity": {
+                            "type": "string",
+                            "pattern": "^-?\\d+(\\.\\d+)?$"
+                          },
+                          "splitFactor": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "pattern": "^-?\\d+(\\.\\d+)?$"
+                          },
+                          "usd": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "pattern": "^-?\\d+(\\.\\d+)?$"
+                          },
+                          "valuation": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "enum": [
+                              "issuer_net_cash",
+                              "market_estimate",
+                              null
+                            ]
+                          },
+                          "issuerEventId": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "issuerRevision": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ]
+                          },
+                          "reversesId": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "changeReason": {
+                            "type": "string",
+                            "enum": [
+                              "initial",
+                              "issuer_correction",
+                              "balance_history_changed",
+                              "valuation_changed",
+                              "no_longer_applicable"
+                            ]
+                          },
+                          "changeDetail": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "mint": {
+                            "type": "string"
+                          },
+                          "symbol": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "nextOffset": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ]
                     }
                   }
                 }

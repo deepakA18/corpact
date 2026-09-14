@@ -12,11 +12,12 @@ import {
 } from '@corpact/solana';
 import { isoOf, unixOf, type Context } from './context';
 import { hintSatisfied } from './hints';
+import { matchColumns, sameInterpretation, storedMatchFromRow } from './interpretation';
 import { loadAllowlist } from './registry';
 import { ensureSignatures } from './signatures';
 import { loadOrFetchTransaction, resolveTransactionOrder } from './transactions';
 
-/** Bump when classification logic changes; old matches are kept, new ones are added alongside. */
+/** Recorded on each match. Bumping it alone writes nothing new; only a changed outcome supersedes a match. */
 export const CLASSIFIER_VERSION = 'classify-v2';
 
 // Issuer corporate-action records are created seconds to minutes before the chain write (UNHx: 3 s).
@@ -261,7 +262,10 @@ export function actionFromPayload(payload: Record<string, unknown>): IssuerCorpo
   return { ...p, effectiveAt: p.effectiveAt === null ? null : new Date(p.effectiveAt), createdAt: new Date(p.createdAt) };
 }
 
-/** Classify every active transition of a mint that has no match under the current classifier version. */
+/**
+ * Re-evaluate every active transition of a mint against the current issuer evidence.
+ * A changed outcome supersedes the stored match (which is kept); an unchanged one writes nothing.
+ */
 export async function classifyTransitions(ctx: Context, mint: string): Promise<number> {
   const { rows: assetRows } = await ctx.db.query('SELECT symbol FROM assets WHERE mint = $1', [mint]);
   const symbol: string | undefined = assetRows[0]?.symbol;
@@ -270,12 +274,17 @@ export async function classifyTransitions(ctx: Context, mint: string): Promise<n
   const { rows: actionRows } = await ctx.db.query(`SELECT payload FROM corporate_actions WHERE issuer = 'xstocks' AND symbol = $1`, [symbol]);
   const actions = actionRows.map((r) => actionFromPayload(r.payload));
   const { rows: versions } = await ctx.db.query(
-    `SELECT v.id, v.old_multiplier_bits, v.new_multiplier_bits, v.scheduled_unix FROM multiplier_versions v
-      WHERE v.mint = $1 AND v.status IN ('active', 'orphaned')
-        AND NOT EXISTS (SELECT 1 FROM action_matches m WHERE m.multiplier_version_id = v.id AND m.classifier_version = $2)`,
-    [mint, CLASSIFIER_VERSION],
+    `SELECT v.id, v.old_multiplier_bits, v.new_multiplier_bits, v.scheduled_unix,
+            m.id AS match_id, m.classification, m.external_id, m.revision, m.net_cash_per_share,
+            m.split_factor_num, m.split_factor_den, m.reasons, m.warnings
+       FROM multiplier_versions v
+       LEFT JOIN action_matches m ON m.multiplier_version_id = v.id AND m.superseded_at IS NULL
+      WHERE v.mint = $1 AND v.status IN ('active', 'orphaned')`,
+    [mint],
   );
   if (versions.length === 0) return 0;
+  let added = 0;
+  let superseded = 0;
 
   await withTransaction(ctx.db, async (client) => {
     for (const v of versions) {
@@ -296,33 +305,44 @@ export async function classifyTransitions(ctx: Context, mint: string): Promise<n
           actions,
         );
       }
-      await client.query(
+      const next = matchColumns(c);
+      if (v.match_id !== null && sameInterpretation(storedMatchFromRow(v), next)) continue;
+      // Supersede, never overwrite: the previous interpretation stays as evidence of what was believed and when.
+      if (v.match_id !== null) await client.query('UPDATE action_matches SET superseded_at = now() WHERE id = $1', [v.match_id]);
+      const { rows: inserted } = await client.query(
         `INSERT INTO action_matches (multiplier_version_id, classifier_version, classification, issuer, external_id, revision,
                                      net_cash_per_share, split_factor_num, split_factor_den, reasons, warnings)
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-         ON CONFLICT (multiplier_version_id, classifier_version) DO NOTHING`,
+         RETURNING id`,
         [
           v.id,
           CLASSIFIER_VERSION,
-          c.kind,
-          c.kind === 'unclassified' ? null : 'xstocks',
-          c.kind === 'unclassified' ? null : c.eventId,
-          c.kind === 'unclassified' ? null : c.version,
-          c.kind === 'dividend' && c.netCashUsdPerShare ? c.netCashUsdPerShare.toTerminatingDecimal() : null,
-          c.kind === 'split' ? c.factor.num.toString() : null,
-          c.kind === 'split' ? c.factor.den.toString() : null,
-          JSON.stringify(c.kind === 'unclassified' ? c.reasons : []),
-          JSON.stringify(c.kind === 'unclassified' ? [] : c.warnings),
+          next.classification,
+          next.external_id === null ? null : 'xstocks',
+          next.external_id,
+          next.revision,
+          next.net_cash_per_share,
+          next.split_factor_num,
+          next.split_factor_den,
+          JSON.stringify(next.reasons),
+          JSON.stringify(next.warnings),
         ],
       );
+      if (v.match_id !== null) {
+        await client.query('UPDATE action_matches SET superseded_by = $2 WHERE id = $1', [v.match_id, inserted[0].id]);
+        superseded++;
+      } else {
+        added++;
+      }
     }
+    if (added + superseded === 0) return;
     const owners = await client.query('SELECT DISTINCT owner FROM position_epochs WHERE mint = $1', [mint]);
     for (const { owner } of owners.rows) {
       await enqueueJob(client, { kind: 'rebuild_positions', businessKey: `rebuild_positions:${owner}`, payload: { owner } });
     }
   });
-  ctx.log('info', 'transitions classified', { mint, symbol, classified: versions.length });
-  return versions.length;
+  ctx.log('info', 'transitions classified', { mint, symbol, added, superseded, unchanged: versions.length - added - superseded });
+  return added + superseded;
 }
 
 /** One-shot import of issuer corporate actions through the configured source. Never scheduled. */

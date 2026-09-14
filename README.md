@@ -93,3 +93,4 @@ The xStocks corporate-action feed has no commercial licence, and the website ter
 - Income comes only from issuer-reported net cash that reconciles with the shares delivered. There is no event-time price source yet. A dividend without trustworthy issuer cash keeps its quantity, with USD shown as unknown.
 - Every position carries `coverageStart`, gaps and reconciliation status. Anything that cannot be replayed from verified chain history is partial or unsupported, never zero.
 - The convertible amount appears only when replay completed. Conversion itself is not built.
+- Issuer corrections never rewrite history. A changed classification supersedes the old one, and changed income is journaled as a reversal plus a replacement. The audit trail is at `GET /v1/journal` ([ADR-0003](docs/adr/0003-issuer-corrections-are-journaled.md)).

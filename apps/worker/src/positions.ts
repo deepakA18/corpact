@@ -1,9 +1,9 @@
 import { LedgerInvariantError, applyEvent, openPosition, type LedgerEvent, type PositionState } from '@corpact/accounting';
-import { withTransaction } from '@corpact/db';
+import { withTransaction, type DbClient } from '@corpact/db';
 import { Rational, type Classification } from '@corpact/domain';
 import { TOKEN_2022_PROGRAM, bitsFromFloat64, float64FromBits, type TokenAccountSnapshot } from '@corpact/solana';
 import { isoOf, type Context } from './context';
-import { CLASSIFIER_VERSION } from './multiplier';
+import { journalValuesFromEntry, planJournal, type JournalValues, type OpenRecognition } from './journal';
 import { resolveTransactionOrder } from './transactions';
 
 export const LEDGER_VERSION = 'ledger-v1';
@@ -35,6 +35,8 @@ interface EntryLink {
   versionId: string;
   matchId: string | null;
   effectiveUnix: bigint;
+  issuerEventId: string | null;
+  issuerRevision: number | null;
 }
 
 interface PositionResult {
@@ -142,10 +144,10 @@ async function buildPosition(
             m.id AS match_id, m.classification, m.external_id, m.revision, m.net_cash_per_share,
             m.split_factor_num, m.split_factor_den, m.reasons, m.warnings
        FROM multiplier_versions v
-       LEFT JOIN action_matches m ON m.multiplier_version_id = v.id AND m.classifier_version = $2
-      WHERE v.mint = $1 AND v.status IN ('active', 'orphaned') AND v.effective_unix <= $3
+       LEFT JOIN action_matches m ON m.multiplier_version_id = v.id AND m.superseded_at IS NULL
+      WHERE v.mint = $1 AND v.status IN ('active', 'orphaned') AND v.effective_unix <= $2
       ORDER BY v.effective_unix, v.id`,
-    [mint, CLASSIFIER_VERSION, clock.unixTime.toString()],
+    [mint, clock.unixTime.toString()],
   );
   const versions: VersionRow[] = versionRows.map((r) => ({
     id: String(r.id),
@@ -246,7 +248,13 @@ async function buildPosition(
         };
         state = applyEvent(state, event);
         if (state.entries.length > before) {
-          links.set(state.entries.length - 1, { versionId: version.id, matchId: version.matchId, effectiveUnix: version.effectiveUnix });
+          links.set(state.entries.length - 1, {
+            versionId: version.id,
+            matchId: version.matchId,
+            effectiveUnix: version.effectiveUnix,
+            issuerEventId: classification.kind === 'unclassified' ? null : classification.eventId,
+            issuerRevision: classification.kind === 'unclassified' ? null : classification.version,
+          });
         }
       } else if (step) {
         si++;
@@ -298,6 +306,78 @@ async function buildPosition(
   };
 }
 
+/** Conversion stays disabled this long after an issuer correction changes a position's income. */
+const CORRECTION_REVIEW_DAYS = 7;
+
+async function openRecognitions(client: DbClient, owner: string, mint: string): Promise<OpenRecognition[]> {
+  const { rows } = await client.query(
+    `SELECT j.* FROM ledger_journal j
+      WHERE j.owner = $1 AND j.mint = $2 AND j.entry_type = 'recognition'
+        AND NOT EXISTS (SELECT 1 FROM ledger_journal x WHERE x.reverses_id = j.id)`,
+    [owner, mint],
+  );
+  return rows.map((r) => ({
+    id: String(r.id),
+    multiplierVersionId: String(r.multiplier_version_id),
+    kind: r.kind,
+    effectiveUnix: BigInt(r.effective_unix),
+    quantity: Rational.of(BigInt(r.quantity_num), BigInt(r.quantity_den)),
+    splitFactor: r.split_factor_num === null ? null : Rational.of(BigInt(r.split_factor_num), BigInt(r.split_factor_den)),
+    usd: r.usd === null ? null : Rational.fromDecimal(r.usd),
+    valuation: r.valuation,
+    actionMatchId: r.action_match_id === null ? null : String(r.action_match_id),
+    issuerEventId: r.issuer_event_id,
+    issuerRevision: r.issuer_revision,
+  }));
+}
+
+/** Append the reversals and recognitions that bring the journal in line with this replay. Returns rows written. */
+async function appendJournal(client: DbClient, owner: string, r: PositionResult): Promise<number> {
+  const desired: JournalValues[] = [];
+  for (const [index, entry] of r.state.entries.entries()) {
+    const link = r.links.get(index);
+    if (!link) continue;
+    const values = journalValuesFromEntry(entry, {
+      multiplierVersionId: link.versionId,
+      actionMatchId: link.matchId,
+      issuerEventId: link.issuerEventId,
+      issuerRevision: link.issuerRevision,
+      effectiveUnix: link.effectiveUnix,
+    });
+    if (values) desired.push(values);
+  }
+  const plan = planJournal(await openRecognitions(client, owner, r.mint), desired);
+  for (const step of plan) {
+    const v = step.type === 'reversal' ? step.reverses : step.values;
+    await client.query(
+      `INSERT INTO ledger_journal (owner, mint, multiplier_version_id, entry_type, kind, effective_unix, quantity_num, quantity_den,
+                                   split_factor_num, split_factor_den, usd, valuation, action_match_id, issuer_event_id,
+                                   issuer_revision, reverses_id, change_reason, change_detail)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)`,
+      [
+        owner, r.mint, v.multiplierVersionId, step.type, v.kind, v.effectiveUnix.toString(),
+        v.quantity.num.toString(), v.quantity.den.toString(),
+        v.splitFactor?.num.toString() ?? null, v.splitFactor?.den.toString() ?? null,
+        v.usd ? v.usd.toTerminatingDecimal() : null, v.valuation, v.actionMatchId, v.issuerEventId, v.issuerRevision,
+        step.type === 'reversal' ? step.reverses.id : null, step.reason, step.detail,
+      ],
+    );
+  }
+  return plan.length;
+}
+
+async function journalRevisions(client: DbClient, owner: string, mint: string) {
+  const { rows } = await client.query(
+    `SELECT multiplier_version_id, count(*)::int AS recognitions,
+            max(recorded_at) FILTER (WHERE change_reason <> 'initial') AS last_corrected_at
+       FROM ledger_journal
+      WHERE owner = $1 AND mint = $2 AND entry_type = 'recognition'
+      GROUP BY multiplier_version_id`,
+    [owner, mint],
+  );
+  return new Map(rows.map((r) => [String(r.multiplier_version_id), { revision: r.recognitions as number, lastCorrectedAt: r.last_corrected_at as Date | null }]));
+}
+
 /** Rebuild every position for an owner from stored observations and replace them atomically. */
 export async function rebuildPositions(ctx: Context, owner: string) {
   const clock = await ctx.chain.finalizedClock();
@@ -327,6 +407,20 @@ export async function rebuildPositions(ctx: Context, owner: string) {
   await withTransaction(ctx.db, async (client) => {
     await client.query('DELETE FROM position_epochs WHERE owner = $1', [owner]);
     for (const r of results) {
+      // Journal first. Only a complete replay may change recognized income, so a transient gap cannot reverse it.
+      const journalChanges = r.replayComplete ? await appendJournal(client, owner, r) : 0;
+      if (journalChanges > 0) ctx.log('info', 'ledger journal updated', { owner, mint: r.mint, rows: journalChanges });
+      const revisions = await journalRevisions(client, owner, r.mint);
+      const disabledReasons = [...r.disabledReasons];
+      const correction = await client.query(
+        `SELECT max(recorded_at) AS at FROM ledger_journal
+          WHERE owner = $1 AND mint = $2 AND change_reason = 'issuer_correction' AND recorded_at > now() - make_interval(days => $3)`,
+        [owner, r.mint, CORRECTION_REVIEW_DAYS],
+      );
+      const correctedAt = correction.rows[0]?.at as Date | null | undefined;
+      if (correctedAt) {
+        disabledReasons.push(`The issuer corrected a past action on ${correctedAt.toISOString().slice(0, 10)}; review the revised income before converting`);
+      }
       const { rows } = await client.query(
         `INSERT INTO position_epochs (owner, mint, epoch, status, coverage_start_unix, coverage_start_slot, coverage_end_unix,
                                       coverage_end_slot, gaps, raw_balance, decimals, multiplier_bits, floor_num, floor_den,
@@ -336,7 +430,7 @@ export async function rebuildPositions(ctx: Context, owner: string) {
           owner, r.mint, r.status, r.coverageStartUnix?.toString() ?? null, r.coverageStartSlot?.toString() ?? null,
           r.coverageEndUnix.toString(), r.coverageEndSlot.toString(), JSON.stringify([...new Set(r.gaps)]), r.state.raw.toString(),
           r.state.decimals, bitsFromFloat64(r.state.multiplier), r.state.floor.num.toString(), r.state.floor.den.toString(),
-          JSON.stringify(r.disabledReasons), r.replayComplete, r.checks.length > 0 && r.checks.every((c) => c.matched), LEDGER_VERSION,
+          JSON.stringify(disabledReasons), r.replayComplete, r.checks.length > 0 && r.checks.every((c) => c.matched), LEDGER_VERSION,
         ],
       );
       const epochId = rows[0].id;
@@ -347,8 +441,9 @@ export async function rebuildPositions(ctx: Context, owner: string) {
         const quantity = entry.type === 'dividend' ? entry.quantity : entry.type === 'unclassified_adjustment' ? entry.quantityDelta : Rational.ZERO;
         await client.query(
           `INSERT INTO income_entries (position_epoch_id, seq, kind, multiplier_version_id, action_match_id, effective_unix,
-                                       quantity_num, quantity_den, split_factor_num, split_factor_den, usd, valuation, warnings, reasons)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`,
+                                       quantity_num, quantity_den, split_factor_num, split_factor_den, usd, valuation, warnings, reasons,
+                                       interpretation_revision, last_corrected_at)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)`,
           [
             epochId, seq++, entry.type, link.versionId, link.matchId, link.effectiveUnix.toString(),
             quantity.num.toString(), quantity.den.toString(),
@@ -358,6 +453,8 @@ export async function rebuildPositions(ctx: Context, owner: string) {
             entry.type === 'dividend' ? entry.valuation : null,
             JSON.stringify(entry.type === 'dividend' ? entry.warnings : []),
             JSON.stringify(entry.type === 'unclassified_adjustment' ? entry.reasons : []),
+            revisions.get(link.versionId)?.revision ?? 1,
+            revisions.get(link.versionId)?.lastCorrectedAt ?? null,
           ],
         );
       }

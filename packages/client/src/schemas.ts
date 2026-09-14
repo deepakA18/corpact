@@ -222,10 +222,39 @@ export const portfolioResponse = {
 const entryKind = { type: 'string', enum: ['dividend', 'split', 'unclassified_adjustment'] } as const;
 const valuation = { type: ['string', 'null'], enum: ['issuer_net_cash', 'market_estimate', null] } as const;
 
+/** One append-only journal row. A reversal repeats the values of the recognition it cancels. */
+export const journalEntry = {
+  type: 'object',
+  additionalProperties: false,
+  required: [
+    'id', 'recordedAt', 'entryType', 'kind', 'effectiveAt', 'quantity', 'splitFactor', 'usd', 'valuation',
+    'issuerEventId', 'issuerRevision', 'reversesId', 'changeReason', 'changeDetail',
+  ],
+  properties: {
+    id: str,
+    recordedAt: str,
+    entryType: { type: 'string', enum: ['recognition', 'reversal'] },
+    kind: entryKind,
+    effectiveAt: str,
+    quantity: decimal,
+    splitFactor: nullableDecimal,
+    usd: nullableDecimal,
+    valuation,
+    issuerEventId: nullableStr,
+    issuerRevision: { type: ['integer', 'null'] },
+    reversesId: nullableStr,
+    changeReason: {
+      type: 'string',
+      enum: ['initial', 'issuer_correction', 'balance_history_changed', 'valuation_changed', 'no_longer_applicable'],
+    },
+    changeDetail: nullableStr,
+  },
+} as const;
+
 export const incomeEntry = {
   type: 'object',
   additionalProperties: false,
-  required: ['id', 'mint', 'symbol', 'kind', 'effectiveAt', 'quantity', 'quantityDisplay', 'splitFactor', 'usd', 'valuation', 'warnings', 'reasons', 'headline'],
+  required: ['id', 'mint', 'symbol', 'kind', 'effectiveAt', 'quantity', 'quantityDisplay', 'splitFactor', 'usd', 'valuation', 'warnings', 'reasons', 'headline', 'revision', 'correctedAt'],
   properties: {
     id: str,
     mint: str,
@@ -240,6 +269,8 @@ export const incomeEntry = {
     warnings: strings,
     reasons: strings,
     headline: str,
+    revision: { type: 'integer', minimum: 1, description: 'How many times this entry has been recognized; above 1 means it was corrected' },
+    correctedAt: { ...nullableStr, description: 'When the entry was last corrected, if ever' },
   },
 } as const;
 
@@ -257,7 +288,10 @@ export const incomeResponse = {
 export const incomeDetail = {
   type: 'object',
   additionalProperties: false,
-  required: ['id', 'owner', 'mint', 'kind', 'quantity', 'quantityDisplay', 'symbol', 'usd', 'valuation', 'warnings', 'reasons', 'headline', 'effectiveAt', 'evidence'],
+  required: [
+    'id', 'owner', 'mint', 'kind', 'quantity', 'quantityDisplay', 'symbol', 'usd', 'valuation', 'warnings', 'reasons', 'headline',
+    'effectiveAt', 'revision', 'correctedAt', 'history', 'evidence',
+  ],
   properties: {
     id: str,
     owner: str,
@@ -272,6 +306,9 @@ export const incomeDetail = {
     reasons: strings,
     headline: str,
     effectiveAt: str,
+    revision: { type: 'integer', minimum: 1 },
+    correctedAt: nullableStr,
+    history: { type: 'array', items: journalEntry, description: 'Every recognition and reversal of this entry, oldest first' },
     evidence: {
       type: 'object',
       additionalProperties: false,
@@ -335,6 +372,24 @@ export const incomeDetail = {
         },
       },
     },
+  },
+} as const;
+
+export const journalResponse = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['owner', 'entries', 'nextOffset'],
+  properties: {
+    owner: str,
+    entries: {
+      type: 'array',
+      items: {
+        ...journalEntry,
+        required: [...journalEntry.required, 'mint', 'symbol'],
+        properties: { ...journalEntry.properties, mint: str, symbol: str },
+      },
+    },
+    nextOffset: { type: ['integer', 'null'] },
   },
 } as const;
 

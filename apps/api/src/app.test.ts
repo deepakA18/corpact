@@ -74,6 +74,32 @@ const incomeRow = {
   mint: KOX,
   symbol: 'KOx',
   decimals: 8,
+  interpretation_revision: 2,
+  last_corrected_at: new Date('2026-09-13T20:00:00Z'),
+};
+
+const journalRow = {
+  id: '5',
+  owner: OWNER,
+  mint: KOX,
+  multiplier_version_id: '3',
+  entry_type: 'reversal',
+  kind: 'dividend',
+  effective_unix: '1781481300',
+  quantity_num: '9059763073',
+  quantity_den: '100000000000',
+  split_factor_num: null,
+  split_factor_den: null,
+  usd: '7.4851762504',
+  valuation: 'issuer_net_cash',
+  action_match_id: '9',
+  issuer_event_id: 'ee3e95e7-4509-499c-a090-4f5c91438ea5',
+  issuer_revision: 1,
+  reverses_id: '4',
+  change_reason: 'issuer_correction',
+  change_detail: 'dividend per issuer action ee3e95e7 revision 1 → dividend per issuer action ee3e95e7 revision 2',
+  recorded_at: new Date('2026-09-13T20:00:00Z'),
+  symbol: 'KOx',
 };
 
 const detailRow = {
@@ -114,6 +140,8 @@ async function fakeQuery(sql: string) {
         ? [{ status: 'queued' }]
         : sql.includes('INSERT INTO jobs_outbox')
           ? [{}]
+          : sql.includes('FROM ledger_journal')
+            ? [journalRow]
           : sql.includes('JOIN multiplier_versions')
             ? [detailRow]
             : sql.includes('ORDER BY e.effective_unix')
@@ -173,7 +201,9 @@ describe('API authentication', () => {
     expect(spec.openapi).toBe('3.1.0');
     expect(spec.components.securitySchemes.apiKey).toMatchObject({ type: 'http', scheme: 'bearer' });
     expect(Object.keys(spec.paths)).toEqual(
-      expect.arrayContaining(['/v1/assets', '/v1/portfolio', '/v1/income', '/v1/income/{id}', '/v1/wallets', '/v1/wallets/sync', '/v1/wallets/{owner}/status']),
+      expect.arrayContaining([
+        '/v1/assets', '/v1/portfolio', '/v1/income', '/v1/income/{id}', '/v1/journal', '/v1/wallets', '/v1/wallets/sync', '/v1/wallets/{owner}/status',
+      ]),
     );
     expect(spec.paths['/v1/health'].get.security).toEqual([]);
   });
@@ -214,6 +244,7 @@ describe('API scopes and tenancy', () => {
     [`/v1/portfolio?owner=${OTHER}`],
     [`/v1/income?owner=${OTHER}`],
     [`/v1/income/10?owner=${OTHER}`],
+    [`/v1/journal?owner=${OTHER}`],
     [`/v1/wallets/${OTHER}/status`],
   ])('answers 404 for a wallet the tenant has not registered: %s', async (url) => {
     const res = await (await app()).inject({ url, headers: full });
@@ -275,6 +306,7 @@ describe('API responses match the published contract', () => {
     ['GET', `/v1/portfolio?owner=${OWNER}`, undefined, schemas.portfolioResponse],
     ['GET', `/v1/income?owner=${OWNER}`, undefined, schemas.incomeResponse],
     ['GET', `/v1/income/10?owner=${OWNER}`, undefined, schemas.incomeDetail],
+    ['GET', `/v1/journal?owner=${OWNER}`, undefined, schemas.journalResponse],
     ['POST', '/v1/wallets/sync', { owner: OTHER }, schemas.syncRequestResponse],
   ] as const;
 
@@ -284,6 +316,16 @@ describe('API responses match the published contract', () => {
     const validate = ajv.compile(schema);
     const body = res.json();
     expect(validate(body), JSON.stringify(validate.errors)).toBe(true);
+  });
+
+  it('exposes corrections on income entries and the full history on event detail', async () => {
+    const api = await app();
+    const list = (await api.inject({ url: `/v1/income?owner=${OWNER}`, headers: full })).json();
+    expect(list.entries[0]).toMatchObject({ revision: 2, correctedAt: '2026-09-13T20:00:00.000Z' });
+    const detail = (await api.inject({ url: `/v1/income/10?owner=${OWNER}`, headers: full })).json();
+    expect(detail.history).toEqual([
+      expect.objectContaining({ entryType: 'reversal', reversesId: '4', changeReason: 'issuer_correction', usd: '7.4851762504' }),
+    ]);
   });
 
   it('error bodies match the error schema', async () => {

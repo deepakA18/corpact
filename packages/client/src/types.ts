@@ -15,3 +15,5 @@ export type IncomeEntry = FromSchema<typeof s.incomeEntry>;
 export type EntryKind = IncomeEntry['kind'];
 export type IncomeResponse = FromSchema<typeof s.incomeResponse>;
 export type IncomeDetail = FromSchema<typeof s.incomeDetail>;
+export type JournalEntry = FromSchema<typeof s.journalEntry>;
+export type JournalResponse = FromSchema<typeof s.journalResponse>;

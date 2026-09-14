@@ -21,6 +21,12 @@ export function formatUsd(decimal: string): string {
   return `${negative && cents !== 0n ? '-' : ''}$${dollars}.${(cents % 100n).toString().padStart(2, '0')}`;
 }
 
+/** Cut a decimal string to `places` fractional digits (toward zero) for display, without floating point. */
+export function truncateDecimal(decimal: string, places: number): string {
+  const [whole, fraction] = decimal.split('.');
+  return fraction === undefined ? decimal : `${whole}.${fraction.slice(0, places)}`;
+}
+
 /** Trim trailing zeros of a decimal quantity string for display. */
 export function formatQuantity(decimal: string): string {
   if (!decimal.includes('.')) return decimal;

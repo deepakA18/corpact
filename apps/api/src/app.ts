@@ -90,6 +90,25 @@ function describeEntry(e: {
   return `Balance adjustment detected; classification pending.${e.reasons[0] ? ` ${e.reasons[0]}.` : ''} No income recorded.`;
 }
 
+function journalEntryFromRow(r: Record<string, any>) {
+  return {
+    id: String(r.id),
+    recordedAt: r.recorded_at,
+    entryType: r.entry_type,
+    kind: r.kind,
+    effectiveAt: iso(r.effective_unix),
+    quantity: exact(Rational.of(BigInt(r.quantity_num), BigInt(r.quantity_den))),
+    splitFactor: r.split_factor_num === null ? null : exact(Rational.of(BigInt(r.split_factor_num), BigInt(r.split_factor_den))),
+    usd: r.usd === null ? null : exact(Rational.fromDecimal(r.usd)),
+    valuation: r.valuation,
+    issuerEventId: r.issuer_event_id,
+    issuerRevision: r.issuer_revision,
+    reversesId: r.reverses_id === null ? null : String(r.reverses_id),
+    changeReason: r.change_reason,
+    changeDetail: r.change_detail,
+  };
+}
+
 function presentedKey(headers: Record<string, string | string[] | undefined>): string | null {
   const auth = headers.authorization;
   if (typeof auth === 'string' && /^Bearer\s+\S+$/i.test(auth)) return auth.replace(/^Bearer\s+/i, '');
@@ -449,7 +468,7 @@ export async function buildApp(options: AppOptions) {
       const owner = await authorizeWallet(request, q.owner);
       const { rows } = await db.query(
         `SELECT e.id, e.kind, e.effective_unix, e.quantity_num, e.quantity_den, e.split_factor_num, e.split_factor_den,
-                e.usd, e.valuation, e.warnings, e.reasons, p.mint, a.symbol, a.decimals
+                e.usd, e.valuation, e.warnings, e.reasons, p.mint, a.symbol, a.decimals, e.interpretation_revision, e.last_corrected_at
            FROM income_entries e JOIN position_epochs p ON p.id = e.position_epoch_id JOIN assets a ON a.mint = p.mint
           WHERE p.owner = $1
           ORDER BY e.effective_unix DESC, e.id DESC
@@ -472,7 +491,7 @@ export async function buildApp(options: AppOptions) {
           warnings: r.warnings as string[],
           reasons: r.reasons as string[],
         };
-        return { ...entry, headline: describeEntry(entry) };
+        return { ...entry, headline: describeEntry(entry), revision: r.interpretation_revision as number, correctedAt: r.last_corrected_at };
       });
       return { owner, entries, nextOffset: rows.length > q.limit ? q.offset + q.limit : null };
     },
@@ -511,6 +530,10 @@ export async function buildApp(options: AppOptions) {
       );
       const r = rows[0];
       if (!r) throw new HttpError(404, 'No such event for this owner');
+      const { rows: historyRows } = await db.query(
+        'SELECT * FROM ledger_journal WHERE owner = $1 AND multiplier_version_id = $2 ORDER BY id',
+        [owner, r.multiplier_version_id],
+      );
       const quantity = Rational.of(BigInt(r.quantity_num), BigInt(r.quantity_den));
       const base = {
         kind: r.kind,
@@ -529,6 +552,9 @@ export async function buildApp(options: AppOptions) {
         ...base,
         headline: describeEntry(base),
         effectiveAt: iso(r.effective_unix),
+        revision: r.interpretation_revision as number,
+        correctedAt: r.last_corrected_at,
+        history: historyRows.map(journalEntryFromRow),
         evidence: {
           chain: {
             updateSignature: r.update_signature,
@@ -555,6 +581,35 @@ export async function buildApp(options: AppOptions) {
             : { result: 'pending', reasons: ['Classification pending'] },
           issuerRecord: r.action_payload ? { source: r.action_source, evidenceSha256: r.evidence_sha256, record: r.action_payload } : null,
         },
+      };
+    },
+  );
+
+  app.get(
+    '/v1/journal',
+    {
+      config: { scope: 'ledger:read' },
+      schema: {
+        tags: ['ledger'],
+        summary: 'Append-only audit trail: every recognition and reversal of income, newest first',
+        querystring: schemas.incomeQuery,
+        response: { 200: schemas.journalResponse, ...errors },
+      },
+    },
+    async (request) => {
+      const q = request.query as { owner: string; limit: number; offset: number };
+      const owner = await authorizeWallet(request, q.owner);
+      const { rows } = await db.query(
+        `SELECT j.*, a.symbol FROM ledger_journal j JOIN assets a ON a.mint = j.mint
+          WHERE j.owner = $1
+          ORDER BY j.id DESC
+          LIMIT $2 OFFSET $3`,
+        [owner, q.limit + 1, q.offset],
+      );
+      return {
+        owner,
+        entries: rows.slice(0, q.limit).map((r) => ({ ...journalEntryFromRow(r), mint: r.mint, symbol: r.symbol })),
+        nextOffset: rows.length > q.limit ? q.offset + q.limit : null,
       };
     },
   );

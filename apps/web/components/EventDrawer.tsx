@@ -2,7 +2,15 @@
 
 import { useEffect, useState } from 'react';
 import { api, type IncomeDetail } from '../lib/api';
-import { formatDateTime } from '../lib/format';
+import { formatDateTime, formatQuantity, formatUsd, truncateDecimal } from '../lib/format';
+
+const REASON_LABEL: Record<string, string> = {
+  initial: 'First recognized',
+  issuer_correction: 'Issuer correction',
+  balance_history_changed: 'Balance history changed',
+  valuation_changed: 'Valuation changed',
+  no_longer_applicable: 'No longer applicable',
+};
 
 export function EventDrawer({ owner, id, onClose }: { owner: string; id: string; onClose: () => void }) {
   const [detail, setDetail] = useState<IncomeDetail | null>(null);
@@ -100,6 +108,29 @@ function Evidence({ detail }: { detail: IncomeDetail }) {
           </>
         )}
       </dl>
+
+      <h2>History</h2>
+      {detail.revision > 1 && (
+        <p className="muted">
+          Corrected {detail.revision - 1} time(s), most recently {formatDateTime(detail.correctedAt)}. Earlier recognitions are reversed, not
+          erased.
+        </p>
+      )}
+      {detail.history.length === 0 ? (
+        <p className="muted">Not yet recorded in the ledger journal.</p>
+      ) : (
+        <ul className="gaps">
+          {detail.history.map((h) => (
+            <li key={h.id}>
+              <strong>{h.entryType === 'reversal' ? 'Reversed' : 'Recognized'}</strong> {formatDateTime(h.recordedAt)} — {REASON_LABEL[h.changeReason]}
+              {': '}
+              {h.kind.replace('_', ' ')} {formatQuantity(truncateDecimal(h.quantity, 8))} units
+              {h.usd !== null ? `, ${formatUsd(h.usd)}` : ''}
+              {h.changeDetail && <div className="muted">{h.changeDetail}</div>}
+            </li>
+          ))}
+        </ul>
+      )}
 
       {issuerRecord && (
         <details>

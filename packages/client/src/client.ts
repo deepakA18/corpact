@@ -3,6 +3,7 @@ import type {
   HealthResponse,
   IncomeDetail,
   IncomeResponse,
+  JournalResponse,
   Portfolio,
   SyncRequestResponse,
   SyncStatusResponse,
@@ -76,6 +77,8 @@ export function createCorpactClient(options: CorpactClientOptions) {
     portfolio: (wallet: string) => request<Portfolio>('GET', '/v1/portfolio', { query: { owner: wallet } }),
     income: (wallet: string, page: { limit?: number; offset?: number } = {}) =>
       request<IncomeResponse>('GET', '/v1/income', { query: { owner: wallet, ...page } }),
+    journal: (wallet: string, page: { limit?: number; offset?: number } = {}) =>
+      request<JournalResponse>('GET', '/v1/journal', { query: { owner: wallet, ...page } }),
     incomeEvent: (wallet: string, id: string) =>
       request<IncomeDetail>('GET', `/v1/income/${encodeURIComponent(id)}`, { query: { owner: wallet } }),
   };
