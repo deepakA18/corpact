@@ -3,20 +3,46 @@
 import { useEffect, useState } from 'react';
 import type { Heading } from '@/lib/docs';
 
+/** A heading counts as the current section once its top passes below the sticky top bar. */
+const TOP_OFFSET = 120;
+
 export function Toc({ headings }: { headings: Heading[] }) {
   const [active, setActive] = useState(headings[0]?.id ?? '');
 
   useEffect(() => {
     const targets = headings.map((h) => document.getElementById(h.id)).filter((el): el is HTMLElement => el !== null);
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries.filter((e) => e.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
-        if (visible[0]) setActive(visible[0].target.id);
-      },
-      { rootMargin: '-96px 0px -65% 0px' },
-    );
-    targets.forEach((t) => observer.observe(t));
-    return () => observer.disconnect();
+    if (targets.length === 0) return;
+
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
+      // A short last section can never scroll up to the top bar, so the bottom of the page selects it.
+      if (atBottom) {
+        setActive(targets[targets.length - 1]!.id);
+        return;
+      }
+      let current = targets[0]!.id;
+      for (const target of targets) {
+        if (target.getBoundingClientRect().top <= TOP_OFFSET) current = target.id;
+        else break;
+      }
+      setActive(current);
+    };
+    const schedule = () => {
+      if (frame === 0) frame = requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule);
+    window.addEventListener('hashchange', schedule);
+    return () => {
+      if (frame !== 0) cancelAnimationFrame(frame);
+      window.removeEventListener('scroll', schedule);
+      window.removeEventListener('resize', schedule);
+      window.removeEventListener('hashchange', schedule);
+    };
   }, [headings]);
 
   if (headings.length === 0) return null;
@@ -33,7 +59,7 @@ export function Toc({ headings }: { headings: Heading[] }) {
           } else h3 += 1;
           return (
             <li key={h.id} className={`depth-${h.depth}`}>
-              <a href={`#${h.id}`} className={active === h.id ? 'active' : ''}>
+              <a href={`#${h.id}`} className={active === h.id ? 'active' : ''} onClick={() => setActive(h.id)}>
                 {h.depth === 3 ? `${h3}. ` : ''}
                 {h.text}
               </a>
