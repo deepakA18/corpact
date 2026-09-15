@@ -179,8 +179,8 @@ export default async function Home() {
           <Link href="/docs/quickstart" className="btn btn-accent">
             Start building
           </Link>
-          <a href="#proof" className="btn btn-ghost">
-            See the proof <Icon name="arrow" size={16} />
+          <a href="#product" className="btn btn-ghost">
+            See how it works <Icon name="arrow" size={16} />
           </a>
         </div>
 
@@ -259,49 +259,6 @@ export default async function Home() {
               <p>{s.body}</p>
             </div>
           ))}
-        </div>
-      </section>
-
-      <section className="section" id="proof">
-        <div className="section-head">
-          <span className="kicker">Proven on real data</span>
-          <h2>Where the obvious reading fails, Corpact gets it right</h2>
-          <p className="section-sub">Every real multiplier change published for xStocks on Solana, replayed through the production engine.</p>
-        </div>
-        <div className="traps">
-          <div className="trap">
-            <span className="trap-sym">HONx spin-off</span>
-            <h4>A +95% change that is not income</h4>
-            <div className="verdict naive">
-              <b>Naive reading</b>Books 95.11% more shares as dividend income.
-            </div>
-            <div className="verdict ours">
-              <b>Corpact</b>Books a basis allocation: 48.75% of the position’s value arrived as principal. No income.
-            </div>
-            <p className="trap-foot">22 multiplier increases in the data set are not cash dividends.</p>
-          </div>
-          <div className="trap">
-            <span className="trap-sym">KRAQx rights sale</span>
-            <h4>Labelled a unit split by the issuer</h4>
-            <div className="verdict naive">
-              <b>Naive reading</b>Trusts the label and books a split, or books +1.38% as income.
-            </div>
-            <div className="verdict ours">
-              <b>Corpact</b>Reads the issuer’s note, recognises warrants sold and reinvested, and allocates basis. No income.
-            </div>
-            <p className="trap-foot">12 changes carry a label the evidence contradicts.</p>
-          </div>
-          <div className="trap">
-            <span className="trap-sym">LINx withholding refund</span>
-            <h4>Tax refunded as a “new dividend”</h4>
-            <div className="verdict naive">
-              <b>Naive reading</b>Lets the refund replace the original dividend, or double-counts it.
-            </div>
-            <div className="verdict ours">
-              <b>Corpact</b>Keeps both, labels the refund, and deducts withholding exactly once.
-            </div>
-            <p className="trap-foot">628 cash dividends · 2 refunds · 10 splits · 7 spin-offs and rights · 1 identity change.</p>
-          </div>
         </div>
       </section>
 
