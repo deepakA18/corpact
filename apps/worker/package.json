@@ -13,9 +13,7 @@
     "@corpact/db": "workspace:*",
     "@corpact/domain": "workspace:*",
     "@corpact/issuers": "workspace:*",
-    "@corpact/solana": "workspace:*"
-  },
-  "devDependencies": {
+    "@corpact/solana": "workspace:*",
     "tsx": "4.23.13"
   }
 }
