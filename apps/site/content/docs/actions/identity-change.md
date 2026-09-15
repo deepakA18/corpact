@@ -3,12 +3,12 @@ title: "Identity change"
 description: "The same economic position under a new underlying listing or form."
 ---
 
-| | |
+| Detail | Value |
 |---|---|
 | Type | `identity_change` |
 | Category | identity |
 | Ledger treatment | Identity change |
-| Validation status | **Validated** |
+| Automatic booking | **Yes** |
 | Real instances | **1** |
 
 ## What we detect
@@ -23,9 +23,9 @@ A matching `StockMerger` record whose note exchanges one listing of a company fo
 
 ## When evidence is missing or conflicts
 
-- No note, or a note naming a different company: an unclassified stock merger, unvalidated.
+- No note, or a note naming a different company: held for review as a stock merger.
 - A ratio that does not reconcile: unclassified.
-- `NameChange`: unclassified, unvalidated.
+- `NameChange`: held for review.
 
 ## How it is booked
 
@@ -35,9 +35,7 @@ Units ×ratio, all cost basis carried over; the protected floor scales by the ra
 
 AZNx: NASDAQ ADR → NYSE ordinary share, 2:1. Labelled `StockMerger` by the issuer and "ReverseSplit" by multiplier history.
 
-Census note: AZNx: NASDAQ ADR → NYSE ordinary share 2:1, labelled StockMerger and "ReverseSplit". Name or ticker changes (NameChange): 0 instances, unvalidated.
-
 ## In the API
 
-- **v2:** `type: "identity_change"`, `treatment: "identity"`, `validation.status: "validated"`, and the lifecycle and evidence on `GET /v2/actions/{id}`.
+- **v2:** `type: "identity_change"`, `treatment: "identity"`, with `validation`, the lifecycle and the evidence on `GET /v2/actions/{id}`.
 - **v1:** shown as `unclassified_adjustment`, with the treatment stated in `reasons` and `headline`.

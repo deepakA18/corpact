@@ -3,12 +3,12 @@ title: "Withholding refund"
 description: "Tax withheld by mistake on an earlier dividend, passed back to holders."
 ---
 
-| | |
+| Detail | Value |
 |---|---|
 | Type | `withholding_adjustment` |
 | Category | income |
 | Ledger treatment | Income |
-| Validation status | **Validated** |
+| Automatic booking | **Yes** |
 | Real instances | **2** |
 
 ## What we detect
@@ -34,9 +34,7 @@ Income, like the dividend it corrects, and distinguishable by type. Withholding 
 
 LINx and NVOx, each refunding tax withheld on its preceding dividend.
 
-Census note: LINx and NVOx pass back wrongly withheld tax as a CashDividend with gross 0 and positive net; recognised from the issuer note, booked like the dividend it corrects, and distinguishable by kind.
-
 ## In the API
 
-- **v2:** `type: "withholding_adjustment"`, `treatment: "income"`, `validation.status: "validated"`, and the lifecycle and evidence on `GET /v2/actions/{id}`.
+- **v2:** `type: "withholding_adjustment"`, `treatment: "income"`, with `validation`, the lifecycle and the evidence on `GET /v2/actions/{id}`.
 - **v1:** shown as `dividend`.

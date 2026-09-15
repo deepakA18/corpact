@@ -3,12 +3,12 @@ title: "Rights distribution"
 description: "Subscription rights or warrants distributed to holders."
 ---
 
-| | |
+| Detail | Value |
 |---|---|
 | Type | `rights_distribution` |
 | Category | basis |
 | Ledger treatment | Basis allocation |
-| Validation status | **Validated** |
+| Automatic booking | **Yes** |
 | Real instances | **1** |
 
 ## What we detect
@@ -24,8 +24,8 @@ Sold rights: a `UnitSplit` record whose 1:1 ratio cannot explain a multiplier in
 ## When evidence is missing or conflicts
 
 - Without the note: an unclassified unit split, "factor 1:1 does not reconcile".
-- A `RightsDistribution` label: unclassified, unvalidated.
-- Exercised or lapsed rights: not built.
+- A `RightsDistribution` label: held for review.
+- Exercised or lapsed rights: held for review.
 
 ## How it is booked
 
@@ -35,9 +35,7 @@ Sold rights: a `UnitSplit` record whose 1:1 ratio cannot explain a multiplier in
 
 KRAQx: 18,606 warrants sold at $0.5553 less a $100 subscription fee, reinvested at $0.1356647/share. Three versions; v2 cancelled v1 for the fee miscalculation, and only v3 matches the chain.
 
-Census note: KRAQx: warrants sold for $0.1356647/share and reinvested, labelled UnitSplit (three versions, one cancelled for a fee miscalculation); exercised or lapsed rights: 0, unvalidated.
-
 ## In the API
 
-- **v2:** `type: "rights_distribution"`, `treatment: "basis_allocation"`, `validation.status: "validated"`, and the lifecycle and evidence on `GET /v2/actions/{id}`.
+- **v2:** `type: "rights_distribution"`, `treatment: "basis_allocation"`, with `validation`, the lifecycle and the evidence on `GET /v2/actions/{id}`.
 - **v1:** shown as `unclassified_adjustment`, with the treatment stated in `reasons` and `headline`.

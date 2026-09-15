@@ -3,15 +3,12 @@ title: "Unit split"
 description: "A change in the number of wrapper units per underlying share, as the issuer's enum defines it."
 ---
 
-> [!WARNING] Unvalidated
-> No real instance has confirmed this classifier. It is recognised and never booked: every instance is an unclassified adjustment with conversion disabled.
-
-| | |
+| Detail | Value |
 |---|---|
 | Type | `unit_split` |
 | Category | basis |
 | Ledger treatment | Not booked |
-| Validation status | **Unvalidated** |
+| Automatic booking | **Held for review** |
 | Real instances | **0** |
 
 ## What we detect
@@ -26,7 +23,7 @@ A reconciling `UnitSplit` record is recognised and not booked. A 1:1 `UnitSplit`
 ## When evidence is missing or conflicts
 
 - Ratio does not reconcile: unclassified.
-- Always: an unclassified adjustment, reason stating that no real instance exists and the classifier is unvalidated.
+- Always held for review: shown as an unclassified adjustment with its reason, no income booked, conversion disabled.
 
 ## How it is booked
 
@@ -36,9 +33,7 @@ Not booked: an unclassified adjustment with its reason. No income, and the chang
 
 None. The only `UnitSplit`-labelled record, on KRAQx, was a rights sale.
 
-Census note: The only UnitSplit-labelled record (KRAQx) is a mislabelled rights sale; no true unit split has occurred.
-
 ## In the API
 
-- **v2:** `type: "unit_split"`, `treatment: "not_booked"`, `validation.status: "unvalidated"`, and the lifecycle and evidence on `GET /v2/actions/{id}`.
+- **v2:** `type: "unit_split"`, `treatment: "not_booked"`, with `validation`, the lifecycle and the evidence on `GET /v2/actions/{id}`.
 - **v1:** shown as `unclassified_adjustment`.

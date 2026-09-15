@@ -3,15 +3,12 @@ title: "Cash and stock dividend"
 description: "A dividend paid partly in cash and partly in shares."
 ---
 
-> [!WARNING] Unvalidated
-> No real instance has confirmed this classifier. It is recognised and never booked: every instance is an unclassified adjustment with conversion disabled.
-
-| | |
+| Detail | Value |
 |---|---|
 | Type | `cash_and_stock_dividend` |
 | Category | basis |
 | Ledger treatment | Not booked |
-| Validation status | **Unvalidated** |
+| Automatic booking | **Held for review** |
 | Real instances | **0** |
 
 ## What we detect
@@ -24,8 +21,8 @@ A matching `CashAndStockDividend` record is recognised, and never booked.
 
 ## When evidence is missing or conflicts
 
-- Always: an unclassified adjustment, reason stating that no real instance exists and the classifier is unvalidated.
-- No fixture is invented for this type; tests only retype a real record to prove it is never booked.
+- Always held for review: shown as an unclassified adjustment with its reason, no income booked, conversion disabled.
+- Corpact books this type automatically only once a real instance has occurred and been tested.
 
 ## How it is booked
 
@@ -35,9 +32,7 @@ Not booked: an unclassified adjustment with its reason. No income, and the chang
 
 None. The type exists in the issuer enum and has never been used.
 
-Census note: Defined in the issuer enum; never used. Recognised and labelled unvalidated; never booked.
-
 ## In the API
 
-- **v2:** `type: "cash_and_stock_dividend"`, `treatment: "not_booked"`, `validation.status: "unvalidated"`, and the lifecycle and evidence on `GET /v2/actions/{id}`.
+- **v2:** `type: "cash_and_stock_dividend"`, `treatment: "not_booked"`, with `validation`, the lifecycle and the evidence on `GET /v2/actions/{id}`.
 - **v1:** shown as `unclassified_adjustment`.

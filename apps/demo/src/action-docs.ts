@@ -20,9 +20,9 @@ interface ActionDoc {
 }
 
 const NOT_BOOKED = 'Not booked: an unclassified adjustment with its reason. No income, and the change makes nothing available to convert.';
-const UNVALIDATED_MISSING = [
-  'Always: an unclassified adjustment, reason stating that no real instance exists and the classifier is unvalidated.',
-  'No fixture is invented for this type; tests only retype a real record to prove it is never booked.',
+const HELD_FOR_REVIEW = [
+  'Always held for review: shown as an unclassified adjustment with its reason, no income booked, conversion disabled.',
+  'Corpact books this type automatically only once a real instance has occurred and been tested.',
 ];
 
 const DOCS: Record<ActionKind, ActionDoc> = {
@@ -85,7 +85,7 @@ const DOCS: Record<ActionKind, ActionDoc> = {
     summary: 'A dividend paid partly in cash and partly in shares.',
     detect: 'A matching `CashAndStockDividend` record is recognised, and never booked.',
     evidence: ['A standing record matching both multipliers and the activation time.'],
-    missing: UNVALIDATED_MISSING,
+    missing: HELD_FOR_REVIEW,
     booking: `${NOT_BOOKED} Splitting one multiplier change into income and a stock dividend needs an issuer unit ratio or a price, and neither has a real instance.`,
     instances: 'None. The type exists in the issuer enum and has never been used.',
   },
@@ -93,7 +93,7 @@ const DOCS: Record<ActionKind, ActionDoc> = {
     summary: 'More shares per share; each is worth proportionally less.',
     detect: 'A multiplier change matching a standing `ForwardSplit` record whose unit ratio reconciles with the multipliers.',
     evidence: ['A standing record matching both multipliers and the activation time.', 'M_old × (toUnits ÷ fromUnits) equals M_new within 4ε. With no published ratio, the factor is derived and a warning says so.'],
-    missing: ['A ratio that does not reconcile: unclassified.', 'A split record publishing cash: recognised as fractional cash in lieu, unvalidated, not booked.'],
+    missing: ['A ratio that does not reconcile: unclassified.', 'A split record publishing cash: recognised as fractional cash in lieu and held for review.'],
     booking: 'Units ×factor. The protected floor ×factor. Zero income.',
     instances: 'NFLXx 10:1, VUGx 6:1, KLACx 10:1, CRWDx 4:1 and others, each reconciled to the issuer unit ratio.',
   },
@@ -112,7 +112,7 @@ const DOCS: Record<ActionKind, ActionDoc> = {
     summary: "A change in the number of wrapper units per underlying share, as the issuer's enum defines it.",
     detect: 'A reconciling `UnitSplit` record is recognised and not booked. A 1:1 `UnitSplit` with issuer cash and a note naming warrants or rights is a rights distribution.',
     evidence: ['A standing record matching both multipliers and the activation time.', 'The unit ratio reconciles.'],
-    missing: ['Ratio does not reconcile: unclassified.', ...UNVALIDATED_MISSING.slice(0, 1)],
+    missing: ['Ratio does not reconcile: unclassified.', ...HELD_FOR_REVIEW.slice(0, 1)],
     booking: NOT_BOOKED,
     instances: 'None. The only `UnitSplit`-labelled record, on KRAQx, was a rights sale.',
   },
@@ -120,7 +120,7 @@ const DOCS: Record<ActionKind, ActionDoc> = {
     summary: 'Cash paid for a fractional share left over by a split.',
     detect: 'A split record that publishes cash is recognised as cash in lieu, and not booked.',
     evidence: ['A split record that reconciles and publishes non-zero gross or net cash.'],
-    missing: UNVALIDATED_MISSING,
+    missing: HELD_FOR_REVIEW,
     booking: `${NOT_BOOKED} A Scaled UI split rescales the multiplier, so raw token amounts never become fractional. This path is structurally unlikely, not merely unobserved.`,
     instances: 'None.',
   },
@@ -153,8 +153,8 @@ const DOCS: Record<ActionKind, ActionDoc> = {
     ],
     missing: [
       'Without the note: an unclassified unit split, "factor 1:1 does not reconcile".',
-      'A `RightsDistribution` label: unclassified, unvalidated.',
-      'Exercised or lapsed rights: not built.',
+      'A `RightsDistribution` label: held for review.',
+      'Exercised or lapsed rights: held for review.',
     ],
     booking:
       "**Basis allocation**, as for a spin-off: (M_new − M_old) ÷ M_new of the position's value as principal. Issuer proceeds are recorded when published, and never booked as income.",
@@ -166,7 +166,7 @@ const DOCS: Record<ActionKind, ActionDoc> = {
     detect:
       'A matching `StockMerger` record is recognised and not booked, unless its note exchanges one listing of a company for another listing of the *same* company. That is an identity change.',
     evidence: ['A standing record matching both multipliers and the activation time.'],
-    missing: ['A note naming a different company: unclassified, "a different company; stock-for-stock mergers are unvalidated".', ...UNVALIDATED_MISSING],
+    missing: ['A note naming a different company: held for review, since a stock-for-stock merger has never occurred.', ...HELD_FOR_REVIEW],
     booking: `${NOT_BOOKED} The lineage model supports a \`transform\` link, and its basis conservation is property-tested, but nothing writes one.`,
     instances: 'None. The only `StockMerger` record, AZNx, is a listing conversion.',
   },
@@ -174,7 +174,7 @@ const DOCS: Record<ActionKind, ActionDoc> = {
     summary: 'The underlying company is acquired for cash.',
     detect: 'A matching `CashMerger` record is recognised and not booked.',
     evidence: ['A standing record matching both multipliers and the activation time.'],
-    missing: UNVALIDATED_MISSING,
+    missing: HELD_FOR_REVIEW,
     booking: `${NOT_BOOKED} How xStocks would deliver cash for a delisted underlying (multiplier to zero, burn, off-chain redemption) is unknown.`,
     instances: 'None.',
   },
@@ -182,7 +182,7 @@ const DOCS: Record<ActionKind, ActionDoc> = {
     summary: 'The underlying company is acquired for shares and cash.',
     detect: 'A matching `StockAndCashMerger` record is recognised and not booked.',
     evidence: ['A standing record matching both multipliers and the activation time.'],
-    missing: UNVALIDATED_MISSING,
+    missing: HELD_FOR_REVIEW,
     booking: NOT_BOOKED,
     instances: 'None.',
   },
@@ -196,9 +196,9 @@ const DOCS: Record<ActionKind, ActionDoc> = {
       'The note ratio equals the published unit ratio, and M_old × ratio equals M_new within 4ε.',
     ],
     missing: [
-      'No note, or a note naming a different company: an unclassified stock merger, unvalidated.',
+      'No note, or a note naming a different company: held for review as a stock merger.',
       'A ratio that does not reconcile: unclassified.',
-      '`NameChange`: unclassified, unvalidated.',
+      '`NameChange`: held for review.',
     ],
     booking:
       'Units ×ratio, all cost basis carried over; the protected floor scales by the ratio. Zero income. The worker writes the position lineage: the identity held before, the identity after, and a link whose successor carries exactly all basis. `GET /v2/instruments/{mint}/lineage` traces it.',
@@ -208,7 +208,7 @@ const DOCS: Record<ActionKind, ActionDoc> = {
     summary: 'The wrapper is redeemed or discontinued and holders are paid out.',
     detect: 'A matching `Redemption` record is recognised and not booked.',
     evidence: ['A standing record matching both multipliers and the activation time.'],
-    missing: UNVALIDATED_MISSING,
+    missing: HELD_FOR_REVIEW,
     booking: `${NOT_BOOKED} The lineage model has a \`terminate\` link (all basis leaves as cash), but nothing writes one.`,
     instances: 'None. No record uses `Redemption` or `redemptionPriceUsd`. Four assets are marked halted, and none has terminated.',
   },
@@ -216,13 +216,13 @@ const DOCS: Record<ActionKind, ActionDoc> = {
     summary: 'The underlying is delisted or declared worthless.',
     detect: 'A matching `WorthlessRemoval` record is recognised and not booked.',
     evidence: ['A standing record matching both multipliers and the activation time.'],
-    missing: UNVALIDATED_MISSING,
+    missing: HELD_FOR_REVIEW,
     booking: NOT_BOOKED,
     instances: 'None.',
   },
   seizure: {
     summary: "Tokens moved out of a holder's account by the mint's permanent delegate.",
-    detect: 'Nothing. The detector is deliberately not built (ADR-0006).',
+    detect: 'Not detected as its own type yet (ADR-0006). See how it is booked below.',
     evidence: ["Would need: the signing authority of each token movement, to tell the holder from the delegate. Wallet history ingestion does not record it today."],
     missing: [
       "Today a delegate transfer out of a tracked wallet is booked as a **withdrawal**: the protected floor scales down proportionally, income is unaffected, and the position still reconciles. It is **not** flagged as a seizure.",
@@ -240,10 +240,11 @@ const DOCS: Record<ActionKind, ActionDoc> = {
   },
 };
 
-const STATUS_TEXT: Record<ActionKindSpec['classifier'], string> = {
-  validated: 'Validated',
-  unvalidated: 'Unvalidated',
-  not_built: 'Not built',
+/** Public wording for the classifier status: whether Corpact books the type without review. */
+const BOOKING_TEXT: Record<ActionKindSpec['classifier'], string> = {
+  validated: 'Yes',
+  unvalidated: 'Held for review',
+  not_built: 'Held for review',
 };
 
 const TREATMENT_TEXT: Record<ActionKindSpec['treatment'], string> = {
@@ -272,23 +273,17 @@ const bullets = (items: readonly string[]) => items.map((i) => `- ${i}`).join('\
 function renderPage(kind: ActionKind): string {
   const spec = ACTION_KIND_SPECS[kind];
   const doc = DOCS[kind];
-  const callout =
-    spec.classifier === 'validated'
-      ? ''
-      : spec.classifier === 'unvalidated'
-        ? `> [!WARNING] Unvalidated\n> No real instance has confirmed this classifier. It is recognised and never booked: every instance is an unclassified adjustment with conversion disabled.\n\n`
-        : `> [!WARNING] Not built\n> Recognised in the taxonomy only. See ADR-0006 for why, and for what happens today.\n\n`;
   return `---
 title: ${JSON.stringify(spec.label)}
 description: ${JSON.stringify(doc.summary)}
 ---
 
-${callout}| | |
+| Detail | Value |
 |---|---|
 | Type | \`${kind}\` |
 | Category | ${spec.category} |
 | Ledger treatment | ${TREATMENT_TEXT[spec.treatment]} |
-| Validation status | **${STATUS_TEXT[spec.classifier]}** |
+| Automatic booking | **${BOOKING_TEXT[spec.classifier]}** |
 | Real instances | **${spec.realInstances}** |
 
 ## What we detect
@@ -311,11 +306,9 @@ ${doc.booking}
 
 ${doc.instances}
 
-Census note: ${spec.evidence}.
-
 ## In the API
 
-- **v2:** \`type: "${kind}"\`, \`treatment: "${spec.treatment === 'termination' || spec.treatment === 'custody_transfer' ? 'not_booked' : spec.treatment}"\`, \`validation.status: "${spec.classifier}"\`, and the lifecycle and evidence on \`GET /v2/actions/{id}\`.
+- **v2:** \`type: "${kind}"\`, \`treatment: "${spec.treatment === 'termination' || spec.treatment === 'custody_transfer' ? 'not_booked' : spec.treatment}"\`, with \`validation\`, the lifecycle and the evidence on \`GET /v2/actions/{id}\`.
 - **v1:** shown as ${v1Presentation(kind)}.
 `;
 }
@@ -323,26 +316,23 @@ Census note: ${spec.evidence}.
 function renderIndex(): string {
   const rows = ACTION_KINDS.map((kind) => {
     const spec = ACTION_KIND_SPECS[kind];
-    return `| [${spec.label}](/docs/actions/${actionSlug(kind)}) | \`${kind}\` | ${TREATMENT_TEXT[spec.treatment]} | ${STATUS_TEXT[spec.classifier]} | ${spec.realInstances} |`;
+    return `| [${spec.label}](/docs/actions/${actionSlug(kind)}) | \`${kind}\` | ${TREATMENT_TEXT[spec.treatment]} | ${BOOKING_TEXT[spec.classifier]} | ${spec.realInstances} |`;
   });
   return `---
 title: Corporate actions
-description: Every action type Corpact recognises, how it is booked, and whether real data has validated it.
+description: Every action type Corpact recognises, how it is booked, and whether it is booked automatically.
 ---
 
 Every multiplier change is classified into one of these types, from issuer evidence only: never from the size of the change or its label. Counts are real instances in the recorded xStocks data and on-chain scans.
 
-| Action | Type | Ledger treatment | Status | Real instances |
+| Action | Type | Ledger treatment | Automatic booking | Real instances |
 |---|---|---|---|---|
 ${rows.join('\n')}
 
-## Validation status
+## Automatic booking
 
-- **Validated:** exercised against every real recorded instance and locked by regression tests on that data.
-- **Unvalidated:** recognised, but no real instance has confirmed how it is delivered. Never booked: an unclassified adjustment, with conversion disabled.
-- **Not built:** a taxonomy entry only. ADR-0006 explains why.
-
-A type with zero real instances cannot be validated. A test enforces it.
+- **Yes:** proven against every real recorded instance, and locked by regression tests on that data.
+- **Held for review:** recognised, but it has never occurred on xStocks. Corpact shows it with its reason and books nothing until a real instance has been observed and tested.
 
 ## Lifecycle
 
@@ -356,11 +346,7 @@ export function renderActionDocs(): Map<string, string> {
   // The docs loader maps the slug `actions` to content/docs/actions.md.
   files.set('apps/site/content/docs/actions.md', renderIndex());
   for (const kind of ACTION_KINDS) files.set(`apps/site/content/docs/actions/${actionSlug(kind)}.md`, renderPage(kind));
-  const nav = ACTION_KINDS.map((kind) => {
-    const status = ACTION_KIND_SPECS[kind].classifier;
-    const badge = status === 'validated' ? '' : `, badge: '${STATUS_TEXT[status]}'`;
-    return `  { title: '${ACTION_KIND_SPECS[kind].label.replaceAll("'", "\\'")}', slug: 'actions/${actionSlug(kind)}'${badge} },`;
-  });
+  const nav = ACTION_KINDS.map((kind) => `  { title: '${ACTION_KIND_SPECS[kind].label.replaceAll("'", "\\'")}', slug: 'actions/${actionSlug(kind)}' },`);
   files.set(
     'apps/site/lib/actions-nav.generated.ts',
     `// Generated by \`pnpm --filter @corpact/demo action-docs\` from ACTION_KIND_SPECS. Do not edit.\nimport type { NavItem } from './nav';\n\nexport const ACTION_NAV: NavItem[] = [\n  { title: 'All action types', slug: 'actions' },\n${nav.join('\n')}\n];\n`,

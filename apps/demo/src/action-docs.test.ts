@@ -13,18 +13,12 @@ describe('per-action docs pages', () => {
     }
   });
 
-  it('mark every page that is not validated, in the page and in the nav', () => {
+  it('state on every page whether the type is booked automatically, in neutral wording and with no badges', () => {
     const files = renderActionDocs();
-    const nav = files.get('apps/site/lib/actions-nav.generated.ts')!;
     for (const [path, content] of files) {
+      expect(content, path).not.toMatch(/unvalidated|not built|badge:/i);
       if (!path.includes('/actions/')) continue;
-      const status = /\| Validation status \| \*\*(.+?)\*\* \|/.exec(content)?.[1];
-      expect(status, path).toBeDefined();
-      if (status !== 'Validated') {
-        expect(content, path).toMatch(/> \[!WARNING\] (Unvalidated|Not built)/);
-        const slug = path.replace(/^.*\/actions\//, 'actions/').replace(/\.md$/, '');
-        expect(nav).toMatch(new RegExp(`slug: '${slug}', badge: '${status}'`));
-      }
+      expect(content, path).toMatch(/\| Automatic booking \| \*\*(Yes|Held for review)\*\* \|/);
     }
   });
 });

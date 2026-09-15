@@ -3,12 +3,12 @@ title: "Cash dividend"
 description: "Cash paid on the underlying share and reinvested by the issuer through the multiplier."
 ---
 
-| | |
+| Detail | Value |
 |---|---|
 | Type | `cash_dividend` |
 | Category | income |
 | Ledger treatment | Income |
-| Validation status | **Validated** |
+| Automatic booking | **Yes** |
 | Real instances | **642** |
 
 ## What we detect
@@ -40,9 +40,7 @@ Units added are **income**. The protected floor is unchanged. USD = shares held 
 
 LINx, ETNx, ASMLx and TSMx cover the retention and retention-release cases; STRCx covers implausible issuer cash.
 
-Census note: 628 of 654 recorded multiplier changes confirmed as cash dividends; special dividends (0 labelled) route here.
-
 ## In the API
 
-- **v2:** `type: "cash_dividend"`, `treatment: "income"`, `validation.status: "validated"`, and the lifecycle and evidence on `GET /v2/actions/{id}`.
+- **v2:** `type: "cash_dividend"`, `treatment: "income"`, with `validation`, the lifecycle and the evidence on `GET /v2/actions/{id}`.
 - **v1:** shown as `dividend`.

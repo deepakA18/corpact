@@ -3,15 +3,12 @@ title: "Unknown"
 description: "A multiplier change no published issuer record explains, or a record of type `Unknown`."
 ---
 
-> [!WARNING] Not built
-> Recognised in the taxonomy only. See ADR-0006 for why, and for what happens today.
-
-| | |
+| Detail | Value |
 |---|---|
 | Type | `unknown` |
 | Category | unknown |
 | Ledger treatment | Not booked |
-| Validation status | **Not built** |
+| Automatic booking | **Held for review** |
 | Real instances | **0** |
 
 ## What we detect
@@ -34,9 +31,7 @@ Not booked: an unclassified adjustment with its reason. No income, and the chang
 
 Six recorded changes have no issuer record: STRCx ×2, SATAx, TQQQx, CMCSAx and JPMx.
 
-Census note: No issuer action matches, or the issuer type is Unknown.
-
 ## In the API
 
-- **v2:** `type: "unknown"`, `treatment: "not_booked"`, `validation.status: "not_built"`, and the lifecycle and evidence on `GET /v2/actions/{id}`.
+- **v2:** `type: "unknown"`, `treatment: "not_booked"`, with `validation`, the lifecycle and the evidence on `GET /v2/actions/{id}`.
 - **v1:** shown as `unclassified_adjustment`.

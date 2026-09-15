@@ -3,12 +3,12 @@ title: "Reverse split"
 description: "Fewer shares per share; each is worth proportionally more."
 ---
 
-| | |
+| Detail | Value |
 |---|---|
 | Type | `reverse_split` |
 | Category | basis |
 | Ledger treatment | Quantity and basis adjustment |
-| Validation status | **Validated** |
+| Automatic booking | **Yes** |
 | Real instances | **1** |
 
 ## What we detect
@@ -33,9 +33,7 @@ Units ×factor. The protected floor ×factor. Zero income.
 
 HONx, 2:1.
 
-Census note: HONx 2:1; fractional cash-in-lieu has 0 instances.
-
 ## In the API
 
-- **v2:** `type: "reverse_split"`, `treatment: "quantity_basis"`, `validation.status: "validated"`, and the lifecycle and evidence on `GET /v2/actions/{id}`.
+- **v2:** `type: "reverse_split"`, `treatment: "quantity_basis"`, with `validation`, the lifecycle and the evidence on `GET /v2/actions/{id}`.
 - **v1:** shown as `split`.

@@ -3,20 +3,17 @@ title: "Permanent-delegate transfer"
 description: "Tokens moved out of a holder's account by the mint's permanent delegate."
 ---
 
-> [!WARNING] Not built
-> Recognised in the taxonomy only. See ADR-0006 for why, and for what happens today.
-
-| | |
+| Detail | Value |
 |---|---|
 | Type | `seizure` |
 | Category | custody |
 | Ledger treatment | Not booked |
-| Validation status | **Not built** |
+| Automatic booking | **Held for review** |
 | Real instances | **0** |
 
 ## What we detect
 
-Nothing. The detector is deliberately not built (ADR-0006).
+Not detected as its own type yet (ADR-0006). See how it is booked below.
 
 ## Evidence required
 
@@ -34,9 +31,7 @@ Not booked as its own type.
 
 None on xStocks. One delegate key is permanent delegate on all 832 mints, and its full history (1,685 transactions) contains no transfer or burn out of another owner.
 
-Census note: One delegate on all 832 mints; its full history (1,685 transactions) has no transfer or burn out of another owner. Left not built: see ADR-0006.
-
 ## In the API
 
-- **v2:** `type: "seizure"`, `treatment: "not_booked"`, `validation.status: "not_built"`, and the lifecycle and evidence on `GET /v2/actions/{id}`.
+- **v2:** `type: "seizure"`, `treatment: "not_booked"`, with `validation`, the lifecycle and the evidence on `GET /v2/actions/{id}`.
 - **v1:** shown as `unclassified_adjustment`.

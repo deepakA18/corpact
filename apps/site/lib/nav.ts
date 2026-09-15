@@ -59,7 +59,7 @@ export const NAV: NavGroup[] = [
       { title: 'Monitoring', slug: 'operations/monitoring' },
       { title: 'Independent RPC provider', slug: 'operations/independent-provider' },
       { title: 'Backup & restore', slug: 'operations/backups' },
-      { title: 'Running the demo', slug: 'operations/demo', badge: 'Local' },
+      { title: 'Running the demo', slug: 'operations/demo' },
     ],
   },
   {
@@ -67,7 +67,7 @@ export const NAV: NavGroup[] = [
     icon: 'reference',
     items: [
       { title: 'API reference', slug: 'api-reference' },
-      { title: 'API v1 → v2', slug: 'reference/api-v1-to-v2', badge: 'New' },
+      { title: 'API v1 → v2', slug: 'reference/api-v1-to-v2' },
       { title: 'TypeScript client', slug: 'reference/client' },
       { title: 'Errors & limits', slug: 'reference/errors' },
     ],

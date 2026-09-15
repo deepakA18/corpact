@@ -29,7 +29,7 @@ v1 predates the taxonomy. Types it never booked appear there as unclassified adj
 | `spin_off` | `basis_allocation` | `unclassified_adjustment` | null | "Spin-off booked as a basis allocation, not income: X% of the position's value was distributed and reinvested" |
 | `rights_distribution` | `basis_allocation` | `unclassified_adjustment` | null | "Rights distribution booked as a basis allocation, not income: X% of the position's value came from rights sold and reinvested" |
 | `identity_change` | `identity` | `unclassified_adjustment` | null | "Identity change of the underlying booked as a quantity adjustment, not income: units ×F, all cost basis carried over" |
-| anything unvalidated or unmatched | `not_booked` | `unclassified_adjustment` | null | the classifier's reason |
+| anything held for review or unmatched | `not_booked` | `unclassified_adjustment` | null | the classifier's reason |
 
 The same mapping applies everywhere v1 shows a kind: `/v1/income`, `/v1/income/{id}` (including `evidence.classification.result`, which reads `unclassified` for these types), `/v1/journal`, and both CSV exports. `/v1/portfolio` counts them in `unclassifiedAdjustments`.
 
@@ -38,7 +38,7 @@ The same mapping applies everywhere v1 shows a kind: `/v1/income`, `/v1/income/{
 | Concern | v1 | v2 |
 |---|---|---|
 | What an entry is | `kind`: `dividend`, `split` or `unclassified_adjustment` | `type` (18 values) plus `treatment` (5 values) |
-| Is it trustworthy? | Implicit | `validation.status`: `validated`, `unvalidated` or `not_built`, with `realInstances` |
+| Booked automatically? | Implicit | `validation.status`: `validated`, `unvalidated` or `not_built`, with `realInstances` |
 | Where it is in its life | Not reported | `lifecycle.state`. Detail adds every step, and the revision each step supersedes |
 | Timestamps | `effectiveAt`; the detail's chain block has `scheduledAt` and `effectiveAt` | Detail `timestamps`: issuer effective, issuer created, configured activation, publication block time, first observed active, ingested |
 | Evidence hash | `evidenceSha256`: hash of the payload at ingestion | `evidenceSha256`: `stored_payload_sha256`, recomputable from the database; every revision carries its own |
