@@ -19,6 +19,7 @@ export const NAV: NavGroup[] = [
     icon: 'start',
     items: [
       { title: 'Overview', slug: '' },
+      { title: 'Try the API', slug: 'try-it' },
       { title: 'Quickstart', slug: 'quickstart' },
       { title: 'Authentication', slug: 'authentication' },
       { title: 'Tenants & wallets', slug: 'tenancy' },

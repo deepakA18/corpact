@@ -8,8 +8,6 @@ description: "The same economic position under a new underlying listing or form.
 | Type | `identity_change` |
 | Category | identity |
 | Ledger treatment | Identity change |
-| Automatic booking | **Yes** |
-| Real instances | **1** |
 
 ## What we detect
 
@@ -23,15 +21,15 @@ A matching `StockMerger` record whose note exchanges one listing of a company fo
 
 ## When evidence is missing or conflicts
 
-- No note, or a note naming a different company: held for review as a stock merger.
+- No note, or a note naming a different company: recognised as a stock merger, and not booked.
 - A ratio that does not reconcile: unclassified.
-- `NameChange`: held for review.
+- `NameChange`: recognised, and not booked.
 
 ## How it is booked
 
 Units ×ratio, all cost basis carried over; the protected floor scales by the ratio. Zero income. The worker writes the position lineage: the identity held before, the identity after, and a link whose successor carries exactly all basis. `GET /v2/instruments/{mint}/lineage` traces it.
 
-## Real instances
+## In practice
 
 AZNx: NASDAQ ADR → NYSE ordinary share, 2:1. Labelled `StockMerger` by the issuer and "ReverseSplit" by multiplier history.
 

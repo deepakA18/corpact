@@ -8,8 +8,6 @@ description: "New shares distributed to holders, delivered as a multiplier incre
 | Type | `stock_dividend` |
 | Category | basis |
 | Ledger treatment | Quantity and basis adjustment |
-| Automatic booking | **Yes** |
-| Real instances | **1** |
 
 ## What we detect
 
@@ -31,7 +29,7 @@ A multiplier increase matching the delivered `StockDividend` record.
 
 Units ×factor, with cost basis spread across them. The protected floor scales by the same factor. Zero income; nothing newly convertible.
 
-## Real instances
+## In practice
 
 SCCOx. The issuer published six versions across two feeds: scheduled at 1:1.012, cancelled ("Will be a cash flow, not a unit change"), cancelled again, rescheduled, delivered at ×1.0153, then the schedule was cancelled after delivery. The lifecycle keeps all six, each naming the revision it supersedes.
 

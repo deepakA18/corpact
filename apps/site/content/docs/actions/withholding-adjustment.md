@@ -8,8 +8,6 @@ description: "Tax withheld by mistake on an earlier dividend, passed back to hol
 | Type | `withholding_adjustment` |
 | Category | income |
 | Ledger treatment | Income |
-| Automatic booking | **Yes** |
-| Real instances | **2** |
 
 ## What we detect
 
@@ -30,7 +28,7 @@ A matching `CashDividend` version with zero gross cash, positive net cash, and a
 
 Income, like the dividend it corrects, and distinguishable by type. Withholding is deducted once: LINx 1.12 + 0.48 = 1.60, and NVOx 0.2883412 + 0.1232128 = 0.411554, each equal to the original gross.
 
-## Real instances
+## In practice
 
 LINx and NVOx, each refunding tax withheld on its preceding dividend.
 

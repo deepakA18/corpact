@@ -8,8 +8,6 @@ description: "Fewer shares per share; each is worth proportionally more."
 | Type | `reverse_split` |
 | Category | basis |
 | Ledger treatment | Quantity and basis adjustment |
-| Automatic booking | **Yes** |
-| Real instances | **1** |
 
 ## What we detect
 
@@ -29,7 +27,7 @@ A multiplier decrease matching a standing `ReverseSplit` record whose unit ratio
 
 Units ×factor. The protected floor ×factor. Zero income.
 
-## Real instances
+## In practice
 
 HONx, 2:1.
 

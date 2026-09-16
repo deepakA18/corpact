@@ -10,7 +10,7 @@ type Props = { params: Promise<{ slug?: string[] }> };
 export const dynamicParams = false;
 
 export function generateStaticParams() {
-  return ALL_ITEMS.filter((item) => item.slug !== 'api-reference').map((item) => ({ slug: item.slug ? item.slug.split('/') : [] }));
+  return ALL_ITEMS.filter((item) => item.slug !== 'api-reference' && item.slug !== 'try-it').map((item) => ({ slug: item.slug ? item.slug.split('/') : [] }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

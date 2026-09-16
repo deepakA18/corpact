@@ -8,8 +8,6 @@ description: "Subscription rights or warrants distributed to holders."
 | Type | `rights_distribution` |
 | Category | basis |
 | Ledger treatment | Basis allocation |
-| Automatic booking | **Yes** |
-| Real instances | **1** |
 
 ## What we detect
 
@@ -24,14 +22,14 @@ Sold rights: a `UnitSplit` record whose 1:1 ratio cannot explain a multiplier in
 ## When evidence is missing or conflicts
 
 - Without the note: an unclassified unit split, "factor 1:1 does not reconcile".
-- A `RightsDistribution` label: held for review.
-- Exercised or lapsed rights: held for review.
+- A `RightsDistribution` label: recognised, and not booked.
+- Exercised or lapsed rights: not booked.
 
 ## How it is booked
 
 **Basis allocation**, as for a spin-off: (M_new − M_old) ÷ M_new of the position's value as principal. Issuer proceeds are recorded when published, and never booked as income.
 
-## Real instances
+## In practice
 
 KRAQx: 18,606 warrants sold at $0.5553 less a $100 subscription fee, reinvested at $0.1356647/share. Three versions; v2 cancelled v1 for the fee miscalculation, and only v3 matches the chain.
 

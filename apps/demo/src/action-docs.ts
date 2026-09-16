@@ -21,7 +21,7 @@ interface ActionDoc {
 
 const NOT_BOOKED = 'Not booked: an unclassified adjustment with its reason. No income, and the change makes nothing available to convert.';
 const HELD_FOR_REVIEW = [
-  'Always held for review: shown as an unclassified adjustment with its reason, no income booked, conversion disabled.',
+  'Always an unclassified adjustment with its reason: no income booked, conversion disabled.',
   'Corpact books this type automatically only once a real instance has occurred and been tested.',
 ];
 
@@ -93,7 +93,7 @@ const DOCS: Record<ActionKind, ActionDoc> = {
     summary: 'More shares per share; each is worth proportionally less.',
     detect: 'A multiplier change matching a standing `ForwardSplit` record whose unit ratio reconciles with the multipliers.',
     evidence: ['A standing record matching both multipliers and the activation time.', 'M_old × (toUnits ÷ fromUnits) equals M_new within 4ε. With no published ratio, the factor is derived and a warning says so.'],
-    missing: ['A ratio that does not reconcile: unclassified.', 'A split record publishing cash: recognised as fractional cash in lieu and held for review.'],
+    missing: ['A ratio that does not reconcile: unclassified.', 'A split record publishing cash: recognised as fractional cash in lieu, and not booked.'],
     booking: 'Units ×factor. The protected floor ×factor. Zero income.',
     instances: 'NFLXx 10:1, VUGx 6:1, KLACx 10:1, CRWDx 4:1 and others, each reconciled to the issuer unit ratio.',
   },
@@ -153,8 +153,8 @@ const DOCS: Record<ActionKind, ActionDoc> = {
     ],
     missing: [
       'Without the note: an unclassified unit split, "factor 1:1 does not reconcile".',
-      'A `RightsDistribution` label: held for review.',
-      'Exercised or lapsed rights: held for review.',
+      'A `RightsDistribution` label: recognised, and not booked.',
+      'Exercised or lapsed rights: not booked.',
     ],
     booking:
       "**Basis allocation**, as for a spin-off: (M_new − M_old) ÷ M_new of the position's value as principal. Issuer proceeds are recorded when published, and never booked as income.",
@@ -166,7 +166,7 @@ const DOCS: Record<ActionKind, ActionDoc> = {
     detect:
       'A matching `StockMerger` record is recognised and not booked, unless its note exchanges one listing of a company for another listing of the *same* company. That is an identity change.',
     evidence: ['A standing record matching both multipliers and the activation time.'],
-    missing: ['A note naming a different company: held for review, since a stock-for-stock merger has never occurred.', ...HELD_FOR_REVIEW],
+    missing: ['A note naming a different company: recognised as a stock-for-stock merger, and not booked.', ...HELD_FOR_REVIEW],
     booking: `${NOT_BOOKED} The lineage model supports a \`transform\` link, and its basis conservation is property-tested, but nothing writes one.`,
     instances: 'None. The only `StockMerger` record, AZNx, is a listing conversion.',
   },
@@ -196,9 +196,9 @@ const DOCS: Record<ActionKind, ActionDoc> = {
       'The note ratio equals the published unit ratio, and M_old × ratio equals M_new within 4ε.',
     ],
     missing: [
-      'No note, or a note naming a different company: held for review as a stock merger.',
+      'No note, or a note naming a different company: recognised as a stock merger, and not booked.',
       'A ratio that does not reconcile: unclassified.',
-      '`NameChange`: held for review.',
+      '`NameChange`: recognised, and not booked.',
     ],
     booking:
       'Units ×ratio, all cost basis carried over; the protected floor scales by the ratio. Zero income. The worker writes the position lineage: the identity held before, the identity after, and a link whose successor carries exactly all basis. `GET /v2/instruments/{mint}/lineage` traces it.',
@@ -240,12 +240,11 @@ const DOCS: Record<ActionKind, ActionDoc> = {
   },
 };
 
-/** Public wording for the classifier status: whether Corpact books the type without review. */
-const BOOKING_TEXT: Record<ActionKindSpec['classifier'], string> = {
-  validated: 'Yes',
-  unvalidated: 'Held for review',
-  not_built: 'Held for review',
-};
+/**
+ * Only types Corpact books get a page. A type it recognises but holds for review is still returned by the API,
+ * and is covered by one line on the index rather than a page that would read as an unfinished feature.
+ */
+const PUBLISHED = ACTION_KINDS.filter((kind) => ACTION_KIND_SPECS[kind].classifier === 'validated');
 
 const TREATMENT_TEXT: Record<ActionKindSpec['treatment'], string> = {
   income: 'Income',
@@ -283,8 +282,6 @@ description: ${JSON.stringify(doc.summary)}
 | Type | \`${kind}\` |
 | Category | ${spec.category} |
 | Ledger treatment | ${TREATMENT_TEXT[spec.treatment]} |
-| Automatic booking | **${BOOKING_TEXT[spec.classifier]}** |
-| Real instances | **${spec.realInstances}** |
 
 ## What we detect
 
@@ -302,7 +299,7 @@ ${bullets(doc.missing)}
 
 ${doc.booking}
 
-## Real instances
+## In practice
 
 ${doc.instances}
 
@@ -314,25 +311,22 @@ ${doc.instances}
 }
 
 function renderIndex(): string {
-  const rows = ACTION_KINDS.map((kind) => {
+  const rows = PUBLISHED.map((kind) => {
     const spec = ACTION_KIND_SPECS[kind];
-    return `| [${spec.label}](/docs/actions/${actionSlug(kind)}) | \`${kind}\` | ${TREATMENT_TEXT[spec.treatment]} | ${BOOKING_TEXT[spec.classifier]} | ${spec.realInstances} |`;
+    return `| [${spec.label}](/docs/actions/${actionSlug(kind)}) | \`${kind}\` | ${TREATMENT_TEXT[spec.treatment]} |`;
   });
   return `---
 title: Corporate actions
-description: Every action type Corpact recognises, how it is booked, and whether it is booked automatically.
+description: The corporate-action types Corpact books, the evidence each one needs, and how it reaches the ledger.
 ---
 
-Every multiplier change is classified into one of these types, from issuer evidence only: never from the size of the change or its label. Counts are real instances in the recorded xStocks data and on-chain scans.
+Every multiplier change is classified from issuer evidence only: never from the size of the change or its label. These are the types Corpact books, each validated against real recorded data.
 
-| Action | Type | Ledger treatment | Automatic booking | Real instances |
-|---|---|---|---|---|
+| Action | Type | Ledger treatment |
+|---|---|---|
 ${rows.join('\n')}
 
-## Automatic booking
-
-- **Yes:** proven against every real recorded instance, and locked by regression tests on that data.
-- **Held for review:** recognised, but it has never occurred on xStocks. Corpact shows it with its reason and books nothing until a real instance has been observed and tested.
+Other types the issuer can publish, such as mergers and redemptions, are recognised and shown with their reason, and are never booked automatically. No number reaches your ledger from an action type Corpact has not proven on real data.
 
 ## Lifecycle
 
@@ -345,8 +339,8 @@ export function renderActionDocs(): Map<string, string> {
   const files = new Map<string, string>();
   // The docs loader maps the slug `actions` to content/docs/actions.md.
   files.set('apps/site/content/docs/actions.md', renderIndex());
-  for (const kind of ACTION_KINDS) files.set(`apps/site/content/docs/actions/${actionSlug(kind)}.md`, renderPage(kind));
-  const nav = ACTION_KINDS.map((kind) => `  { title: '${ACTION_KIND_SPECS[kind].label.replaceAll("'", "\\'")}', slug: 'actions/${actionSlug(kind)}' },`);
+  for (const kind of PUBLISHED) files.set(`apps/site/content/docs/actions/${actionSlug(kind)}.md`, renderPage(kind));
+  const nav = PUBLISHED.map((kind) => `  { title: '${ACTION_KIND_SPECS[kind].label.replaceAll("'", "\\'")}', slug: 'actions/${actionSlug(kind)}' },`);
   files.set(
     'apps/site/lib/actions-nav.generated.ts',
     `// Generated by \`pnpm --filter @corpact/demo action-docs\` from ACTION_KIND_SPECS. Do not edit.\nimport type { NavItem } from './nav';\n\nexport const ACTION_NAV: NavItem[] = [\n  { title: 'All action types', slug: 'actions' },\n${nav.join('\n')}\n];\n`,
@@ -359,5 +353,5 @@ if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) {
     mkdirSync(dirname(join(REPO_ROOT, path)), { recursive: true });
     writeFileSync(join(REPO_ROOT, path), content);
   }
-  console.log(`Wrote ${ACTION_KINDS.length} action pages, the index and the nav`);
+  console.log(`Wrote ${PUBLISHED.length} action pages, the index and the nav`);
 }

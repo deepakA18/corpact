@@ -23,7 +23,7 @@ Then the issuer's **evidence**, not its type label, decides the action type. Eac
 | `SpinOff` | **Basis allocation:** (M_new − M_old) ÷ M_new of the position's value as principal, no income |
 | `UnitSplit` 1:1 that cannot explain the change, with cash and a note naming warrants | **Rights distribution:** basis allocation, no income |
 | `StockMerger` exchanging one listing of a company for another of the same company | **Identity change:** units rescaled, all basis carried over, lineage written |
-| A type with no real instance (mergers, redemptions, delistings, name changes, …) | **Held for review:** shown as an unclassified adjustment, never booked automatically |
+| A type Corpact does not book automatically (mergers, redemptions, delistings, name changes) | **Unclassified adjustment,** shown with its reason and never booked |
 | No matching action | **Unclassified adjustment:** no published issuer action matches |
 
 An unclassified adjustment is visible with its reason. It adds nothing to income and makes nothing available to convert.

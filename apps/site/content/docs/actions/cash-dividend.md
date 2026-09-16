@@ -8,8 +8,6 @@ description: "Cash paid on the underlying share and reinvested by the issuer thr
 | Type | `cash_dividend` |
 | Category | income |
 | Ledger treatment | Income |
-| Automatic booking | **Yes** |
-| Real instances | **642** |
 
 ## What we detect
 
@@ -36,7 +34,7 @@ A multiplier increase that matches a standing `CashDividend` record exactly: bot
 
 Units added are **income**. The protected floor is unchanged. USD = shares held at the event × issuer net cash per share.
 
-## Real instances
+## In practice
 
 LINx, ETNx, ASMLx and TSMx cover the retention and retention-release cases; STRCx covers implausible issuer cash.
 

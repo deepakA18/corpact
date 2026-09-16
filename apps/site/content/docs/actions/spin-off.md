@@ -8,8 +8,6 @@ description: "Shares of a separated company distributed to the parent's holders.
 | Type | `spin_off` |
 | Category | basis |
 | Ledger treatment | Basis allocation |
-| Automatic booking | **Yes** |
-| Real instances | **6** |
 
 ## What we detect
 
@@ -31,7 +29,7 @@ A multiplier increase matching a standing `SpinOff` record. xStocks never delive
 
 **Basis allocation.** The distributed share of the position's value is exactly (M_new − M_old) ÷ M_new, with no price needed. The added units are principal carrying allocated basis. The floor scales with the multiplier. Zero income; nothing newly convertible.
 
-## Real instances
+## In practice
 
 GMEx, HONx ×2, DFDVx, OPENx and CMCSAx. Four are labelled "Dividend" and two "Administrative"; four of the six raise the multiplier less than the largest cash dividend (+2.93%).
 

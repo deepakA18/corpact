@@ -8,8 +8,6 @@ description: "More shares per share; each is worth proportionally less."
 | Type | `forward_split` |
 | Category | basis |
 | Ledger treatment | Quantity and basis adjustment |
-| Automatic booking | **Yes** |
-| Real instances | **9** |
 
 ## What we detect
 
@@ -23,13 +21,13 @@ A multiplier change matching a standing `ForwardSplit` record whose unit ratio r
 ## When evidence is missing or conflicts
 
 - A ratio that does not reconcile: unclassified.
-- A split record publishing cash: recognised as fractional cash in lieu and held for review.
+- A split record publishing cash: recognised as fractional cash in lieu, and not booked.
 
 ## How it is booked
 
 Units ×factor. The protected floor ×factor. Zero income.
 
-## Real instances
+## In practice
 
 NFLXx 10:1, VUGx 6:1, KLACx 10:1, CRWDx 4:1 and others, each reconciled to the issuer unit ratio.
 

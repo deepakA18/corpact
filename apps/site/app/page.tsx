@@ -57,11 +57,11 @@ const START_PATHS: Array<{ title: string; time: string; body: string; command: s
     href: '/docs/quickstart',
   },
   {
-    title: 'Integrate the API',
-    time: 'when you build',
-    body: 'Typed endpoints for positions, income, corporate actions, the audit journal and CSV exports.',
+    title: 'Call the live API',
+    time: 'about 1 minute',
+    body: 'Run real requests against the hosted API from the docs, with a read-only demo key. No signup, no setup.',
     command: 'GET /v2/actions?owner=',
-    href: '/docs/api-reference',
+    href: '/docs/try-it',
   },
 ];
 

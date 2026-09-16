@@ -3,39 +3,44 @@ title: Overview
 description: What Corpact is, what it gives you, and where to start.
 ---
 
+Tokenized stocks pay dividends by **changing a multiplier on the mint**. Holders end up with more stock-equivalent units, yet no transaction touches their account, so anything that follows transfers sees nothing. Corpact reads those changes, proves what each one was, and turns them into an audit-ready ledger behind one API.
+
 ## Start here
 
-New to Corpact? Pick the path that matches what you want to do.
-
-1. **See it work, about 5 minutes.** [Running the demo](/docs/operations/demo) runs the whole flow on a local Solana network with synthetic data, and checks every number through the real API. One command, no keys, no mainnet.
-2. **Sync a real wallet, about 15 minutes.** The [Quickstart](/docs/quickstart) starts the worker against mainnet and reads a real position's dividends, splits and coverage.
-3. **Integrate.** Read [Authentication](/docs/authentication), then the [API reference](/docs/api-reference). Corporate actions live at `GET /v2/actions`.
-4. **Understand the numbers.** [Classification from evidence](/docs/concepts/classification) explains why a change is or is not booked; [Coverage & partial history](/docs/concepts/coverage) explains when a number is withheld.
+<div class="card-grid">
+<a class="doc-link-card" href="/docs/try-it"><span class="card-title">Try the API</span><span class="card-meta">1 minute, no setup</span><p>Run real requests against the hosted API from your browser, with a read-only demo key.</p></a>
+<a class="doc-link-card" href="/docs/operations/demo"><span class="card-title">Run the demo</span><span class="card-meta">5 minutes, one command</span><p>The whole flow on a local Solana network with synthetic data, checked through the real API.</p></a>
+<a class="doc-link-card" href="/docs/quickstart"><span class="card-title">Quickstart</span><span class="card-meta">15 minutes</span><p>Point the worker at mainnet, sync a wallet, and read its dividends, splits and coverage.</p></a>
+<a class="doc-link-card" href="/docs/api-reference"><span class="card-title">API reference</span><span class="card-meta">Every endpoint</span><p>Generated from the same schemas the server validates against, so it cannot drift.</p></a>
+</div>
 
 > [!NOTE] Private preview
-> Corpact runs on live Solana chain data with recorded issuer data (`ISSUER_SOURCE=fixtures`). The live issuer feed stays off until the data licence is settled, and there is no hosted sandbox yet, so every path above runs on your own machine.
+> Corpact runs on live Solana chain data with recorded issuer data (`ISSUER_SOURCE=fixtures`). The live issuer feed stays off until the data licence is settled.
 
-## What Corpact does
+## What you get
 
-Tokenized stocks such as xStocks on Solana pay dividends by **changing a multiplier on the mint**. The Token-2022 *Scaled UI Amount* extension multiplies every raw balance for display. When a dividend activates, holders own more stock-equivalent units, yet **no transaction touches their account**. Anything that follows transfers sees nothing.
-
-Corpact is an API that turns those multiplier changes into an evidence-backed ledger:
-
-- **Verified dividends, splits and pending changes.** Each one is matched to the issuer's own corporate action, never inferred from the size or label of the change.
-- **Positions with a protected floor.** Units that came from dividends are kept apart from principal, and splits adjust the basis.
-- **Coverage on every number.** A position is `complete`, `partial` or `unsupported`. Partial history never produces a yield claim.
-- **An append-only journal.** Issuer corrections become a reversal plus a replacement, and nothing is edited.
-- **Reconciliation.** Every replay is checked against the exact raw chain balance, and optionally against an independent RPC provider.
+<div class="card-grid">
+<a class="doc-link-card" href="/docs/actions"><span class="card-title">Corporate actions</span><p>Cash dividends, withholding refunds, splits, stock dividends, spin-offs, rights and identity changes, each with the evidence it requires.</p></a>
+<a class="doc-link-card" href="/docs/concepts/classification"><span class="card-title">Classified from evidence</span><p>Matched to the issuer's own record on exact multipliers and activation time. Never from the size or label of a change.</p></a>
+<a class="doc-link-card" href="/docs/concepts/protected-floor"><span class="card-title">Protected principal</span><p>Units that came from dividends stay separate from principal, and splits adjust the basis exactly.</p></a>
+<a class="doc-link-card" href="/docs/concepts/coverage"><span class="card-title">Coverage on every number</span><p>A position is complete, partial or unsupported. Partial history never produces a yield claim.</p></a>
+<a class="doc-link-card" href="/docs/concepts/corrections"><span class="card-title">Append-only journal</span><p>An issuer correction becomes a reversal plus a replacement. Nothing is ever edited.</p></a>
+<a class="doc-link-card" href="/docs/operations/independent-provider"><span class="card-title">Reconciled to the chain</span><p>Every replay matches the exact raw balance, optionally cross-checked against a second RPC provider.</p></a>
+</div>
 
 ## How the pieces fit
 
 | Component | What it does |
 |---|---|
 | **Worker** | Reads chain history and mint state, rebuilds the multiplier timeline, classifies changes and replays positions into Postgres |
-| **API** | Serves portfolio, income, journal, yield and exports to API keys scoped by tenant |
+| **API** | Serves portfolio, income, corporate actions, journal, yield and exports to API keys scoped by tenant |
 | **`@corpact/client`** | Typed TypeScript client generated from the same schemas as the API |
 | **Dashboard** | A reference UI that calls the API through its own server |
 
-## Corporate actions
+## Next
 
-Every multiplier change is classified into one of 18 action types, from issuer evidence only. [Corporate actions](/docs/actions) lists them all, with what each one needs as evidence, how it is booked, and how many real instances exist.
+<div class="card-grid">
+<a class="doc-link-card" href="/docs/authentication"><span class="card-title">Authentication</span><p>Keys, scopes and tenant isolation.</p></a>
+<a class="doc-link-card" href="/docs/guides/read-income"><span class="card-title">Read income</span><p>Entries, headlines, and what a null USD value means.</p></a>
+<a class="doc-link-card" href="/docs/reference/client"><span class="card-title">TypeScript client</span><p>Every method, typed from the API contract.</p></a>
+</div>

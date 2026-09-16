@@ -513,6 +513,87 @@ kbd {
   .site-header, .card, .tile.dark, .step, .trap, .refuse-item, .window, .cta-band, .proof-item, .pain, .feature, .compare, .start-path { background: var(--panel-solid); }
 }
 
+/* ── Docs: cards, steps, code tabs ──────────────────────────────────────────────────── */
+.card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 14px; margin: 24px 0; }
+.doc-link-card {
+  display: flex; flex-direction: column; gap: 6px; padding: 18px 20px; border-radius: 14px;
+  border: 1px solid var(--border); background: var(--bg-elev);
+  transition: border-color 0.15s, background 0.15s, transform 0.15s;
+}
+.doc-link-card:hover { border-color: var(--border-strong); background: var(--panel-hover); transform: translateY(-1px); }
+.doc-link-card .card-title { display: flex; align-items: center; gap: 10px; font-size: 15.5px; font-weight: 600; color: var(--text); }
+.doc-link-card .card-title::after { content: '→'; margin-left: auto; color: var(--accent-text); opacity: 0; transition: opacity 0.15s; }
+.doc-link-card:hover .card-title::after { opacity: 1; }
+.doc-link-card .card-meta { font-size: 12.5px; color: var(--faint); }
+.doc-link-card p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.55; }
+
+.steps { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; margin: 26px 0; padding-left: 46px; min-width: 0; }
+.steps::before { content: ''; position: absolute; left: 15px; top: 10px; bottom: 10px; width: 2px; background: var(--border); }
+.step-block { position: relative; min-width: 0; padding-bottom: 28px; }
+.step-block > * { min-width: 0; max-width: 100%; }
+/* Code inside a step sits in a narrower column. Wrap long lines instead of hiding them behind a scrollbar. */
+.steps .code-frame, .steps .code-tabs { max-width: 100%; min-width: 0; }
+.steps pre, .steps pre code { white-space: pre-wrap; overflow-wrap: anywhere; }
+.steps pre code .line { display: inline-block; text-indent: -2ch; padding-left: 2ch; }
+/* A numbered rail already says "step 3"; the heading anchors would repeat it. */
+.prose .steps h3 .anchor { display: none; }
+.step-block:last-child { padding-bottom: 0; }
+.step-block::before {
+  content: attr(data-step); position: absolute; left: -46px; top: -2px; width: 32px; height: 32px; border-radius: 50%;
+  display: grid; place-items: center; font-size: 13.5px; font-weight: 600;
+  background: var(--accent-soft); color: var(--accent-text); border: 1px solid var(--border-strong);
+}
+.prose .steps h3 { margin-top: 0; font-size: 19px; }
+.prose .steps > .step-block > :last-child { margin-bottom: 0; }
+
+.code-tabs { margin: 22px 0; border: 1px solid var(--border); border-radius: 14px; overflow: hidden; background: var(--code-bg); }
+.code-tabs-bar { display: flex; gap: 4px; padding: 8px 10px; border-bottom: 1px solid var(--border); background: var(--panel-hover); }
+.code-tabs-bar button {
+  padding: 6px 12px; border-radius: 8px; border: 1px solid transparent; background: transparent;
+  color: var(--muted); font-size: 13px; cursor: pointer;
+}
+.code-tabs-bar button:hover { color: var(--text); }
+.code-tabs-bar button.active { background: var(--accent-soft); color: var(--text); border-color: color-mix(in srgb, var(--accent) 35%, transparent); }
+.code-tab { display: none; }
+.code-tab.active { display: block; }
+.code-tabs .code-frame { margin: 0; }
+.code-tabs pre { border: 0; border-radius: 0; }
+
+/* ── Docs: try the API ──────────────────────────────────────────────────────────────── */
+/* Long URLs and keys in these samples wrap instead of running off the page. */
+.tryit-page pre, .tryit-page code { white-space: pre-wrap; overflow-wrap: anywhere; }
+.tryit { margin: 22px 0 8px; border-radius: 16px; border: 1px solid var(--border); background: var(--bg-elev); overflow: hidden; }
+.tryit-tabs { display: flex; flex-wrap: wrap; gap: 4px; padding: 10px 12px; border-bottom: 1px solid var(--border); }
+.tryit-tabs button {
+  padding: 7px 13px; border-radius: 9px; border: 1px solid transparent; background: transparent;
+  color: var(--muted); font-size: 14px; cursor: pointer;
+}
+.tryit-tabs button:hover { color: var(--text); background: var(--panel-hover); }
+.tryit-tabs button.active { color: var(--text); background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 35%, transparent); }
+.tryit-summary { margin: 0; padding: 16px 18px 0; color: var(--muted); font-size: 14.5px; }
+.tryit-request { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 14px 18px 16px; }
+.tryit-request code { font-size: 13.5px; color: var(--text); overflow-wrap: anywhere; }
+/* Fixed widths: the labels change ("Run" to "Running…", "Copy as curl" to "Copied"), and the row must not move. */
+.tryit-request .btn { margin-left: auto; min-width: 104px; justify-content: center; }
+.tryit-copy {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-width: 124px; padding: 6px 11px; border-radius: 8px; cursor: pointer;
+  border: 1px solid var(--border); background: transparent; color: var(--muted); font-size: 12.5px;
+}
+.tryit-copy:hover { color: var(--text); border-color: var(--border-strong); }
+.tryit-result { border-top: 1px solid var(--border); }
+.tryit-status { display: flex; align-items: center; gap: 12px; padding: 10px 18px; font-size: 13px; background: var(--panel-hover); }
+.tryit-status .ok { color: var(--green); font-weight: 600; }
+.tryit-status .bad { color: var(--red); font-weight: 600; }
+.tryit-ms { color: var(--faint); }
+.tryit-note {
+  margin: 0; padding: 12px 18px; font-size: 13.5px; line-height: 1.5; color: var(--amber);
+  background: var(--amber-soft); border-bottom: 1px solid var(--border);
+}
+.tryit-result pre {
+  margin: 0; padding: 16px 18px; max-height: 420px; overflow: auto; background: var(--code-bg);
+  font-size: 13px; line-height: 1.6; color: var(--text);
+}
+
 /* ── Docs shell ─────────────────────────────────────────────────────────────────────── */
 .docs-shell { display: grid; grid-template-columns: 300px 1fr; min-height: 100vh; background: var(--bg); }
 .sidebar {
@@ -584,6 +665,11 @@ kbd {
 .prose .anchor { color: var(--accent-text); margin-right: 10px; font-weight: 400; opacity: 0.9; }
 .prose p { margin: 14px 0; }
 .prose a:not(.anchor) { color: var(--accent-text); text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--accent-text) 35%, transparent); text-underline-offset: 3px; }
+/* Cards are blocks, not inline links: the underline above would make them look like unfinished text links. */
+.prose a.doc-link-card, .prose a.doc-link-card:hover, .prose a.doc-link-card * { text-decoration: none; color: inherit; }
+.prose a.doc-link-card .card-title { color: var(--text); }
+.prose a.doc-link-card .card-meta { color: var(--faint); }
+.prose a.doc-link-card p { color: var(--muted); }
 .prose ul, .prose ol { padding-left: 24px; }
 .prose li { margin: 6px 0; }
 .prose strong { color: var(--text); font-weight: 600; }

@@ -5,6 +5,7 @@ import matter from 'gray-matter';
 import type { BundledLanguage } from 'shiki';
 import type { Element, ElementContent, Root } from 'hast';
 import { toString } from 'hast-util-to-string';
+import rehypeRaw from 'rehype-raw';
 import rehypeSlug from 'rehype-slug';
 import rehypeStringify from 'rehype-stringify';
 import remarkGfm from 'remark-gfm';
@@ -96,7 +97,9 @@ async function render(slug: string): Promise<DocPage | null> {
     await unified()
       .use(remarkParse)
       .use(remarkGfm)
-      .use(remarkRehype)
+      // Pages use small blocks of HTML for card grids, step rails and code tabs; Markdown inside them still renders.
+      .use(remarkRehype, { allowDangerousHtml: true })
+      .use(rehypeRaw)
       .use(rehypeSlug)
       .use(rehypeCallouts)
       .use(rehypeHeadings(headings))
@@ -128,7 +131,7 @@ export async function searchIndex(): Promise<SearchEntry[]> {
   const entries: SearchEntry[] = [];
   for (const item of ALL_ITEMS) {
     const href = item.slug ? `/docs/${item.slug}` : '/docs';
-    const doc = item.slug === 'api-reference' ? null : await getDoc(item.slug);
+    const doc = item.slug === 'api-reference' || item.slug === 'try-it' ? null : await getDoc(item.slug);
     entries.push({ title: item.title, group: item.group, href, excerpt: doc?.description || doc?.text.slice(0, 160) || 'Every endpoint, parameter and response.' });
     for (const h of doc?.headings ?? []) entries.push({ title: item.title, group: item.group, href: `${href}#${h.id}`, section: h.text, excerpt: '' });
   }

@@ -7,10 +7,28 @@ description: API keys, scopes and how requests are authorized.
 
 Every route except `/v1/health` and `/v1/openapi.json` needs an API key. Send it as a bearer token, or in the `x-api-key` header:
 
+<div class="code-tabs">
+<div class="code-tab" data-label="curl">
+
 ```bash
 curl -s http://127.0.0.1:4600/v1/assets -H "authorization: Bearer $CORPACT_API_KEY"
 curl -s http://127.0.0.1:4600/v1/assets -H "x-api-key: $CORPACT_API_KEY"
 ```
+
+</div>
+<div class="code-tab" data-label="TypeScript">
+
+```ts
+import { createCorpactClient } from '@corpact/client';
+
+// The key stays on your server; never ship it to a browser.
+const corpact = createCorpactClient({ baseUrl: 'http://127.0.0.1:4600', apiKey: process.env.CORPACT_API_KEY });
+
+const { assets } = await corpact.assets();
+```
+
+</div>
+</div>
 
 Keys look like `cpk_` followed by 43 URL-safe characters: 256 bits of entropy. Corpact stores only a SHA-256 of each key, so a lost key cannot be recovered, only revoked and replaced.
 
