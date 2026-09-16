@@ -3,6 +3,11 @@ title: Quickstart
 description: Run the worker and API, create a key, and sync your first wallet.
 ---
 
+This guide syncs a **real wallet** against mainnet, and takes about 15 minutes.
+
+> [!TIP] Want the fastest look first?
+> [Running the demo](/docs/operations/demo) does all of this in one command on a local network with synthetic data, in about 5 minutes. It needs no RPC key and no wallet.
+
 ## Requirements
 
 - Node 24 and pnpm 10

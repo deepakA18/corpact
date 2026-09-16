@@ -47,7 +47,32 @@ const corpact = createCorpactClient({
 | `opsStatus()` | `GET /v1/ops/status` | `OpsStatusResponse` |
 | `opsMetrics()` | `GET /v1/ops/metrics` | Prometheus text |
 
-All response types are exported, for example `import type { IncomeEntry, Position } from '@corpact/client'`.
+### Corporate actions (v2)
+
+| Method | Endpoint | Returns |
+|---|---|---|
+| `v2.actions(wallet, { limit, offset })` | `GET /v2/actions` | `ActionsResponse` |
+| `v2.action(wallet, id)` | `GET /v2/actions/{id}` | `ActionDetail` |
+| `v2.taxonomy()` | `GET /v2/taxonomy` | `TaxonomyResponse` |
+| `v2.lineage(mint)` | `GET /v2/instruments/{mint}/lineage` | `LineageResponse` |
+
+```ts
+const { actions } = await corpact.v2.actions(wallet);
+
+for (const a of actions) {
+  // type: cash_dividend, spin_off, stock_dividend, identity_change, …
+  // treatment: income, quantity_basis, basis_allocation, identity, not_booked
+  console.log(a.type, a.treatment, a.quantityDisplay, a.usd ?? 'USD unknown', a.lifecycle.state);
+}
+
+// Full evidence for one action: lifecycle steps, six timestamps, every issuer revision, lineage.
+const detail = await corpact.v2.action(wallet, actions[0]!.id);
+```
+
+All response types are exported, for example `import type { Action, ActionDetail, IncomeEntry, Position } from '@corpact/client'`.
+
+> [!TIP] v1 or v2?
+> v1 (`income`, `portfolio`, `journal`) stays supported and unchanged. v2 adds the action type, its lifecycle and its evidence. See [API v1 → v2](/docs/reference/api-v1-to-v2).
 
 ## Errors
 

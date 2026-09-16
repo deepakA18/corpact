@@ -33,8 +33,8 @@ Each key holds a subset of four scopes. New keys default to read-only (`assets:r
 
 | Scope | Grants |
 |---|---|
-| `assets:read` | `GET /v1/assets` |
-| `ledger:read` | Portfolio, income, event detail, journal, yield, exports, wallet list and sync status |
+| `assets:read` | `GET /v1/assets`, plus `GET /v2/taxonomy` and `GET /v2/instruments/{mint}/lineage` |
+| `ledger:read` | Portfolio, income, event detail, journal, yield, exports, wallet list and sync status, plus `GET /v2/actions` and `GET /v2/actions/{id}` |
 | `wallets:sync` | `POST /v1/wallets/sync`: registers a wallet and queues a sync |
 | `ops:read` | `GET /v1/ops/status` and `/v1/ops/metrics` only; no ledger access |
 

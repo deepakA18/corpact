@@ -41,9 +41,33 @@ const RESPONSE_SAMPLE = `
 }
 `;
 
+const START_PATHS: Array<{ title: string; time: string; body: string; command: string; href: string }> = [
+  {
+    title: 'Run the demo',
+    time: 'about 5 minutes',
+    body: 'One command on your machine: a local Solana network, synthetic dividends, splits and a spin-off, all read back through the real API.',
+    command: 'pnpm demo',
+    href: '/docs/operations/demo',
+  },
+  {
+    title: 'Sync a real wallet',
+    time: 'about 15 minutes',
+    body: 'Point the worker at mainnet, sync a wallet that holds tokenized stocks, and read its dividends, splits and coverage.',
+    command: 'pnpm cli sync-wallet',
+    href: '/docs/quickstart',
+  },
+  {
+    title: 'Integrate the API',
+    time: 'when you build',
+    body: 'Typed endpoints for positions, income, corporate actions, the audit journal and CSV exports.',
+    command: 'GET /v2/actions?owner=',
+    href: '/docs/api-reference',
+  },
+];
+
 const PROOF: Array<{ value: string; label: string }> = [
   { value: '654', label: 'real corporate actions replayed and classified' },
-  { value: '18', label: 'action types, each with a stated validation status' },
+  { value: '18', label: 'action types, each classified from issuer evidence' },
   { value: '59/59', label: 'end-to-end checks through the live API' },
   { value: '0', label: 'values guessed: unknown is never shown as zero' },
 ];
@@ -191,6 +215,31 @@ export default async function Home() {
               <span>{p.label}</span>
             </div>
           ))}
+        </div>
+
+        <div className="start">
+          <div className="start-head">
+            <h2>Start here</h2>
+            <p>
+              Corpact is in private preview. It runs on live Solana chain data with recorded issuer data, and there is no hosted sandbox yet, so the fastest way to see
+              it is on your own machine.
+            </p>
+          </div>
+          <div className="start-paths">
+            {START_PATHS.map((p, i) => (
+              <Link href={p.href} className="start-path" key={p.title}>
+                <span className="start-num">{i + 1}</span>
+                <div>
+                  <h3>
+                    {p.title} <span className="start-time">{p.time}</span>
+                  </h3>
+                  <p>{p.body}</p>
+                  <code>{p.command}</code>
+                </div>
+                <Icon name="arrow" size={18} />
+              </Link>
+            ))}
+          </div>
         </div>
 
         <div className="bento">

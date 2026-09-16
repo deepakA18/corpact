@@ -3,6 +3,18 @@ title: Overview
 description: What Corpact is, what it gives you, and where to start.
 ---
 
+## Start here
+
+New to Corpact? Pick the path that matches what you want to do.
+
+1. **See it work, about 5 minutes.** [Running the demo](/docs/operations/demo) runs the whole flow on a local Solana network with synthetic data, and checks every number through the real API. One command, no keys, no mainnet.
+2. **Sync a real wallet, about 15 minutes.** The [Quickstart](/docs/quickstart) starts the worker against mainnet and reads a real position's dividends, splits and coverage.
+3. **Integrate.** Read [Authentication](/docs/authentication), then the [API reference](/docs/api-reference). Corporate actions live at `GET /v2/actions`.
+4. **Understand the numbers.** [Classification from evidence](/docs/concepts/classification) explains why a change is or is not booked; [Coverage & partial history](/docs/concepts/coverage) explains when a number is withheld.
+
+> [!NOTE] Private preview
+> Corpact runs on live Solana chain data with recorded issuer data (`ISSUER_SOURCE=fixtures`). The live issuer feed stays off until the data licence is settled, and there is no hosted sandbox yet, so every path above runs on your own machine.
+
 ## What Corpact does
 
 Tokenized stocks such as xStocks on Solana pay dividends by **changing a multiplier on the mint**. The Token-2022 *Scaled UI Amount* extension multiplies every raw balance for display. When a dividend activates, holders own more stock-equivalent units, yet **no transaction touches their account**. Anything that follows transfers sees nothing.
@@ -15,9 +27,6 @@ Corpact is an API that turns those multiplier changes into an evidence-backed le
 - **An append-only journal.** Issuer corrections become a reversal plus a replacement, and nothing is edited.
 - **Reconciliation.** Every replay is checked against the exact raw chain balance, and optionally against an independent RPC provider.
 
-> [!NOTE] Private preview
-> Corpact runs today against recorded issuer data (`ISSUER_SOURCE=fixtures`) and live Solana chain data. The live issuer feed is switched off until the data licence is settled.
-
 ## How the pieces fit
 
 | Component | What it does |
@@ -27,9 +36,6 @@ Corpact is an API that turns those multiplier changes into an evidence-backed le
 | **`@corpact/client`** | Typed TypeScript client generated from the same schemas as the API |
 | **Dashboard** | A reference UI that calls the API through its own server |
 
-## Where to start
+## Corporate actions
 
-- **See it work locally:** [Running the demo](/docs/operations/demo) runs the whole flow on a local Surfpool network, with synthetic data.
-- **Sync a real wallet:** follow the [Quickstart](/docs/quickstart).
-- **Understand the numbers:** read [Classification from evidence](/docs/concepts/classification) and [Coverage & partial history](/docs/concepts/coverage).
-- **Integrate:** see [Authentication](/docs/authentication), then the [API reference](/docs/api-reference).
+Every multiplier change is classified into one of 18 action types, from issuer evidence only. [Corporate actions](/docs/actions) lists them all, with what each one needs as evidence, how it is booked, and how many real instances exist.
