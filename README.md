@@ -1,113 +1,235 @@
 # Corpact
 
-**Corporate-action accounting for tokenized equities on Solana.**
+Corporate-action accounting for tokenized equities on Solana, classified from issuer evidence.
 
-Tokenized stocks such as xStocks pay dividends, split and spin off by rewriting a balance multiplier on the mint. No cash and no transfer is involved. Read naively, that data gives confidently wrong numbers. A spin-off books as ~95% income, a split looks like a windfall, and an issuer cash figure that doesn't reconcile becomes revenue.
+Tokenized stocks such as xStocks pay dividends, split and spin off by rewriting a **balance multiplier on
+the mint**. No cash moves, no transfer happens, and no event reaches a transfer-based indexer. Read
+naively, that data produces confidently wrong numbers: a spin-off books as ~95% income, a split looks
+like a windfall, and an issuer cash figure that cannot reconcile with the shares delivered becomes
+revenue.
 
-Corpact turns those multiplier changes into evidence-backed accounting, which exchanges, collateral protocols, portfolio trackers and tax tools can build on:
+Corpact reads every multiplier change from chain history, matches it against the issuer's own corporate
+action, and books it as one of eight validated action types — or refuses to book it and says why. The
+result is an append-only ledger with dividend income, a protected-principal floor, exact basis across
+spin-offs and identity changes, coverage on every position, and the evidence behind each number, served
+over one typed API.
 
-- **Timeline:** every multiplier change for a mint, rebuilt from chain data and verified against live mint state.
-- **Classification:** 18 corporate-action types (cash dividends, withholding refunds, splits, stock dividends, spin-offs, rights, identity changes and more), each matched to the issuer's corporate-action evidence and never to the size or label of the change. Every type states whether real data has validated it; unvalidated types are recognised and never booked ([corporate actions](apps/site/content/docs/actions.md), [ADR-0006](docs/adr/0006-zero-instance-action-types.md)).
-- **Lifecycle and lineage:** each action's append-only lifecycle (announced → confirmed → activated → corrected, reversed or superseded), with every issuer revision kept, and a position lineage that carries basis exactly across identity changes.
-- **Ledger:** dividend quantity and USD value per position, a protected-principal floor, the amount convertible now, and exact reconciliation against on-chain balances.
-- **Coverage:** where history is complete, partial or unsupported. It never guesses, and never reports unknown as zero.
+Built on Token-2022 Scaled UI Amount, `@solana/kit`, Postgres, Fastify and Next.js. Issuer data is read
+through one adapter, defaulting to recorded fixtures.
 
-> **Status: pre-validation.** The engine is built and tested against real mainnet data. Commercial use of the issuer's corporate-action feed is not yet licensed, and the regulatory review is pending. See [phase0-validation.md](docs/findings/phase0-validation.md) and [counsel-questions-api.md](docs/findings/counsel-questions-api.md).
+> **Status: private preview.** The engine runs on live Solana chain data with recorded issuer data.
+> Commercial use of the issuer feed is not yet licensed and the regulatory review is pending, so the
+> live feed stays switched off. See [phase0-validation.md](docs/findings/phase0-validation.md).
 
-## Packages
+## How it works
 
-| Package | What it does |
-|---|---|
-| `@corpact/domain` | Exact `Rational` arithmetic, units, the action taxonomy, lifecycle state machine and position lineage |
-| `@corpact/accounting` | Evidence classifier and ledger reducer: income, quantity-basis, basis-allocation and identity treatments (pure, deterministic) |
-| `@corpact/solana` | Token-2022 mint decoding, the multiplier timeline (mirrors the program's processor), the transaction parser, a kit-based chain reader |
-| `@corpact/issuers` | Issuer adapters behind `IssuerSource`: recorded fixtures (default) or live |
-| `@corpact/db` | Postgres schema, migrations, outbox, immutable observations |
-| `@corpact/client` | API contract (JSON schemas → OpenAPI and TypeScript types) and a typed fetch client |
-| `apps/worker` | Registry verification, archival ingestion, timeline, classification, position rebuild |
-| `apps/api` | Read-only HTTP API over the ledger |
-| `apps/web` | Reference dashboard: a demo of the API, not the product |
+A wallet goes from raw chain history to a defensible ledger in five stages:
 
-Design decisions are in [docs/adr/](docs/adr/), and the original product plan is [PLAN.md](PLAN.md).
+1. **Observe.** The worker finds every `ScaledUiAmount` multiplier write for a mint, resolves intra-slot
+   order, and rebuilds the timeline the token program itself would produce, then verifies it against
+   live mint state. A scheduled multiplier activates with **no account write at all**, so activation is
+   settled from the finalized cluster clock, not from a transaction.
+2. **Match.** Each activated change is paired with the issuer's corporate action on exact multipliers
+   (within 4ε of the mint's f64) and an activation time equal to the second. Announcements and cancelled
+   revisions are never evidence. No match means no booking.
+3. **Classify.** The standing issuer record decides the type, never the size or the label: cash
+   dividends, withholding refunds, splits, stock dividends, spin-offs, rights, identity changes. Types
+   with no real instance are recognised, held for review, and never booked.
+4. **Account.** Positions replay from balance movements into a protected stock floor: income adds
+   convertible exposure, basis events rescale principal, spin-offs allocate basis at `ΔM ÷ M_new` with no
+   price needed, and identity changes carry basis across the underlying through position lineage. Every
+   value is exact `Rational` arithmetic, and USD comes only from issuer cash that reconciles.
+5. **Prove.** The replay is reconciled to the exact raw on-chain balance, optionally cross-checked
+   against a second RPC provider, and every recognition and reversal is appended to a journal. Issuer
+   corrections never rewrite history.
 
-## Run it
+## Architecture
 
-Requires Node 24, pnpm 10, Docker, and an archival Solana RPC. Public mainnet works but is very slow; see [ADR-0002](docs/adr/0002-archival-history-on-standard-json-rpc.md).
+```mermaid
+flowchart TD
+    MINT[(Token-2022 mint · ScaledUiAmount)] -->|multiplier writes| TL[Worker · rebuild + verify timeline]
+    WALLET[(Wallet history · token accounts)] -->|signatures + balance movements| ING[Worker · archival ingestion]
+    ISS[[Issuer source · recorded fixtures]] -->|one-shot import| IMP[Worker · import-issuer-actions]
+    ISS -.->|activation hints for backfill| TL
+
+    TL --> PG
+    ING --> PG
+    IMP -->|corporate_actions + payload hash| PG
+
+    PG[(Postgres · append-only evidence, matches, journal)]
+
+    PG -->|transitions + standing issuer records| CLS[Worker · classifier · evidence only]
+    CLS -->|action_matches · superseded, never edited| PG
+    PG -->|movements + matches| LED[Worker · ledger replay · protected floor]
+    LED -->|positions, income, journal| PG
+
+    RPC2[(Second RPC provider)] -.->|balances + mint state| XC[Worker · provider cross-check]
+    XC -->|provider_checks · pauses conversion, never the ledger| PG
+
+    PG --> API{{API · v1 ledger · v2 corporate actions}}
+    API --> SDK([Typed client · generated from one contract])
+    API --> CSV([CSV export · accountant-ready journal])
+    API --> DASH([Reference dashboard])
+    API --> OPS([Monitoring · checks + Prometheus])
+
+    classDef chain   fill:#e0f2fe,stroke:#0284c7,color:#0c4a6e;
+    classDef issuer  fill:#fef3c7,stroke:#d97706,color:#78350f;
+    classDef engine  fill:#ede9fe,stroke:#7c3aed,color:#4c1d95;
+    classDef store   fill:#1f2937,stroke:#111827,color:#f9fafb;
+    classDef api     fill:#dcfce7,stroke:#16a34a,color:#14532d;
+    classDef sink    fill:#f3f4f6,stroke:#6b7280,color:#374151;
+    classDef guard   fill:#ccfbf1,stroke:#0d9488,color:#134e4a;
+
+    class MINT,WALLET chain;
+    class ISS,IMP issuer;
+    class TL,ING,CLS,LED,XC engine;
+    class PG store;
+    class API api;
+    class SDK,CSV,DASH,OPS sink;
+    class RPC2 guard;
+```
+
+Every stage reads and writes Postgres rather than passing state to the next one: ingestion and the
+timeline store what the chain said, the import stores each issuer record with its payload hash, the
+classifier reads both back and writes a match, and the ledger replays from stored movements and matches.
+Each stage is a separate job, so any of them can re-run over the same evidence and reach the same
+answer. The only direct issuer reads are that one-shot import and the activation hints the backfill uses
+to find writes on chain; the worker's steady-state loop polls **chain state only**.
+
+## Guarantees
+
+- **Nothing is booked without issuer evidence.** A change with no matching record, a mismatched
+  activation time, or a ratio that does not reconcile becomes an unclassified adjustment with a stated
+  reason. It adds no income and makes nothing convertible.
+- **Unknown is never zero.** A dividend whose issuer cash is missing, or implies a reinvestment price
+  more than 3× from the asset's own median, keeps its quantity with `usd: null` and is counted as
+  unvalued.
+- **History is append-only, enforced by the database.** Evidence and journal tables carry
+  `forbid_mutation()` triggers on 9 tables. An issuer correction appends a reversal plus a replacement;
+  `verify-integrity` re-checks stored payload hashes, the guards, and that the journal equals published
+  income.
+- **Basis is conserved exactly.** Spin-offs, rights and identity changes move basis with exact rational
+  arithmetic, property-tested so no chain of events creates or loses basis.
+- **Partial history is never dressed up.** Every position is `complete`, `partial` or `unsupported`, and
+  a yield figure is claimed only for a fully replayed position over a window its coverage spans.
+- **Two providers, one truth.** With `RECONCILIATION_RPC_URL` set, balances and multiplier state are
+  cross-checked against a second provider; a disagreement pauses conversion for the affected positions
+  without touching the ledger ([ADR-0004](docs/adr/0004-independent-reconciliation-provider.md)).
+
+## Layout
+
+```
+packages/domain/      Exact Rational arithmetic, units, the 18-type action taxonomy, the lifecycle state
+                      machine (announced → confirmed → activated → corrected | reversed | superseded),
+                      and position lineage with exact basis conservation.
+packages/accounting/  The evidence classifier and the ledger reducer: income, quantity-basis,
+                      basis-allocation and identity treatments. Pure and deterministic.
+packages/solana/      Token-2022 mint decoding, the multiplier timeline (mirrors the program's
+                      processor), the transaction parser, and a kit-based chain reader.
+packages/issuers/     Issuer adapters behind IssuerSource: recorded fixtures (default) or live.
+packages/db/          Postgres schema and migrations, the job outbox, immutable observations, monitoring
+                      snapshots, and the integrity checker.
+packages/client/      One set of JSON schemas that generate the OpenAPI document, the server validation
+                      and the typed fetch client.
+apps/worker/          Registry verification, archival ingestion, timeline rebuild, classification,
+                      position replay, journaling, and provider cross-checks.
+apps/api/             Read-only HTTP API: v1 ledger, v2 corporate actions, CSV export, monitoring.
+apps/site/            Homepage and developer docs, with a live API sandbox.
+apps/web/             Reference dashboard: a demo of the API, not the product.
+apps/demo/            The end-to-end demo on a local validator, the recorded-case report, and the
+                      mainnet lineage check.
+```
+
+pnpm workspaces on Node 24. Design decisions are in [docs/adr/](docs/adr/); the original product plan is
+[PLAN.md](PLAN.md).
+
+## Tests
 
 ```bash
+pnpm test        # 244 tests across 25 files
+pnpm typecheck
+pnpm --filter @corpact/api openapi:check
+```
+
+The suite pins the findings, not just the code: all 654 recorded multiplier changes classify into 630
+dividends, 10 splits, 7 distributions, 1 identity change and 6 unexplained changes; spin-offs never book
+as income; SCCOx's six issuer revisions resolve on the delivered record; KRAQx's rights sale is caught
+despite its `UnitSplit` label; withholding is deducted exactly once; and property tests assert basis
+conservation and that no basis event creates convertible exposure. CI also applies the migrations twice
+against a fresh Postgres and runs `verify-integrity`.
+
+The end-to-end demo runs the whole flow on a local validator and checks every number through the real
+API: **59 of 59 checks pass on Surfpool and on `solana-test-validator`**.
+
+## Running it
+
+```bash
+# the demo: prerequisites, install, Postgres, and a full local run (~5 min, no keys)
+pnpm demo
+tools/demo/run-demo.sh solana-test-validator    # the same demo on the Agave validator
+
+# a real wallet against mainnet
 pnpm install
-cp .env.example .env                         # set SOLANA_RPC_URL (an API-key URL stays server-side)
-docker compose up -d                         # Postgres on 127.0.0.1:54329
+cp .env.example .env                 # set SOLANA_RPC_URL (archival; stays server-side)
+docker compose up -d                 # Postgres on 127.0.0.1:54329
 
 cd apps/worker
 pnpm cli migrate
-pnpm cli sync-registry                       # verify every recorded xStock mint on mainnet
-pnpm cli import-issuer-actions               # corporate actions from fixtures (no network)
-pnpm start                                   # worker: job queue + chain-only mint polling
+pnpm cli sync-registry               # verify every recorded xStock mint on chain
+pnpm cli import-issuer-actions       # corporate actions from fixtures (no network)
+pnpm start                           # job queue + chain-only mint polling
 
 cd ../api
-pnpm tenants create demo "Demo dashboard"
-pnpm keys create dashboard --tenant demo --scopes assets:read,ledger:read,wallets:sync   # printed once
+pnpm tenants create demo "Demo"
+pnpm keys create backend --tenant demo --scopes assets:read,ledger:read,wallets:sync
 PORT=4600 pnpm start
-
-cd ../web
-# apps/web/.env.local (gitignored):
-#   CORPACT_API_URL=http://127.0.0.1:4600
-#   CORPACT_API_KEY=cpk_...
-pnpm dev --port 3600
 ```
 
-Checks: `pnpm test` and `pnpm typecheck` from the root, plus `pnpm --filter @corpact/api openapi:check`. CI runs all three, and applies the migrations twice against a fresh Postgres. To sync a wallet without the web app, run `pnpm cli sync-wallet <address>` in `apps/worker`.
+Then sync a wallet with `pnpm cli sync-wallet <address>` in `apps/worker`, or
+`POST /v1/wallets/sync`. Read it back:
 
-**Website and docs.** `apps/site` is the homepage and developer documentation: guides, concepts, operations, and an API reference generated from the OpenAPI document. Run it with `pnpm --filter @corpact/site dev` at http://localhost:3700. Pages are Markdown files in `apps/site/content/docs`.
+```ts
+import { createCorpactClient } from '@corpact/client';
 
-**Demo.** From a fresh clone, `pnpm demo` (`tools/demo/run-demo.sh`) checks prerequisites, installs, starts Postgres and runs the demo. It needs Node 24, pnpm 10, Docker and Surfpool 1.0 (or pass `solana-test-validator`), and takes about 5 minutes. The demo creates its own database, tenant, keys and local network, and needs no `.env` or RPC key. It runs three parts:
+const corpact = createCorpactClient({ baseUrl: 'http://127.0.0.1:4600', apiKey: process.env.CORPACT_API_KEY });
 
-1. A narrated walkthrough on a local network: position, a dividend with no transfer, the entry, a split that isn't income, and an issuer correction.
-2. Six recorded cases beside the naive reading: HONx spin-off, STRCx implausible cash, KRAQx rights labelled UnitSplit, SCCOx type churn, LINx withholding refund, AZNx ADR conversion.
-3. The full synthetic trap regression suite.
+const { actions } = await corpact.v2.actions(wallet);   // type, treatment, lifecycle, evidence
+const { positions } = await corpact.portfolio(wallet);  // floor, convertible amount, coverage
+```
 
-Synthetic data is labelled in every API response, export and dashboard view. See [docs/demo.md](docs/demo.md). The one mainnet check, the AZNx identity change verified end to end on a real wallet, is scripted separately. `pnpm --filter @corpact/demo lineage-check` needs `SOLANA_RPC_URL` and runs in a scratch database. The one-page leave-behind is [docs/findings/what-this-catches.md](docs/findings/what-this-catches.md), regenerated with `pnpm --filter @corpact/demo catches`.
+Other entry points: the docs and sandbox with `pnpm --filter @corpact/site dev`
+(http://localhost:3700), the dashboard with `pnpm dev --port 3600` in `apps/web`, the recorded-case
+report with `pnpm --filter @corpact/demo catches`, and the mainnet identity-change check with
+`pnpm --filter @corpact/demo lineage-check`.
 
-## API access
+**API access.** Every route except `/v1/health` and `/v1/openapi.json` needs a bearer key; only a
+SHA-256 of each key is stored. Keys hold a subset of `assets:read`, `ledger:read`, `wallets:sync` and
+`ops:read`, and read only the wallets their tenant registered — any other wallet answers
+`404 wallet_not_registered`, so one customer cannot learn which wallets another tracks. Rate limits are
+per key. Browsers never hold a key: the dashboard calls its own server route.
 
-- **Keys.** Every route except `/v1/health` and `/v1/openapi.json` needs `Authorization: Bearer <key>`. Only a SHA-256 of each key is stored. In `apps/api`:
-  - `pnpm tenants create <slug> <name> [--max-wallets N]`
-  - `pnpm keys create <name> --tenant <slug> [--scopes …]`
-  - `pnpm keys list`
-  - `pnpm keys revoke <id>`
-- **Scopes.** Each key holds a subset of `assets:read`, `ledger:read`, `wallets:sync` and `ops:read`, and new keys default to read-only (`assets:read`, `ledger:read`). `ops:read` covers only the monitoring routes. Calling a route without its scope returns `403 missing_scope`.
-- **Tenancy.** A key reads only wallets its tenant has registered. `POST /v1/wallets/sync` registers a wallet within the tenant's quota (`403 wallet_quota_exceeded` beyond it). Any other wallet answers `404 wallet_not_registered`, so one customer cannot learn which wallets another tracks. `GET /v1/wallets` lists a tenant's wallets. The chain data itself is shared across tenants; only access is scoped.
-- **Limits.** Each key is allowed `RATE_LIMIT_PER_MINUTE` requests per minute (default 120), with `429` and `retry-after` beyond that. After `AUTH_FAILURES_PER_MINUTE` failed key attempts (default 20), further attempts from that address are refused for the minute. Limits are held in memory per API instance.
-- **Yield.** `GET /v1/yield?owner=` reports, per position, income and share yield for trailing 30 days, trailing 365 days and the tracked period. Share yield is dividend shares gained ÷ time-weighted shares held, in the current split basis, needs no price, and is not annualized. It also reports trailing net distribution per share from issuer-verified cash. Partial history is excluded from yield claims: a yield is given only for a completely replayed position over a window its coverage fully spans, and otherwise is null with a coded `excluded` reason, while the income and quantities observed in the covered part are still reported. Distribution yield stays null until a price source exists.
-- **Export.** `GET /v1/export?owner=&dataset=journal|income` returns RFC 4180 CSV, capped at 50,000 rows. `journal` (the default) is the append-only recognition/reversal trail for accountants; `income` is current entries with revisions. Rows carry position status, reconciliation and coverage start, and unknown USD is an empty cell, never `0`.
-- **Monitoring.** `GET /v1/ops/status` (JSON checks) and `GET /v1/ops/metrics` (Prometheus) need `ops:read`; `pnpm cli check` in `apps/worker` runs the same checks. See the [monitoring runbook](docs/ops/monitoring.md).
-- **Independent provider.** Set `RECONCILIATION_RPC_URL` to a second RPC provider, and the worker cross-checks wallet balances and held mints' multiplier state against it. A disagreement pauses conversion for the affected positions and turns monitoring critical, without touching the ledger ([ADR-0004](docs/adr/0004-independent-reconciliation-provider.md)).
-- **Backups.** `tools/ops/restore-drill.sh` dumps the database, restores it into a scratch database, bounds the row counts, and runs `pnpm cli verify-integrity` on the copy. That command checks stored evidence hashes, the append-only guards, and that the journal matches published income. See the [backup and restore runbook](docs/ops/backup-restore.md).
-- **API v2: corporate actions.** `GET /v2/actions?owner=` reports every action applied to a wallet with its type, ledger treatment, validation status and lifecycle state. `GET /v2/actions/{id}` adds the full lifecycle, six distinct timestamps, every issuer revision with its stored hash, and lineage. `GET /v2/taxonomy` lists every type, and `GET /v2/instruments/{mint}/lineage` traces identity changes. v1 keeps its behaviour; the differences are in [API v1 → v2](apps/site/content/docs/reference/api-v1-to-v2.md).
-- **Contract.** The OpenAPI 3.1 document is served at `/v1/openapi.json` and committed at [packages/client/openapi.json](packages/client/openapi.json). The API, that document and the `@corpact/client` types all come from one set of schemas, and a contract test checks real responses against them.
-- **Client.**
+**The issuer-data constraint.** The xStocks feed has no commercial licence and its terms prohibit
+automated retrieval. Every issuer read goes through `IssuerSource`; `ISSUER_SOURCE=fixtures` is the
+default and makes no network calls, `live` is the only switch, and no scheduled job ever reads the
+issuer — the worker loop polls chain state only. `tools/record-fixtures.mjs` and the scripts in
+`tools/validate/` do call the live feed; do not run them until licensing is resolved.
 
-  ```ts
-  import { createCorpactClient } from '@corpact/client';
+## Future scope
 
-  const corpact = createCorpactClient({ baseUrl: 'https://api.example', apiKey: process.env.CORPACT_API_KEY });
-  const { positions, coverage } = await corpact.portfolio('6kn8Vj9YkvNLo8peW2fzebQdSLtX33A3TkRJwXqMCy1U');
-  ```
-
-- **Browsers never hold keys.** The demo dashboard calls its own server route (`/api/corpact/*`), which attaches the key and forwards only the routes it needs.
-
-## The issuer-data constraint
-
-The xStocks corporate-action feed has no commercial licence, and the website terms prohibit automated retrieval.
-
-- **Every issuer read goes through `IssuerSource`.** `ISSUER_SOURCE=fixtures` is the default and makes no network calls. `live` is the only switch.
-- **No scheduled job reads the issuer.** `import-issuer-actions` is a one-shot command; the worker loop polls **chain state only**.
-- **These scripts call `api.xstocks.fi` live:** `tools/record-fixtures.mjs` and the Phase 0 scripts in `tools/validate/`. Do not run them until licensing is resolved.
-
-## What the numbers promise
-
-- Income comes only from issuer-reported net cash that reconciles with the shares delivered. There is no event-time price source yet. A dividend without trustworthy issuer cash keeps its quantity, with USD shown as unknown.
-- Every position carries `coverageStart`, gaps and reconciliation status. Anything that cannot be replayed from verified chain history is partial or unsupported, never zero.
-- The convertible amount appears only when replay completed. Conversion itself is not built.
-- Issuer corrections never rewrite history. A changed classification supersedes the old one, and changed income is journaled as a reversal plus a replacement. The audit trail is at `GET /v1/journal` ([ADR-0003](docs/adr/0003-issuer-corrections-are-journaled.md)).
+- **Conversion.** Turn the convertible amount into an actual harvest: sell dividend-attributed exposure
+  to USDC through a vault, with the protected floor enforced on-chain rather than in the ledger alone.
+- **A second issuer.** The classifier is one adapter away from other tokenized-equity issuers; the
+  taxonomy, lifecycle and lineage are already issuer-neutral.
+- **Event-time pricing.** A price source with staleness and disagreement rules would let dividends
+  without issuer cash carry a market valuation, and would turn distribution yield from null into a
+  number.
+- **The remaining action types.** Cash and mixed mergers, redemptions, delistings and fractional
+  cash-in-lieu are recognised but never booked, because no real instance exists to validate them
+  ([ADR-0006](docs/adr/0006-zero-instance-action-types.md)). Each becomes bookable the day one occurs.
+- **Seizure detection.** A permanent-delegate transfer would currently book as a withdrawal. Recording
+  each movement's signing authority would let it be flagged as custody, not a sale.
+- **Self-serve onboarding.** Accounts, self-managed API keys and per-key usage metering, so integrators
+  can start without a hand-created tenant.
+- **Streaming.** Webhooks or SSE for new actions and corrections, so consumers stop polling
+  `GET /v2/actions`.
+```
