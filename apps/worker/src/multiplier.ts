@@ -189,7 +189,7 @@ export async function rebuildTimeline(ctx: Context, mint: string) {
   };
   if (writes.length === 0 && mintState && cfg && cfg.newMultiplierEffectiveTimestamp === 0n && cfg.multiplierBits === cfg.newMultiplierBits) {
     // Live state shows no multiplier ever scheduled. With no writes observed, the value is certain only from
-    // the first observation of that state — keep the earliest one rather than moving it forward each rebuild.
+    // the first observation of that state - keep the earliest one rather than moving it forward each rebuild.
     const earlier = priorState?.knownFrom;
     knownFrom =
       earlier && earlier.multiplierBits === cfg.multiplierBits

@@ -1,4 +1,4 @@
-/** An f64 as its 8 little-endian bytes in lowercase hex — the exact on-chain representation. */
+/** An f64 as its 8 little-endian bytes in lowercase hex - the exact on-chain representation. */
 export type Float64Bits = string;
 
 export const toHex = (bytes: Uint8Array): string => Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');

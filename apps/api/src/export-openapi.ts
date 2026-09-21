@@ -32,7 +32,7 @@ if (process.argv.includes('--check')) {
   if (current === spec) {
     console.log('OpenAPI spec is up to date');
   } else {
-    console.error(`${OUT} is out of date — run: pnpm --filter @corpact/api openapi:export`);
+    console.error(`${OUT} is out of date - run: pnpm --filter @corpact/api openapi:export`);
     process.exitCode = 1;
   }
 } else {

@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
+import { ThinkingOrb } from 'thinking-orbs';
 import { CorpactApiError, api, type IncomeEntry, type Portfolio, type SyncStatus, type YieldResponse } from '../lib/api';
 import { formatDate, formatDateTime, formatPercent, formatQuantity, formatUsd, shortAddress } from '../lib/format';
 
@@ -154,13 +155,24 @@ function SyncBanner({ sync }: { sync: SyncStatus | null }) {
   }
   if (ACTIVE.includes(sync.status)) {
     const { phase, done, total } = sync.progress;
+    const queued = sync.status === 'queued';
     return (
-      <div className="banner">
-        <strong>{sync.status === 'queued' ? 'Sync queued' : 'Reading on-chain history'}</strong>
-        <span className="muted">
-          {phase ?? 'Starting'}
-          {done !== undefined && total !== undefined ? `: ${done} of ${total}` : ''}
-        </span>
+      <div className="banner banner-live">
+        {/* A backfill runs for minutes and the phase line only changes every few polls: the orb is what
+            says the page is still waiting rather than stuck. `breathing` while queued, `searching` once
+            the worker is actually reading chain history. */}
+        <ThinkingOrb
+          state={queued ? 'breathing' : 'searching'}
+          size={64}
+          aria-label={queued ? 'Sync queued' : 'Reading on-chain history'}
+        />
+        <div>
+          <strong>{queued ? 'Sync queued' : 'Reading on-chain history'}</strong>
+          <span className="muted">
+            {phase ?? 'Starting'}
+            {done !== undefined && total !== undefined ? `: ${done} of ${total}` : ''}
+          </span>
+        </div>
       </div>
     );
   }

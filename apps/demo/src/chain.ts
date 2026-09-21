@@ -115,7 +115,7 @@ export async function createDemoChain(rpcUrl: string, wsUrl: string) {
     /** The associated Token-2022 account of `owner` for `mint`. */
     tokenAccount: ata,
 
-    /** Transactions that have touched an address — evidence that something did or did not write to it. */
+    /** Transactions that have touched an address - evidence that something did or did not write to it. */
     async signatureCount(address: Address): Promise<number> {
       return (await rpc.getSignaturesForAddress(address, { commitment: 'confirmed', limit: 1000 }).send()).length;
     },

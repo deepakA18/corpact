@@ -69,6 +69,10 @@ input {
 .banner { border-radius: var(--radius); padding: 14px 16px; border: 1px solid var(--line); background: var(--surface); }
 .banner.partial { background: var(--caution-bg); border-color: transparent; }
 .banner strong { display: block; }
+/* The banner grows an orb while a sync is in flight: the mark sits beside the text, not above it. */
+.banner-live { display: flex; align-items: center; gap: 14px; }
+.banner-live canvas { flex: none; }
+.row-inline { display: flex; align-items: center; gap: 8px; }
 
 .values { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
 @media (max-width: 800px) { .values { grid-template-columns: repeat(2, 1fr); } }

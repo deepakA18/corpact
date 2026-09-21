@@ -78,7 +78,7 @@ describe('spin-off ledger semantics', () => {
     expect(state.entries.map((e) => e.type)).toEqual(['deposit', 'dividend', 'split', 'distribution', 'dividend']);
     const spin = state.entries[3]!;
     expect(spin.type === 'distribution' && spin.distributedFraction.toFixed(5)).toBe('0.48747');
-    // Proceeds = shares held (10 raw tokens × 0.51205 multiplier) × $216.66 — recorded, never income.
+    // Proceeds = shares held (10 raw tokens × 0.51205 multiplier) × $216.66 - recorded, never income.
     expect(spin.type === 'distribution' && spin.proceedsUsd?.toFixed(2)).toBe('1109.43');
     expect(positionView(state).dividendIncomeUsd.compare(Rational.of(25n))).toBeLessThan(0);
   });

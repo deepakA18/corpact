@@ -7,7 +7,7 @@ export type Queryable = Pick<pg.Pool, 'query'>;
 
 export function createDb(connectionString: string | undefined = process.env.DATABASE_URL): Db {
   if (!connectionString) throw new Error('DATABASE_URL is not set');
-  // numeric and int8 come back as strings (pg default) — never coerced to JS number.
+  // numeric and int8 come back as strings (pg default) - never coerced to JS number.
   return new pg.Pool({ connectionString, max: 10 });
 }
 

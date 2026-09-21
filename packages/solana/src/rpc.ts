@@ -112,7 +112,7 @@ export function createChainReader(options: ChainReaderOptions) {
     rpcUrl: options.rpcUrl,
     stats: () => ({ ...stats }),
 
-    /** Latest finalized slot and its Clock timestamp. Settlement evidence — never local wall-clock time. */
+    /** Latest finalized slot and its Clock timestamp. Settlement evidence - never local wall-clock time. */
     async finalizedClock(): Promise<{ slot: bigint; unixTime: bigint }> {
       const slot = await call('getSlot', () => rpc.getSlot({ commitment: 'finalized' }).send());
       const time = await call(`getBlockTime(${slot})`, () => rpc.getBlockTime(slot).send());
@@ -143,7 +143,7 @@ export function createChainReader(options: ChainReaderOptions) {
       return { slot: slot ?? 0n, accounts: result };
     },
 
-    /** Current inventory only — not history. */
+    /** Current inventory only - not history. */
     async tokenAccountsByOwner(owner: string, tokenProgram: Address, options: { minContextSlot?: bigint } = {}) {
       const { context, value } = await call(`getTokenAccountsByOwner(${owner})`, () =>
         rpc
@@ -213,7 +213,7 @@ export function createChainReader(options: ChainReaderOptions) {
       );
     },
 
-    /** Ordered signatures of a block — the only source of a transaction's index within its slot. */
+    /** Ordered signatures of a block - the only source of a transaction's index within its slot. */
     async blockSignatures(slot: bigint): Promise<string[]> {
       const block = await call(`getBlock(${slot})`, () =>
         rpc

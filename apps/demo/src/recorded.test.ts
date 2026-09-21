@@ -42,7 +42,7 @@ describe('side-by-side cases', () => {
   it('HONx: the naive reading books +95% as income; Corpact books a basis allocation, citing the SpinOff', () => {
     const c = honxSpinOff(rows);
     expect(c.naive.reading).toMatch(/^Books 95\.11% more shares as dividend income, worth the issuer's \$216\.66 per share held$/);
-    expect(c.corpact.outcome).toBe('Spin-off — basis allocation, no income booked');
+    expect(c.corpact.outcome).toBe('Spin-off - basis allocation, no income booked');
     expect(c.corpact.reason).toMatch(/^Issuer SpinOff ca3da1bc; distributed share .* = 0\.48747/);
   });
 
@@ -52,6 +52,6 @@ describe('side-by-side cases', () => {
     expect(c.impliedPriceUsd).toMatch(/^953\d{3}\.\d{2}$/);
     expect(Number(c.peerMedianUsd)).toBeGreaterThan(50);
     expect(Number(c.peerMedianUsd)).toBeLessThan(200);
-    expect(c.corpact.outcome).toBe('Dividend recognized — USD unknown');
+    expect(c.corpact.outcome).toBe('Dividend recognized - USD unknown');
   });
 });

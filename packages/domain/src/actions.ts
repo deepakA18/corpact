@@ -40,7 +40,7 @@ export interface IssuerCorporateAction {
   multiplierNew: string | null;
   /** Per underlying share. */
   grossCashUsdPerShare: string | null;
-  /** Per underlying share, after withholding — what was actually reinvested. */
+  /** Per underlying share, after withholding - what was actually reinvested. */
   netCashUsdPerShare: string | null;
   withholdingTaxRate: string | null;
   fromUnits: string | null;

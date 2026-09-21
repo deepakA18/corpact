@@ -39,7 +39,7 @@ async function main() {
 
   say(
     [
-      `# Corpact demo — run ${runId}`,
+      `# Corpact demo - run ${runId}`,
       '',
       `> **Part 1 and Part 3 are SYNTHETIC.** They use a local ${validator} network with no mainnet connection, keys generated for this run, and issuer records written by the demo. The database is permanently labelled synthetic, and every API response and export says so.`,
       '>',
@@ -71,7 +71,7 @@ async function main() {
       const { honx, strcx, kraqx, sccox, linx, aznx } = recordedCases(recorded);
       add('recorded issuer data', [
         check('HONx spin-off books a basis allocation, no income; the naive reading books +95%', honx.corpact.outcome.startsWith('Spin-off') && honx.naive.reading.includes('95.11%'), honx.corpact.reason, 'Multiplier-history reason and size are not evidence'),
-        check('STRCx keeps the dividend but refuses the $953k/share valuation', strcx.corpact.outcome === 'Dividend recognized — USD unknown' && strcx.impliedPriceUsd.startsWith('953'), strcx.corpact.reason, 'Issuer cash that does not match shares delivered'),
+        check('STRCx keeps the dividend but refuses the $953k/share valuation', strcx.corpact.outcome === 'Dividend recognized - USD unknown' && strcx.impliedPriceUsd.startsWith('953'), strcx.corpact.reason, 'Issuer cash that does not match shares delivered'),
         check('KRAQx rights sale labelled UnitSplit books a basis allocation, not a split or income', kraqx.corpact.outcome.startsWith('Rights distribution'), kraqx.corpact.reason, "The issuer's action type is not evidence"),
         check('SCCOx resolves on the delivered record through six revisions, reporting the superseded 1:1.012', sccox.corpact.outcome.startsWith('Stock dividend') && sccox.corpact.reason.includes('stated 1:1.012'), sccox.corpact.reason, 'Type churn before delivery'),
         check('LINx withholding refund is not a new dividend, and withholding is deducted once', linx.corpact.outcome.startsWith('Withholding refund') && linx.corpact.reading.includes('= 1.6 gross'), linx.corpact.reading, 'Withholding refunds arrive as new dividends'),
@@ -121,7 +121,7 @@ async function main() {
       const failed = checks.filter((c) => !c.pass);
       say(
         [
-          `## Part 3 — Trap regression suite (SYNTHETIC), and every check in this run`,
+          `## Part 3 - Trap regression suite (SYNTHETIC), and every check in this run`,
           '',
           'Part 3 runs every Phase 0 trap the ledger can reproduce without a price source through the full chain → worker → API path, then checks what happens when an independent RPC provider disagrees.',
           '',
@@ -130,7 +130,7 @@ async function main() {
           ...[...new Set(checks.map((c) => c.phase))].flatMap((phase) => [
             `**${phase}**`,
             '',
-            ...checks.filter((c) => c.phase === phase).map((c) => `- ${c.pass ? '✅' : '❌'} ${c.name}${c.pass ? '' : ` — ${c.detail}`}`),
+            ...checks.filter((c) => c.phase === phase).map((c) => `- ${c.pass ? '✅' : '❌'} ${c.name}${c.pass ? '' : ` - ${c.detail}`}`),
             '',
           ]),
         ].join('\n'),

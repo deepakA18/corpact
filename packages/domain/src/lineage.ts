@@ -79,7 +79,7 @@ export function validateLink(link: LineageLink): void {
 /**
  * The share of value distributed by a spin-off delivered as cash reinvested into the parent
  * (how xStocks deliver every recorded spin-off). The issuer reinvests at market, so the new
- * units' share of the position is exactly (M_new − M_old) / M_new — no price needed.
+ * units' share of the position is exactly (M_new − M_old) / M_new - no price needed.
  */
 export function reinvestedDistributionFraction(multiplierBefore: number, multiplierAfter: number): Rational {
   const before = Rational.fromFloat64(multiplierBefore);

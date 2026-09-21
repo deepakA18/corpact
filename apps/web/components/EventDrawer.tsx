@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { ThinkingOrb } from 'thinking-orbs';
 import { api, type IncomeDetail } from '../lib/api';
 import { formatDateTime, formatQuantity, formatUsd, truncateDecimal } from '../lib/format';
 
@@ -38,7 +39,12 @@ export function EventDrawer({ owner, id, onClose }: { owner: string; id: string;
           <button onClick={onClose}>Close</button>
         </div>
         {error && <p className="error">{error}</p>}
-        {!detail && !error && <p className="muted">Loading…</p>}
+        {!detail && !error && (
+          <p className="muted row-inline">
+            <ThinkingOrb state="working" size={20} aria-label="Loading the evidence" />
+            Loading…
+          </p>
+        )}
         {detail && <Evidence detail={detail} />}
       </aside>
     </div>

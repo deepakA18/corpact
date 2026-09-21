@@ -1,5 +1,5 @@
 {
- "_source": "api.xstocks.fi/api/v2/public — recorded 2026-09-13T16:14:12.445Z (multiplier history) and 2026-09-13 (corporate actions history, all versions)",
+ "_source": "api.xstocks.fi/api/v2/public - recorded 2026-09-13T16:14:12.445Z (multiplier history) and 2026-09-13 (corporate actions history, all versions)",
  "symbol": "SPYx",
  "mint": "XsoCS1TfEyfFhfvj8EtZ528L3CaKBDBRqRapnBbDF2W",
  "multiplierHistory": [

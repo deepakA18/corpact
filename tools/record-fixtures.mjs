@@ -37,7 +37,7 @@ for (const symbol of symbols) {
   const corporateActions = await pages(1, (p) => `${API}/corporate-actions/history?symbol=${symbol}&pageSize=100&page=${p}`);
   writeFileSync(
     join(OUT, `${symbol}.json`),
-    `${JSON.stringify({ _source: `api.xstocks.fi/api/v2/public — recorded ${recordedAt}`, symbol, mint, multiplierHistory, corporateActions }, null, 1)}\n`,
+    `${JSON.stringify({ _source: `api.xstocks.fi/api/v2/public - recorded ${recordedAt}`, symbol, mint, multiplierHistory, corporateActions }, null, 1)}\n`,
   );
   console.log(`${symbol} ${mint} history=${multiplierHistory.length} actions=${corporateActions.length}`);
 }

@@ -24,7 +24,7 @@ function write(kind: 'initialize' | 'update', value: number, clock: bigint, effe
   };
 }
 
-describe('buildMultiplierTimeline — recorded xStocks UpdateMultiplier', () => {
+describe('buildMultiplierTimeline - recorded xStocks UpdateMultiplier', () => {
   const recorded = JSON.parse(readFileSync(join(CHAIN, 'tx-update-multiplier-0.json'), 'utf8'));
   const parsed = parseTransaction(recorded.result);
 
@@ -56,7 +56,7 @@ describe('buildMultiplierTimeline — recorded xStocks UpdateMultiplier', () => 
   });
 });
 
-describe('buildMultiplierTimeline — Token-2022 processor rules', () => {
+describe('buildMultiplierTimeline - Token-2022 processor rules', () => {
   it('activates a scheduled value without any further write', () => {
     const writes = [write('initialize', 1, 100n), write('update', 1.5, 200n, 1000n)];
     expect(buildMultiplierTimeline(MINT, writes, 999n).transitions[0]?.status).toBe('scheduled');

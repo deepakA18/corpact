@@ -44,7 +44,7 @@ export function recordedCasesMarkdown(rows: readonly RecordedTransition[]): stri
   const { honx, strcx, kraqx, sccox, linx, aznx } = recordedCases(rows);
   const section = (c: SideBySide) => [`### ${c.title}`, '', sideBySideMarkdown(c), ''];
   return [
-    `## Part 2 — Six real cases the naive reading gets wrong (RECORDED issuer data)`,
+    `## Part 2 - Six real cases the naive reading gets wrong (RECORDED issuer data)`,
     '',
     `> **Recorded, not synthetic, and not live.** These are xStocks corporate-action and multiplier-history responses recorded on 2026-09-13 (\`${RECORDING}\`), replayed offline through the production classifier.`,
     '',

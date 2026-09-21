@@ -199,7 +199,7 @@ async function main() {
         r(link.cash_basis_num, link.cash_basis_den).isZero() &&
         r(link.basis_num, link.basis_den).eq(Rational.ONE) &&
         r(link.quantity_factor_num, link.quantity_factor_den).eq(Rational.of(1n, 2n)),
-      `${identities.length} identities (${identities.map((i) => i.underlying_symbol).join(' → ')}), ${links.length} link(s); successor basis ${link ? `${link.basis_num}/${link.basis_den}` : '—'}, cash basis ${link ? `${link.cash_basis_num}/${link.cash_basis_den}` : '—'}, factor ${link ? `${link.quantity_factor_num}/${link.quantity_factor_den}` : '—'}`,
+      `${identities.length} identities (${identities.map((i) => i.underlying_symbol).join(' → ')}), ${links.length} link(s); successor basis ${link ? `${link.basis_num}/${link.basis_den}` : '-'}, cash basis ${link ? `${link.cash_basis_num}/${link.cash_basis_den}` : '-'}, factor ${link ? `${link.quantity_factor_num}/${link.quantity_factor_den}` : '-'}`,
     );
 
     const position = (await db.query('SELECT status, replay_complete, reconciled, gaps FROM position_epochs WHERE owner = $1 AND mint = $2', [owner, AZNX_MINT])).rows[0];
@@ -245,7 +245,7 @@ async function main() {
         expect(
           'API v2 detail',
           detail.lineage?.successors?.[0]?.basisFraction === '1' && detail.lineage?.cashBasisFraction === '0' && detail.lifecycle.inconsistency === null,
-          `lifecycle ${detail.lifecycle.steps.map((s: { state: string }) => s.state).join(' → ')}; lineage successor basis ${detail.lineage?.successors?.[0]?.basisFraction ?? '—'}`,
+          `lifecycle ${detail.lifecycle.steps.map((s: { state: string }) => s.state).join(' → ')}; lineage successor basis ${detail.lineage?.successors?.[0]?.basisFraction ?? '-'}`,
         );
         const v1: Array<Record<string, any>> = (await get(`/v1/income?owner=${q}&limit=200`)).entries;
         const same = v1.find((e) => e.mint === AZNX_MINT && e.effectiveAt === action.effectiveAt);

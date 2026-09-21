@@ -83,7 +83,7 @@ export async function syncAssetRegistry(ctx: Context): Promise<{ verified: numbe
 /**
  * Chain-only reconciliation fallback (PLAN §5.2 step 1). For mints held by tracked wallets:
  * record config changes, fetch writes the mint stores but we have not seen, and settle
- * scheduled activations whose time has passed — none of which needs an account write.
+ * scheduled activations whose time has passed - none of which needs an account write.
  */
 export async function pollMintState(ctx: Context): Promise<void> {
   const { rows } = await ctx.db.query(

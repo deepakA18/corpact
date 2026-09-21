@@ -60,7 +60,7 @@ export async function runWalkthrough(ctx: WalkthroughContext) {
     value != null && Rational.fromDecimal(value).sub(Rational.fromDecimal(expected)).abs().compare(Rational.fromDecimal('0.000001')) < 0;
   const eq = (value: string | null | undefined, expected: string) => value != null && Rational.fromDecimal(value).eq(Rational.fromDecimal(expected));
   const iso = (unix: bigint) => new Date(Number(unix) * 1000).toISOString();
-  const fmt = (value: string | null | undefined, places = 8) => (value == null ? '—' : Rational.fromDecimal(value).toFixed(places));
+  const fmt = (value: string | null | undefined, places = 8) => (value == null ? '-' : Rational.fromDecimal(value).toFixed(places));
   const usd = (value: string | null | undefined) => (value == null ? 'unknown' : `$${Rational.fromDecimal(value).toFixed(2)}`);
 
   // The issuer's transaction pattern: re-assert the live multiplier, then schedule the next one.
@@ -101,7 +101,7 @@ export async function runWalkthrough(ctx: WalkthroughContext) {
     return record;
   };
 
-  say(`## Part 1 — Walkthrough (SYNTHETIC: local network, generated keys and issuer records)\n`);
+  say(`## Part 1 - Walkthrough (SYNTHETIC: local network, generated keys and issuer records)\n`);
 
   // ── Step 1 ─────────────────────────────────────────────────────────────────────────────
   // The issuer schedules a dividend and publishes its record ahead of activation; the holder is funded before it activates.
@@ -115,12 +115,12 @@ export async function runWalkthrough(ctx: WalkthroughContext) {
   const touches1 = await chain.signatureCount(tokenAccount);
   say(
     [
-      `### Step 1 — A holder with a synthetic position`,
+      `### Step 1 - A holder with a synthetic position`,
       '',
       table(
         ['', ''],
         [
-          ['Raw base units on chain', p1?.rawBalance ?? '—'],
+          ['Raw base units on chain', p1?.rawBalance ?? '-'],
           ['Multiplier', String(dividend.before)],
           ['Displayed quantity (raw ÷ 10^8 × multiplier)', fmt(p1?.quantity)],
           ['Protected floor (stock units)', fmt(p1?.protectedQuantity)],
@@ -148,12 +148,12 @@ export async function runWalkthrough(ctx: WalkthroughContext) {
   const e2 = await entries();
   say(
     [
-      `### Step 2 — The dividend activates with no transaction`,
+      `### Step 2 - The dividend activates with no transaction`,
       '',
       table(
         ['', 'Before', 'After activation'],
         [
-          ['Raw base units on chain', p1?.rawBalance ?? '—', p2?.rawBalance ?? '—'],
+          ['Raw base units on chain', p1?.rawBalance ?? '-', p2?.rawBalance ?? '-'],
           ["Transactions that ever touched the holder's token account", touches1, touches2],
           ['Displayed quantity', fmt(p1?.quantity), fmt(p2?.quantity)],
         ],
@@ -176,7 +176,7 @@ export async function runWalkthrough(ctx: WalkthroughContext) {
   const portfolio2 = await api.get<Portfolio>(`/v1/portfolio?owner=${owner}`);
   say(
     [
-      `### Step 3 — The verified dividend entry`,
+      `### Step 3 - The verified dividend entry`,
       '',
       table(
         ['', ''],
@@ -210,7 +210,7 @@ export async function runWalkthrough(ctx: WalkthroughContext) {
   const splitEntry = (await entries()).find((e) => e.kind === 'split');
   say(
     [
-      `### Step 4 — A 2-for-1 split is not income`,
+      `### Step 4 - A 2-for-1 split is not income`,
       '',
       table(
         ['', 'Before split', 'After split'],
@@ -218,7 +218,7 @@ export async function runWalkthrough(ctx: WalkthroughContext) {
           ['Displayed quantity', fmt(p2?.quantity), fmt(p4?.quantity)],
           ['Protected floor', fmt(p2?.protectedQuantity), fmt(p4?.protectedQuantity)],
           ['Dividend income', usd(p2?.dividendIncomeUsd), usd(p4?.dividendIncomeUsd)],
-          ['Entry booked by the split', '—', splitEntry ? `split ×${splitEntry.splitFactor}, USD ${splitEntry.usd ?? 'none'}` : 'none'],
+          ['Entry booked by the split', '-', splitEntry ? `split ×${splitEntry.splitFactor}, USD ${splitEntry.usd ?? 'none'}` : 'none'],
         ],
       ),
       '',
@@ -255,7 +255,7 @@ export async function runWalkthrough(ctx: WalkthroughContext) {
   const original = j5.find((j) => j.id === reversal?.reversesId);
   say(
     [
-      `### Step 5 — The issuer corrects the dividend`,
+      `### Step 5 - The issuer corrects the dividend`,
       '',
       'The issuer publishes revision 2 of the dividend: withholding 34% instead of 30%, net $0.33 per share.',
       '',
@@ -266,8 +266,8 @@ export async function runWalkthrough(ctx: WalkthroughContext) {
           j.entryType === 'reversal' ? `reversal of #${j.reversesId}` : 'recognition',
           j.kind,
           // A split has no USD value at all; "unknown" is reserved for a dividend whose value is missing.
-          j.kind === 'dividend' ? usd(j.usd) : '—',
-          j.issuerRevision ?? '—',
+          j.kind === 'dividend' ? usd(j.usd) : '-',
+          j.issuerRevision ?? '-',
           j.changeReason,
         ]),
       ),

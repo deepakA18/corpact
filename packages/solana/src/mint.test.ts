@@ -9,7 +9,7 @@ const mintBytes = (symbol: string) => {
   const f = JSON.parse(readFileSync(join(CHAIN, `mint-${symbol}.json`), 'utf8'));
   return new Uint8Array(Buffer.from(f.value.data[0], 'base64'));
 };
-/** 2026-09-13T12:00:00Z — after every activation in these recordings. */
+/** 2026-09-13T12:00:00Z - after every activation in these recordings. */
 const RECORDED_AT = 1_789_300_800n;
 
 describe('decodeToken2022Mint on recorded mainnet mints', () => {

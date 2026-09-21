@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { ThinkingOrb } from 'thinking-orbs';
 import { Icon } from '@/components/Icon';
 import { DEMO_API_KEY, DEMO_API_URL, DEMO_REQUESTS, curlFor } from '@/lib/demo-api';
 
@@ -111,6 +112,14 @@ export function TryIt() {
         </button>
       </div>
 
+      {/* The previous response stays on screen while the next one is in flight, so say which state the panel is in. */}
+      {running && (
+        <div className="tryit-running">
+          <ThinkingOrb state="working" size={20} aria-label="Waiting for the demo API" />
+          <span>Waiting for the demo API…</span>
+        </div>
+      )}
+
       {(result || error) && (
         <div className="tryit-result">
           <div className="tryit-status">
@@ -125,10 +134,13 @@ export function TryIt() {
             )}
           </div>
           {result?.syncing && (
-            <p className="tryit-note">
-              This wallet’s first sync is still running: Corpact replays its whole archival history before it reports anything, so the list is empty until that
-              finishes. Try <strong>Taxonomy</strong> or <strong>Assets</strong> meanwhile, both of which return data now.
-            </p>
+            <div className="tryit-note">
+              <ThinkingOrb state="searching" size={64} aria-label="Replaying archival history" />
+              <p>
+                This wallet’s first sync is still running: Corpact replays its whole archival history before it reports anything, so the list is empty until
+                that finishes. Try <strong>Taxonomy</strong> or <strong>Assets</strong> meanwhile, both of which return data now.
+              </p>
+            </div>
           )}
           <pre>{error ?? result!.body}</pre>
         </div>

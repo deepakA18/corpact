@@ -35,7 +35,7 @@ export type LedgerEntry =
       action: 'cash_dividend' | 'withholding_adjustment';
       eventId: string;
       quantity: Rational;
-      /** Null means unknown — never zero. */
+      /** Null means unknown - never zero. */
       usd: Rational | null;
       valuation: DividendValuation | null;
       warnings: string[];

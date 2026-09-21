@@ -23,15 +23,15 @@ const share = (c: Extract<Classification, { kind: 'distribution' }>) => `${(Numb
 function outcome(c: Classification): string {
   switch (c.kind) {
     case 'dividend':
-      return c.action === 'withholding_adjustment' ? 'Withholding refund — income, not a new dividend' : 'Cash dividend — income';
+      return c.action === 'withholding_adjustment' ? 'Withholding refund - income, not a new dividend' : 'Cash dividend - income';
     case 'split':
-      return c.action === 'stock_dividend' ? `Stock dividend — units ×${c.factor.toFixed(6)}, basis spread, not income` : `Split (${c.action.replace('_', ' ')}) — not income`;
+      return c.action === 'stock_dividend' ? `Stock dividend - units ×${c.factor.toFixed(6)}, basis spread, not income` : `Split (${c.action.replace('_', ' ')}) - not income`;
     case 'distribution':
-      return `${c.action === 'rights_distribution' ? 'Rights sold and reinvested' : 'Spin-off'} — ${share(c)} of the position as principal, not income`;
+      return `${c.action === 'rights_distribution' ? 'Rights sold and reinvested' : 'Spin-off'} - ${share(c)} of the position as principal, not income`;
     case 'identity_change':
-      return `Identity change — ${c.fromUnderlying} → ${c.toUnderlying}, units ×${c.factor.toFixed(2)}, not income`;
+      return `Identity change - ${c.fromUnderlying} → ${c.toUnderlying}, units ×${c.factor.toFixed(2)}, not income`;
     case 'unclassified':
-      return 'Not income — pending classification';
+      return 'Not income - pending classification';
   }
 }
 
@@ -73,7 +73,7 @@ async function main() {
         ? `ratio ${a.fromUnits}:${a.toUnits}${a.effectiveAt ? `, effective ${a.effectiveAt.toISOString().slice(0, 16)}` : ''}`
         : a.effectiveAt
           ? `effective ${a.effectiveAt.toISOString().slice(0, 16)}, no ratio`
-          : '—';
+          : '-';
 
   // Case: withholding refunds.
   const refunds = rows.filter((r) => r.classification.kind === 'dividend' && r.classification.action === 'withholding_adjustment');
@@ -124,23 +124,23 @@ ${table(['Stated reason', 'Changes'], byCount(s.unclassified.byReason))}
 
 **Splits by issuer type:** ${byCount(s.splits.byIssuerType).map(([t, n]) => `${t} ${n}`).join(', ')}.
 
-## Case 1 — ${honx.title}
+## Case 1 - ${honx.title}
 
 ${sideBySideMarkdown(honx)}
 
-## Case 2 — ${strcx.title}
+## Case 2 - ${strcx.title}
 
 ${sideBySideMarkdown(strcx)}
 
 Implied reinvestment price, from the issuer's own numbers (M_old × net cash ÷ (M_new − M_old)): **$${Number(strcx.impliedPriceUsd).toLocaleString('en-US', { maximumFractionDigits: 2 })}** per share, against a median of **$${strcx.peerMedianUsd}** across STRCx's other dividends.
 
-## Case 3 — KRAQx: rights sold for cash, labelled \`UnitSplit\`
+## Case 3 - KRAQx: rights sold for cash, labelled \`UnitSplit\`
 
 On ${day(kraqx)} the issuer published a \`UnitSplit\` at **1:1** for KRAQx, and the multiplier rose ${signed(change(kraqx))}. A 1:1 unit split cannot move a multiplier. The note says what happened: warrants were sold and the proceeds reinvested.
 
 ${table(
   ['Version', 'Status', 'Multipliers', 'Issuer note'],
-  kraqxVersions.map(({ a }) => [`v${a.version}`, a.status, a.multiplierOld === null ? '—' : `${a.multiplierOld} → ${a.multiplierNew}`, a.notes ?? '—']),
+  kraqxVersions.map(({ a }) => [`v${a.version}`, a.status, a.multiplierOld === null ? '-' : `${a.multiplierOld} → ${a.multiplierNew}`, a.notes ?? '-']),
 )}
 
 ${beforeAfter([
@@ -154,13 +154,13 @@ ${beforeAfter([
 
 Without the note naming the rights, Corpact would leave this change unclassified: "factor 1:1 does not reconcile". The note is the evidence; the label is not.
 
-## Case 4 — SCCOx: a stock dividend that changed form twice before delivery
+## Case 4 - SCCOx: a stock dividend that changed form twice before delivery
 
 Across its two feeds the issuer published **${sccoxVersions.length} versions** of one SCCOx event within ${Math.round((sccoxVersions.at(-1)!.a.createdAt.getTime() - sccoxVersions[0]!.a.createdAt.getTime()) / 60_000)} minutes. It announced a stock dividend, cancelled it ("will be a cash flow, not a unit change"), rescheduled it, delivered it, and then cancelled the schedule after delivery.
 
 ${table(
   ['Version', 'Feed', 'Status', 'Created (UTC)', 'What it said', 'Note'],
-  sccoxVersions.map(({ feed, a }) => [`v${a.version}`, feed, a.status, a.createdAt.toISOString().slice(11, 19), said(a), a.notes?.trim() || '—']),
+  sccoxVersions.map(({ feed, a }) => [`v${a.version}`, feed, a.status, a.createdAt.toISOString().slice(11, 19), said(a), a.notes?.trim() || '-']),
 )}
 
 ${beforeAfter([
@@ -171,7 +171,7 @@ ${beforeAfter([
   ],
 ])}
 
-## Case 5 — Withholding refunds arrive as new dividends
+## Case 5 - Withholding refunds arrive as new dividends
 
 When tax was withheld by mistake, the issuer passes it back as a **\`Corrected\` version of the original dividend**, delivered days later as a second multiplier change with gross cash of zero.
 
@@ -185,7 +185,7 @@ ${beforeAfter(
 
 The issuer also publishes a **5% currency retention** in the withholding-rate field (${retentions.map((r) => `${r.symbol} ${day(r)}`).join(', ')}). It is not tax: net cash already reflects it, so Corpact records it as \`retentionRate\` and flags nothing. A later dividend that releases an earlier retention (TSMx 2026-06-11) is not a reconciliation gap either.
 
-## Case 6 — Size is not evidence
+## Case 6 - Size is not evidence
 
 The largest recorded cash dividend raised its multiplier **${signed(largestDividend)}**. **${spinOffs.filter((r) => change(r) < largestDividend).length} of ${spinOffs.length} spin-offs** fall inside that range. So do the stock dividend, the rights sale and both withholding refunds, which a size threshold would read as dividends:
 
@@ -198,7 +198,7 @@ ${table(
 
 Ratios don't separate kinds either. AZNx on ${day(aznx)} and HONx on ${day(honxReverse)} both halved their multipliers exactly (×${(aznx.transition.after / aznx.transition.before).toFixed(1)}). One is a reverse split; the other is an ADR converting to the ordinary share. Only the issuer note, "${aznx.action?.notes}", tells them apart. Corpact books AZNx as an identity change and writes it to the position lineage, with all basis carried over.
 
-## Case 7 — The label is not evidence
+## Case 7 - The label is not evidence
 
 The multiplier-history \`reason\` field is the obvious thing to trust. On ${mislabels.length} of the ${s.transitions} changes, issuer corporate-action evidence contradicts it:
 

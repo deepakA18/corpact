@@ -5,6 +5,7 @@ coverage/
 .env
 .env.*
 !.env.example
+env.neon
 *.log
 *.tsbuildinfo
 .DS_Store

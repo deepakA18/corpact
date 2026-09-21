@@ -1,10 +1,10 @@
-# Questions for securities counsel — accounting API posture
+# Questions for securities counsel - accounting API posture
 
 **Status:** draft brief, not legal analysis · **Date:** 2026-09-13 · **Gate:** PLAN §0.2, now the gating check
 
 ## What we would offer
 
-The service is read-only accounting infrastructure for tokenized equities on Solana (xStocks today). Business customers — exchanges listing xStocks, lending protocols accepting them as collateral, portfolio trackers and tax tools — send a position or a wallet. They receive back:
+The service is read-only accounting infrastructure for tokenized equities on Solana (xStocks today). Business customers - exchanges listing xStocks, lending protocols accepting them as collateral, portfolio trackers and tax tools - send a position or a wallet. They receive back:
 
 1. **Event classification.** Each on-chain balance-multiplier change is labelled dividend, split, spin-off or unclassified, with the issuer record it was matched to and the reasons.
 2. **Dividend-attributed quantity**, with a USD estimate and the valuation source named.
@@ -14,7 +14,7 @@ We would not custody assets, execute trades, route orders, hold customer or end-
 
 ## Questions
 
-1. **Regulated activity.** In [target jurisdiction(s) — to be fixed], is supplying corporate-action classification and income calculations for third-party tokenized securities to businesses a regulated activity? Candidates we can see: market-data vendor, investment advice, benchmark or index administration.
+1. **Regulated activity.** In [target jurisdiction(s) - to be fixed], is supplying corporate-action classification and income calculations for third-party tokenized securities to businesses a regulated activity? Candidates we can see: market-data vendor, investment advice, benchmark or index administration.
 2. **Where the line sits.** Does it change the answer if the output includes an "available to convert" figure that a customer might use to drive sales? Should the API stop at classification and attributed quantity?
 3. **Tax characterisation.** Can we label amounts "income", or does that amount to tax advice? The issuer reinvests dividends net of withholding and pays no cash. Would "dividend-attributed exposure" be the safer term?
 4. **Liability for error.** If a customer relies on our output and misstates a user's income or collateral value, what disclaimers, terms and service levels are appropriate? Our own validation shows the issuer's data itself is sometimes inconsistent.

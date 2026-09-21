@@ -32,23 +32,23 @@ Corpact turns tokenized-stock multiplier changes into an evidence-backed corpora
 
 **Splits by issuer type:** ForwardSplit 8, StockDividend 1, ReverseSplit 1.
 
-## Case 1 — HONx spin-off: a +95% multiplier change that is not income
+## Case 1 - HONx spin-off: a +95% multiplier change that is not income
 
 |  | Naive reading | Corpact |
 |---|---|---|
 | Rule | Any multiplier increase is a dividend | Classify from issuer corporate-action evidence, never from the size or label of the change |
-| Result | **Books 95.11% more shares as dividend income, worth the issuer's $216.66 per share held** | **Spin-off — basis allocation, no income booked.** Books the 95.11% unit change as principal bought with the distributed value (48.75% of the position); nothing is added to income or made available to convert |
+| Result | **Books 95.11% more shares as dividend income, worth the issuer's $216.66 per share held** | **Spin-off - basis allocation, no income booked.** Books the 95.11% unit change as principal bought with the distributed value (48.75% of the position); nothing is added to income or made available to convert |
 
 Evidence: multiplier 0.5120473566533945 → 0.9990655067370947 at 2026-06-29T23:55:00.000Z; multiplier-history label "Administrative"; issuer record SpinOff (ca3da1bc), issuer cash figure $216.6649884 per share.
 
 Stated reason: _Issuer SpinOff ca3da1bc; distributed share (M_new − M_old) ÷ M_new = 0.48747, from the multipliers alone_
 
-## Case 2 — STRCx implausible issuer cash: $0.63 per share for 0.00000066 shares
+## Case 2 - STRCx implausible issuer cash: $0.63 per share for 0.00000066 shares
 
 |  | Naive reading | Corpact |
 |---|---|---|
 | Rule | Value a dividend at the issuer's net cash | Classify from issuer corporate-action evidence, never from the size or label of the change |
-| Result | **Books $0.62708331 of income per share held, though only 0.00000066 shares were delivered per share** | **Dividend recognized — USD unknown.** Keeps the delivered quantity as a verified dividend and counts it as unvalued; USD is null, never zero |
+| Result | **Books $0.62708331 of income per share held, though only 0.00000066 shares were delivered per share** | **Dividend recognized - USD unknown.** Keeps the delivered quantity as a verified dividend and counts it as unvalued; USD is null, never zero |
 
 Evidence: multiplier 1 → 1.000000657507339 at 2025-11-30T23:55:00.000Z; multiplier-history label "Dividend"; issuer record CashDividend (3c56a5bc), net cash $0.62708331 per share.
 
@@ -56,7 +56,7 @@ Stated reason: _Issuer net cash implies reinvestment at $953728.23/share against
 
 Implied reinvestment price, from the issuer's own numbers (M_old × net cash ÷ (M_new − M_old)): **$953,728.23** per share, against a median of **$94.80** across STRCx's other dividends.
 
-## Case 3 — KRAQx: rights sold for cash, labelled `UnitSplit`
+## Case 3 - KRAQx: rights sold for cash, labelled `UnitSplit`
 
 On 2026-03-26 the issuer published a `UnitSplit` at **1:1** for KRAQx, and the multiplier rose +1.38%. A 1:1 unit split cannot move a multiplier. The note says what happened: warrants were sold and the proceeds reinvested.
 
@@ -73,24 +73,24 @@ On 2026-03-26 the issuer published a `UnitSplit` at **1:1** for KRAQx, and the m
 
 Without the note naming the rights, Corpact would leave this change unclassified: "factor 1:1 does not reconcile". The note is the evidence; the label is not.
 
-## Case 4 — SCCOx: a stock dividend that changed form twice before delivery
+## Case 4 - SCCOx: a stock dividend that changed form twice before delivery
 
 Across its two feeds the issuer published **6 versions** of one SCCOx event within 308 minutes. It announced a stock dividend, cancelled it ("will be a cash flow, not a unit change"), rescheduled it, delivered it, and then cancelled the schedule after delivery.
 
 | Version | Feed | Status | Created (UTC) | What it said | Note |
 |---|---|---|---|---|---|
-| v1 | upcoming | Scheduled | 15:50:59 | ratio 1:1.012, effective 2026-08-11T00:00 | — |
+| v1 | upcoming | Scheduled | 15:50:59 | ratio 1:1.012, effective 2026-08-11T00:00 | - |
 | v2 | upcoming | Cancelled | 16:45:40 | ratio 1:1.012 | [CANCELLED v1] Will be a cash flow, not a unit change. |
 | v3 | upcoming | Cancelled | 20:54:45 | ratio 1:1.012 | [CANCELLED v1] |
-| v4 | upcoming | Scheduled | 20:58:14 | effective 2026-08-12T00:30, no ratio | — |
-| v5 | history | Initial | 20:58:14 | delivered: multiplier 1.003847883664 → 1.019224471246712 | — |
-| v6 | upcoming | Cancelled | 20:58:30 | — | [CANCELLED v4] |
+| v4 | upcoming | Scheduled | 20:58:14 | effective 2026-08-12T00:30, no ratio | - |
+| v5 | history | Initial | 20:58:14 | delivered: multiplier 1.003847883664 → 1.019224471246712 | - |
+| v6 | upcoming | Cancelled | 20:58:30 | - | [CANCELLED v4] |
 
 | Issuer feed says | A naive integration books | Corpact books |
 |---|---|---|
 | Six versions; the highest one (v6) is `Cancelled` | Latest version wins: the action was cancelled, so the delivered change is either unexplained or read as a dividend. First announcement wins: a 1:1.012 ratio, which doesn't reconcile with the chain | **Stock dividend** on the delivered record (v5): units ×1.015318, cost basis spread across them, zero income. v6 cancels the v4 *schedule*, not the delivery. The lifecycle keeps all 6 revisions, each naming the one it supersedes |
 
-## Case 5 — Withholding refunds arrive as new dividends
+## Case 5 - Withholding refunds arrive as new dividends
 
 When tax was withheld by mistake, the issuer passes it back as a **`Corrected` version of the original dividend**, delivered days later as a second multiplier change with gross cash of zero.
 
@@ -101,68 +101,68 @@ When tax was withheld by mistake, the issuer passes it back as a **`Corrected` v
 
 The issuer also publishes a **5% currency retention** in the withholding-rate field (ETNx 2026-05-08, ASMLx 2026-04-25, LINx 2026-06-04). It is not tax: net cash already reflects it, so Corpact records it as `retentionRate` and flags nothing. A later dividend that releases an earlier retention (TSMx 2026-06-11) is not a reconciliation gap either.
 
-## Case 6 — Size is not evidence
+## Case 6 - Size is not evidence
 
 The largest recorded cash dividend raised its multiplier **+2.93%**. **4 of 6 spin-offs** fall inside that range. So do the stock dividend, the rights sale and both withholding refunds, which a size threshold would read as dividends:
 
 | Asset | Activation | Change | Inside the dividend size range | Corpact |
 |---|---|---|---|---|
-| LINx | 2026-03-26 | +0.10% | **yes** | Withholding refund — income, not a new dividend |
-| NVOx | 2025-09-05 | +0.13% | **yes** | Withholding refund — income, not a new dividend |
-| GMEx | 2025-10-08 | +0.53% | **yes** | Spin-off — 0.53% of the position as principal, not income |
-| HONx | 2025-10-30 | +1.10% | **yes** | Spin-off — 1.09% of the position as principal, not income |
-| KRAQx | 2026-03-26 | +1.38% | **yes** | Rights sold and reinvested — 1.36% of the position as principal, not income |
-| DFDVx | 2025-11-07 | +1.47% | **yes** | Spin-off — 1.45% of the position as principal, not income |
-| SCCOx | 2026-08-12 | +1.53% | **yes** | Stock dividend — units ×1.015318, basis spread, not income |
-| OPENx | 2025-11-24 | +2.08% | **yes** | Spin-off — 2.04% of the position as principal, not income |
-| CMCSAx | 2026-01-07 | +4.72% | no | Spin-off — 4.50% of the position as principal, not income |
-| HONx | 2026-06-29 | +95.11% | no | Spin-off — 48.75% of the position as principal, not income |
+| LINx | 2026-03-26 | +0.10% | **yes** | Withholding refund - income, not a new dividend |
+| NVOx | 2025-09-05 | +0.13% | **yes** | Withholding refund - income, not a new dividend |
+| GMEx | 2025-10-08 | +0.53% | **yes** | Spin-off - 0.53% of the position as principal, not income |
+| HONx | 2025-10-30 | +1.10% | **yes** | Spin-off - 1.09% of the position as principal, not income |
+| KRAQx | 2026-03-26 | +1.38% | **yes** | Rights sold and reinvested - 1.36% of the position as principal, not income |
+| DFDVx | 2025-11-07 | +1.47% | **yes** | Spin-off - 1.45% of the position as principal, not income |
+| SCCOx | 2026-08-12 | +1.53% | **yes** | Stock dividend - units ×1.015318, basis spread, not income |
+| OPENx | 2025-11-24 | +2.08% | **yes** | Spin-off - 2.04% of the position as principal, not income |
+| CMCSAx | 2026-01-07 | +4.72% | no | Spin-off - 4.50% of the position as principal, not income |
+| HONx | 2026-06-29 | +95.11% | no | Spin-off - 48.75% of the position as principal, not income |
 
 Ratios don't separate kinds either. AZNx on 2026-02-02 and HONx on 2026-06-29 both halved their multipliers exactly (×0.5). One is a reverse split; the other is an ADR converting to the ordinary share. Only the issuer note, "Stock Merger 0.5 NYSE:AZN for 1 NASDAQ:AZN (ADR)", tells them apart. Corpact books AZNx as an identity change and writes it to the position lineage, with all basis carried over.
 
-## Case 7 — The label is not evidence
+## Case 7 - The label is not evidence
 
 The multiplier-history `reason` field is the obvious thing to trust. On 12 of the 654 changes, issuer corporate-action evidence contradicts it:
 
 | Asset | Activation | Label says | Issuer evidence | Corpact |
 |---|---|---|---|---|
-| SCCOx | 2026-08-12 | Dividend | StockDividend | Stock dividend — units ×1.015318, basis spread, not income |
-| SATAx | 2026-09-01 | Dividend | no matching action | Not income — pending classification |
-| STRCx | 2026-04-01 | Dividend | no matching action | Not income — pending classification |
-| STRCx | 2026-05-15 | Dividend | no matching action | Not income — pending classification |
-| DFDVx | 2025-11-07 | Dividend | SpinOff | Spin-off — 1.45% of the position as principal, not income |
-| OPENx | 2025-11-24 | Dividend | SpinOff | Spin-off — 2.04% of the position as principal, not income |
-| TQQQx | 2026-03-25 | Dividend | no matching action | Not income — pending classification |
-| GMEx | 2025-10-08 | Dividend | SpinOff | Spin-off — 0.53% of the position as principal, not income |
-| HONx | 2025-10-30 | Dividend | SpinOff | Spin-off — 1.09% of the position as principal, not income |
-| CMCSAx | 2026-04-01 | Dividend | no matching action | Not income — pending classification |
-| AZNx | 2026-02-02 | ReverseSplit | StockMerger | Identity change — NASDAQ:AZN (ADR) → NYSE:AZN, units ×0.50, not income |
-| JPMx | 2026-04-03 | Dividend | no matching action | Not income — pending classification |
+| SCCOx | 2026-08-12 | Dividend | StockDividend | Stock dividend - units ×1.015318, basis spread, not income |
+| SATAx | 2026-09-01 | Dividend | no matching action | Not income - pending classification |
+| STRCx | 2026-04-01 | Dividend | no matching action | Not income - pending classification |
+| STRCx | 2026-05-15 | Dividend | no matching action | Not income - pending classification |
+| DFDVx | 2025-11-07 | Dividend | SpinOff | Spin-off - 1.45% of the position as principal, not income |
+| OPENx | 2025-11-24 | Dividend | SpinOff | Spin-off - 2.04% of the position as principal, not income |
+| TQQQx | 2026-03-25 | Dividend | no matching action | Not income - pending classification |
+| GMEx | 2025-10-08 | Dividend | SpinOff | Spin-off - 0.53% of the position as principal, not income |
+| HONx | 2025-10-30 | Dividend | SpinOff | Spin-off - 1.09% of the position as principal, not income |
+| CMCSAx | 2026-04-01 | Dividend | no matching action | Not income - pending classification |
+| AZNx | 2026-02-02 | ReverseSplit | StockMerger | Identity change - NASDAQ:AZN (ADR) → NYSE:AZN, units ×0.50, not income |
+| JPMx | 2026-04-03 | Dividend | no matching action | Not income - pending classification |
 
 More broadly, "any multiplier increase is income" is wrong **22 times**. 16 are splits, spin-offs, rights or stock dividends the issuer published. 6 are changes the issuer never explained:
 
 | Asset | Activation | Change | Corpact |
 |---|---|---|---|
-| SCCOx | 2026-08-12 | +1.53% | Stock dividend — units ×1.015318, basis spread, not income |
-| APHx | 2026-09-03 | +100.00% | Split (forward split) — not income |
+| SCCOx | 2026-08-12 | +1.53% | Stock dividend - units ×1.015318, basis spread, not income |
+| APHx | 2026-09-03 | +100.00% | Split (forward split) - not income |
 | SATAx | 2026-09-01 | +0.05% | No published issuer action matches the observed multiplier change |
-| VUGx | 2026-04-21 | +500.00% | Split (forward split) — not income |
-| KLACx | 2026-06-12 | +900.00% | Split (forward split) — not income |
-| PALLx | 2026-05-17 | +400.00% | Split (forward split) — not income |
-| PPLTx | 2026-05-17 | +900.00% | Split (forward split) — not income |
-| KRAQx | 2026-03-26 | +1.38% | Rights sold and reinvested — 1.36% of the position as principal, not income |
+| VUGx | 2026-04-21 | +500.00% | Split (forward split) - not income |
+| KLACx | 2026-06-12 | +900.00% | Split (forward split) - not income |
+| PALLx | 2026-05-17 | +400.00% | Split (forward split) - not income |
+| PPLTx | 2026-05-17 | +900.00% | Split (forward split) - not income |
+| KRAQx | 2026-03-26 | +1.38% | Rights sold and reinvested - 1.36% of the position as principal, not income |
 | STRCx | 2026-04-01 | +0.19% | No published issuer action matches the observed multiplier change |
 | STRCx | 2026-05-15 | +0.96% | No published issuer action matches the observed multiplier change |
-| DFDVx | 2025-11-07 | +1.47% | Spin-off — 1.45% of the position as principal, not income |
-| OPENx | 2025-11-24 | +2.08% | Spin-off — 2.04% of the position as principal, not income |
-| TQQQx | 2025-11-20 | +100.00% | Split (forward split) — not income |
+| DFDVx | 2025-11-07 | +1.47% | Spin-off - 1.45% of the position as principal, not income |
+| OPENx | 2025-11-24 | +2.08% | Spin-off - 2.04% of the position as principal, not income |
+| TQQQx | 2025-11-20 | +100.00% | Split (forward split) - not income |
 | TQQQx | 2026-03-25 | +0.11% | No published issuer action matches the observed multiplier change |
-| GMEx | 2025-10-08 | +0.53% | Spin-off — 0.53% of the position as principal, not income |
-| CRWDx | 2026-07-02 | +300.00% | Split (forward split) — not income |
-| HONx | 2025-10-30 | +1.10% | Spin-off — 1.09% of the position as principal, not income |
-| HONx | 2026-06-29 | +95.11% | Spin-off — 48.75% of the position as principal, not income |
-| NFLXx | 2025-11-16 | +900.00% | Split (forward split) — not income |
-| CMCSAx | 2026-01-07 | +4.72% | Spin-off — 4.50% of the position as principal, not income |
+| GMEx | 2025-10-08 | +0.53% | Spin-off - 0.53% of the position as principal, not income |
+| CRWDx | 2026-07-02 | +300.00% | Split (forward split) - not income |
+| HONx | 2025-10-30 | +1.10% | Spin-off - 1.09% of the position as principal, not income |
+| HONx | 2026-06-29 | +95.11% | Spin-off - 48.75% of the position as principal, not income |
+| NFLXx | 2025-11-16 | +900.00% | Split (forward split) - not income |
+| CMCSAx | 2026-01-07 | +4.72% | Spin-off - 4.50% of the position as principal, not income |
 | CMCSAx | 2026-04-01 | +0.80% | No published issuer action matches the observed multiplier change |
 | JPMx | 2026-04-03 | +0.36% | No published issuer action matches the observed multiplier change |
 

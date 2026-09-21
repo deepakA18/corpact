@@ -76,8 +76,8 @@ export interface AppOptions {
 }
 
 /**
- * API v1 predates the action taxonomy. Kinds v1 never booked — spin-offs and rights (distributions), stock dividends
- * and identity changes — are presented there as unclassified adjustments: no income and nothing convertible, which is
+ * API v1 predates the action taxonomy. Kinds v1 never booked - spin-offs and rights (distributions), stock dividends
+ * and identity changes - are presented there as unclassified adjustments: no income and nothing convertible, which is
  * true. The treatment is stated in reasons and headline, so v1's kinds and response shape are unchanged. API v2
  * reports the kind itself (docs: API v1 → v2).
  */

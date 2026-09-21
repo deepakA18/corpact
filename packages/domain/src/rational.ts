@@ -12,7 +12,7 @@ function gcd(a: bigint, b: bigint): bigint {
  *
  * Every ledger quantity, floor and USD amount is a Rational. JS `number` appears
  * only where the chain itself stores f64 (the Scaled UI multiplier), and is
- * lifted exactly via `fromFloat64` — every finite f64 is a dyadic rational.
+ * lifted exactly via `fromFloat64` - every finite f64 is a dyadic rational.
  */
 export class Rational {
   private constructor(
@@ -42,7 +42,7 @@ export class Rational {
     return Rational.of(m[1] ? -magnitude : magnitude, 10n ** BigInt(frac.length));
   }
 
-  /** The exact value of a finite f64 — no decimal round trip. */
+  /** The exact value of a finite f64 - no decimal round trip. */
   static fromFloat64(value: number): Rational {
     if (!Number.isFinite(value)) throw new RangeError(`Non-finite float64: ${value}`);
     const view = new DataView(new ArrayBuffer(8));
@@ -107,7 +107,7 @@ export class Rational {
     return a.compare(b) >= 0 ? a : b;
   }
 
-  /** Lossy. For comparison against on-chain f64 and for display — never for ledger math. */
+  /** Lossy. For comparison against on-chain f64 and for display - never for ledger math. */
   toNumber(): number {
     return Number(this.num) / Number(this.den);
   }
@@ -124,7 +124,7 @@ export class Rational {
   }
 
   /**
-   * Exact decimal text, for denominators whose only prime factors are 2 and 5 —
+   * Exact decimal text, for denominators whose only prime factors are 2 and 5 -
    * every f64, and every product of f64s and decimal strings. Throws otherwise.
    */
   toTerminatingDecimal(): string {

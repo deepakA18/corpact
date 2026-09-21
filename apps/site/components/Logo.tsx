@@ -1,19 +1,41 @@
 import Link from 'next/link';
 
-/** A token whose balance steps up with no transfer: the multiplier change Corpact accounts for. */
-export function LogoMark({ size = 28 }: { size?: number }) {
+/**
+ * A bitmap C on the same 8-cell square as the hero plate and the tape, so the mark is made of the
+ * page's own pixel. Monochrome on purpose: it inherits the theme, the footer and the favicon without
+ * any colour management. No gradient, no radius, no stroke.
+ */
+const MARK = [
+  '..####..',
+  '.######.',
+  '.##..##.',
+  '.##.....',
+  '.##.....',
+  '.##..##.',
+  '.######.',
+  '..####..',
+];
+
+export function LogoMark({ size = 20 }: { size?: number }) {
+  const cells: Array<{ x: number; y: number }> = [];
+  MARK.forEach((row, y) => {
+    [...row].forEach((ch, x) => {
+      if (ch === '#') cells.push({ x, y });
+    });
+  });
+
   return (
-    <svg width={size} height={size} viewBox="0 0 32 32" aria-hidden="true">
-      <defs>
-        <linearGradient id="corpact-mark" x1="4" y1="2" x2="28" y2="30" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#8fb2ff" />
-          <stop offset="0.55" stopColor="#4f6bff" />
-          <stop offset="1" stopColor="#2a3fd6" />
-        </linearGradient>
-      </defs>
-      <rect x="2" y="2" width="28" height="28" rx="8" fill="url(#corpact-mark)" />
-      <path d="M8 21.5h5.2v-4.6h5.6V11h5.2" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx="24" cy="11" r="2.2" fill="#fff" />
+    <svg
+      className="logo-mark"
+      width={size}
+      height={size}
+      viewBox="0 0 8 8"
+      aria-hidden="true"
+      shapeRendering="crispEdges"
+    >
+      {cells.map((c) => (
+        <rect key={`${c.x}-${c.y}`} x={c.x} y={c.y} width="1" height="1" fill="currentColor" />
+      ))}
     </svg>
   );
 }

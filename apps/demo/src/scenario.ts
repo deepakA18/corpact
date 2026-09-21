@@ -256,7 +256,7 @@ export async function runScenario(chain: DemoChain, log: (line: string) => void)
 
   // ── DPARx: held before its multiplier history is observable → partial, no yield claim ───
   // A separate deployer creates the mint, so its ScaledUiAmount initialize sits outside every
-  // authority window the backfill scans — like mainnet mints whose early history is out of reach.
+  // authority window the backfill scans - like mainnet mints whose early history is out of reach.
   const parAuthority = await generateKeyPairSigner();
   const parDeployer = await chain.fundedSigner();
   const dpar: MintState = {

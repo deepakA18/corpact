@@ -1,6 +1,6 @@
 -- Tracker ledger, PLAN §8 (observe-only subset: no policies, intents, attempts or receipts).
 -- Raw token amounts: numeric(20,0). Floors and quantities: exact rational num/den.
--- USD: numeric with no scale (exact), NULL meaning unknown — never zero.
+-- USD: numeric with no scale (exact), NULL meaning unknown - never zero.
 -- No floating-point columns hold ledger values; multipliers are stored as their exact f64 bytes.
 
 CREATE FUNCTION forbid_mutation() RETURNS trigger LANGUAGE plpgsql AS $$

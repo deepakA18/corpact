@@ -7,6 +7,12 @@ description: How wallet access is isolated between customers.
 
 A tenant is one customer of the API. Every key belongs to a tenant, and a tenant has a wallet quota.
 
+## Plans
+
+No payment is taken. Choosing a plan records your choice and nothing else. There is no card to enter and nothing is billed. We record the plan you pick so we can shape usage limits around it, and the prices above are what each plan will cost.
+
+The site reads that copy from `NEXT_PUBLIC_PLAN_DISCLAIMER`. `NEXT_PUBLIC_BILLING_MODE=record_only` is what keeps checkout off.
+
 ```bash
 pnpm tenants create <slug> <name> [--max-wallets N]
 ```

@@ -9,7 +9,7 @@ export interface QuantitySample {
 export interface DividendPoint {
   unix: bigint;
   quantity: Rational;
-  /** Null means unknown — never counted as zero. */
+  /** Null means unknown - never counted as zero. */
   usd: Rational | null;
 }
 

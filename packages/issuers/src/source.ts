@@ -84,7 +84,7 @@ export function createFixtureXStocksSource(dir: string = DEFAULT_FIXTURES_DIR): 
   };
 }
 
-/** Live issuer API. Only reachable when ISSUER_SOURCE=live — see the data-rights constraint in docs/findings. */
+/** Live issuer API. Only reachable when ISSUER_SOURCE=live - see the data-rights constraint in docs/findings. */
 export function createLiveXStocksSource(): IssuerSource {
   const client = createXStocksClient();
   return {

@@ -37,7 +37,7 @@ const split = (factor: Rational): Classification => ({
 const unclassified: Classification = { kind: 'unclassified', action: 'unknown', classifier: 'not_built', eventId: null, version: null, reasons: ['test'] };
 const q = (text: string) => Rational.fromDecimal(text);
 
-describe('ledger — worked example (dyadic multipliers so every value is exact)', () => {
+describe('ledger - worked example (dyadic multipliers so every value is exact)', () => {
   let s = openPosition(MINT, DECIMALS, 1);
 
   it('deposit sets the protected floor to the deposited quantity', () => {
@@ -56,7 +56,7 @@ describe('ledger — worked example (dyadic multipliers so every value is exact)
     expect(v.floor.eq(q('10'))).toBe(true);
     expect(v.availableQuantity.eq(q('1.25'))).toBe(true);
     expect(v.dividendIncomeUsd.eq(q('20'))).toBe(true); // 10 shares × $2 net
-    // ceil(10 × 1e8 / 1.125) = 888,888,889 — rounding keeps principal.
+    // ceil(10 × 1e8 / 1.125) = 888,888,889 - rounding keeps principal.
     expect(v.protectedRaw).toBe(888_888_889n);
     expect(v.maximumHarvestRaw).toBe(111_111_111n);
     expect(Rational.of(v.maximumHarvestRaw, 10n ** 8n).mul(q('1.125')).compare(v.availableQuantity)).toBeLessThanOrEqual(0);
@@ -101,7 +101,7 @@ describe('ledger — worked example (dyadic multipliers so every value is exact)
     expect(s.entries.at(-1)?.type).toBe('unclassified_adjustment');
   });
 
-  it('refuses a transition that does not start where the position is — a missed activation is loud', () => {
+  it('refuses a transition that does not start where the position is - a missed activation is loud', () => {
     expect(() =>
       applyEvent(s, { type: 'transition', transition: tx(2.5, 2.75), classification: dividend('1') }),
     ).toThrow(LedgerInvariantError);
@@ -189,7 +189,7 @@ function step(s: PositionState, op: Op): PositionState {
   }
 }
 
-describe('ledger — properties', () => {
+describe('ledger - properties', () => {
   it('never lets the floor exceed the position, and a harvest never touches principal', () => {
     fc.assert(
       fc.property(fc.array(opArb, { maxLength: 40 }), (ops) => {

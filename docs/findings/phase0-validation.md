@@ -1,11 +1,11 @@
-# Phase 0 — validation results
+# Phase 0 - validation results
 
 **Investigated:** 2026-09-13 · **Network:** Solana mainnet · **Plan:** [PLAN.md](../../PLAN.md) v2 §0 and §4
 **Reproduce:** [`tools/validate/`](../../tools/validate/) · **Evidence:** [`evidence/demand-20260913.json`](evidence/demand-20260913.json)
 
 | § | Check | Status | Verdict |
 |---|---|---|---|
-| 0.1 | Demand | ✅ Measured | **Borderline.** Many holders; material income for few. Decision needed — see below. |
+| 0.1 | Demand | ✅ Measured | **Borderline.** Many holders; material income for few. Decision needed - see below. |
 | 0.2 | Regulatory boundary | ⛔ Not started | Needs securities counsel. Nothing here substitutes for it. |
 | §4 | Feasibility spike | ✅ Mostly proven | The mechanic works on real data. Classification evidence exists and is good. Archival history is still open. |
 
@@ -23,7 +23,7 @@
 | Median wallet's estimated yearly dividend value | **$0.0017** |
 | p90 / p99 wallet | $0.053 / $4.88 |
 | Wallets ≥ $1 / ≥ $10 / ≥ $100 per year | 4,912 / **1,443** / 344 |
-| Wallet × event pairs | 1,370,669 — of which ≥ $1: 15,957; ≥ $10: 5,686 |
+| Wallet × event pairs | 1,370,669 - of which ≥ $1: 15,957; ≥ $10: 5,686 |
 | Estimated total holder dividend value | ~$25M/yr, highly concentrated |
 
 Holders concentrate in a handful of assets: 18 assets have ≥1,000 holders, 37 have ≥100, and the median dividend-paying asset has **6**.
@@ -92,7 +92,7 @@ Every wallet with ≥ $10/yr of estimated dividend value was profiled. Dividends
 4. **USD income can come from issuer evidence.** Value = shares held × `netCashflowUsd`. SPYx 2026-06-18 implies a reinvestment price of ~$741, consistent with market. The issuer's `/price-data` is *latest only*; there is no event-time price endpoint.
 5. **Price units.** `/price-data` quotes per **displayed** unit. NFLXx (M = 10) was $77.30 against $77.36 on Jupiter; SPYx and TQQQx agree too.
 
-### Traps found — each now handled in code
+### Traps found - each now handled in code
 
 | Trap | Evidence | Handling |
 |---|---|---|
@@ -104,7 +104,7 @@ Every wallet with ≥ $10/yr of estimated dividend value was profiled. Dividends
 | Issuer cash that does not match shares delivered | STRCx 2025-11-30 implies $953,728/share | Cross-check implied price against market (±20%), else market value with warning |
 | Missing issuer cash | 16 dividends with null `netCashflowUsd` | USD `null`, counted as unvalued; never zero |
 | Documented activation time is not the real one | Docs say 00:30 UTC; observed 23:55, 04:00, 11:20, 13:00, 21:48 | Schedule from the on-chain timestamp only |
-| Price sources disagree | CRWDx: xStocks $206.37 vs Jupiter $119.41 (-42%) | Open — needs a staleness/disagreement rule before any valuation ships |
+| Price sources disagree | CRWDx: xStocks $206.37 vs Jupiter $119.41 (-42%) | Open - needs a staleness/disagreement rule before any valuation ships |
 
 ### Not yet proven
 
@@ -122,7 +122,7 @@ If the product becomes an accounting API rather than a consumer app, the questio
 
 ## Built so far (program-free, no app yet)
 
-- `packages/domain` — exact `Rational` over BigInt (with exact f64 lift), unit helpers, and a branded scaled price type.
-- `packages/issuers` — Zod-validated xStocks adapter. Every row is validated on its own, with rejections kept. Fetch failures are reported separately from "no data".
-- `packages/accounting` — evidence classifier and a pure protected-floor ledger (PLAN §6), with worked-example and property tests.
-- `fixtures/xstocks` — recorded issuer data for nine tickers covering dividends, splits, a reverse split, a spin-off and corrections.
+- `packages/domain` - exact `Rational` over BigInt (with exact f64 lift), unit helpers, and a branded scaled price type.
+- `packages/issuers` - Zod-validated xStocks adapter. Every row is validated on its own, with rejections kept. Fetch failures are reported separately from "no data".
+- `packages/accounting` - evidence classifier and a pure protected-floor ledger (PLAN §6), with worked-example and property tests.
+- `fixtures/xstocks` - recorded issuer data for nine tickers covering dividends, splits, a reverse split, a spin-off and corrections.

@@ -20,6 +20,6 @@ export function unitScale(decimals: number): bigint {
 /** B = R / D. */
 export const baseQuantity = (raw: bigint, decimals: number): Rational => Rational.of(raw, unitScale(decimals));
 
-/** Q = B × M — what the holder's wallet displays. */
+/** Q = B × M - what the holder's wallet displays. */
 export const displayedQuantity = (raw: bigint, decimals: number, multiplier: Rational): Rational =>
   baseQuantity(raw, decimals).mul(multiplier);

@@ -23,7 +23,7 @@ function describeEntry(e: IncomeEntry | undefined): string {
   if (!e) return 'no entry';
   const usd = e.usd === null ? 'USD unknown' : `USD ${e.usd}`;
   const notes = [...e.warnings, ...e.reasons];
-  return `${e.kind}${e.kind === 'dividend' ? `, ${usd}` : ''}${e.revision > 1 ? `, revision ${e.revision}` : ''}${notes.length ? ` — ${notes.join('; ')}` : ''}`;
+  return `${e.kind}${e.kind === 'dividend' ? `, ${usd}` : ''}${e.revision > 1 ? `, revision ${e.revision}` : ''}${notes.length ? ` - ${notes.join('; ')}` : ''}`;
 }
 
 function matches(e: IncomeEntry | undefined, expected: ExpectedEntry): boolean {

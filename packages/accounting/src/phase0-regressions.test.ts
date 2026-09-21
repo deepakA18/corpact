@@ -65,7 +65,7 @@ describe('HONx: a spin-off must never book as income', () => {
     const spinOff = state.entries[3]!;
     expect(spinOff.type === 'distribution' && spinOff.action).toBe('spin_off');
 
-    // Income is exactly shares-held × issuer net cash for the two real dividends — nothing from the +95% spin-off.
+    // Income is exactly shares-held × issuer net cash for the two real dividends - nothing from the +95% spin-off.
     const expected = Rational.of(tokens)
       .mul(Rational.fromFloat64(window[0]!.before))
       .mul(Rational.fromDecimal('0.833'))
@@ -85,7 +85,7 @@ describe('STRCx: an implausible issuer cash figure is not used for valuation', (
     expect(c.warnings.join()).toMatch(/implies reinvestment at \$953[\d,.]*\/share against a median/);
   });
 
-  it('leaves the USD value of that event unknown in the ledger — counted, never zero', async () => {
+  it('leaves the USD value of that event unknown in the ledger - counted, never zero', async () => {
     const t = at(await transitionsFor('STRCx'), '2025-11-30T23:55:00.000Z');
     const state = replay(openPosition(t.mint, 8, t.before), [
       { type: 'deposit', at: new Date('2025-11-01T00:00:00Z'), raw: 100_000_000n },

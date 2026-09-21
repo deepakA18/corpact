@@ -15,7 +15,7 @@ function requireString(payload: Record<string, unknown>, key: string): string {
 }
 
 /**
- * Scheduled and queued work. Note what is absent: issuer imports never run here —
+ * Scheduled and queued work. Note what is absent: issuer imports never run here -
  * they are one-shot CLI commands, so no steady-state loop polls the issuer feed.
  */
 const handlers: Record<string, (ctx: Context, payload: Record<string, unknown>) => Promise<unknown>> = {

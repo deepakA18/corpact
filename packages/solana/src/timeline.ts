@@ -19,7 +19,7 @@ export interface MultiplierWrite {
   mint: Address;
   signature: string;
   cursor: ChainCursor;
-  /** The slot's Clock.unix_timestamp (RPC `blockTime`) — what the program compared the timestamp against. */
+  /** The slot's Clock.unix_timestamp (RPC `blockTime`) - what the program compared the timestamp against. */
   clockUnix: bigint;
   kind: 'initialize' | 'update';
   multiplierBits: Float64Bits;
@@ -50,7 +50,7 @@ export interface MultiplierTimeline {
   transitions: MultiplierTransition[];
   /** The earliest point from which the active multiplier is known exactly. Before it, nothing can be replayed. */
   knownFrom: { unixTime: bigint; cursor: ChainCursor; multiplierBits: Float64Bits } | null;
-  /** The mint's stored extension fields as the observed writes leave them — compare with live state. */
+  /** The mint's stored extension fields as the observed writes leave them - compare with live state. */
   stored: { multiplierBits: Float64Bits | null; newMultiplierBits: Float64Bits | null; effectiveUnix: bigint | null };
 }
 

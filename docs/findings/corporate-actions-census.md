@@ -19,8 +19,8 @@ Counts use the latest version of each issuer event.
 | SpinOff | 6 | 1 | All delivered as cash reinvested through the parent (§2) |
 | ReverseSplit | 1 | 1 | HONx 2:1 |
 | StockDividend | 1 | 1 | SCCOx; its type was cancelled twice before delivery |
-| UnitSplit | 1 | — | KRAQx: really a rights (warrant) sale |
-| StockMerger | 1 | — | AZNx: really an ADR-to-ordinary conversion |
+| UnitSplit | 1 | - | KRAQx: really a rights (warrant) sale |
+| StockMerger | 1 | - | AZNx: really an ADR-to-ordinary conversion |
 | CashMerger, StockAndCashMerger, Redemption, NameChange, WorthlessRemoval, RightsDistribution, CashAndStockDividend, Unknown | **0** | **0** | Defined in the issuer enum, never used |
 
 - **Other fields.** No record uses `redemptionPriceUsd`. 24 historical records carry `notes`; those notes are the only evidence of several traps below.
@@ -33,11 +33,11 @@ xStocks do not create a token for the spun-off company. **The issuer sells the d
 | Asset | Activation | Label | Multiplier | Increase | Share of value distributed (ΔM ÷ M_new) | Issuer cash | Delivery evidence |
 |---|---|---|---|---|---|---|---|
 | HONx | 2026-06-29 | Administrative | 0.51205 → 0.99907 | +95.11% | 48.75% | $216.66/share | Cash figure; implies a parent price of $227.80 against $233.99 from HONx's own dividends (reconciles within 3%) |
-| CMCSAx | 2026-01-07 | Administrative | 1.01384 → 1.06167 | +4.72% | 4.51% | — | Note: "Sell of 373.48 shares of VSNT (CMCSA spin off) @ $34.56" |
-| OPENx | 2025-11-24 | **Dividend** | 1 → 1.02082 | +2.08% | 2.04% | — | Multiplier only |
-| DFDVx | 2025-11-07 | **Dividend** | 1 → 1.01473 | +1.47% | 1.45% | — | Multiplier only |
-| HONx | 2025-10-30 | **Dividend** | 1.00166 → 1.01269 | +1.10% | 1.09% | — | Multiplier only |
-| GMEx | 2025-10-08 | **Dividend** | 1 → 1.00531 | +0.53% | 0.53% | — | Multiplier only |
+| CMCSAx | 2026-01-07 | Administrative | 1.01384 → 1.06167 | +4.72% | 4.51% | - | Note: "Sell of 373.48 shares of VSNT (CMCSA spin off) @ $34.56" |
+| OPENx | 2025-11-24 | **Dividend** | 1 → 1.02082 | +2.08% | 2.04% | - | Multiplier only |
+| DFDVx | 2025-11-07 | **Dividend** | 1 → 1.01473 | +1.47% | 1.45% | - | Multiplier only |
+| HONx | 2025-10-30 | **Dividend** | 1.00166 → 1.01269 | +1.10% | 1.09% | - | Multiplier only |
+| GMEx | 2025-10-08 | **Dividend** | 1 → 1.00531 | +0.53% | 0.53% | - | Multiplier only |
 
 **What this means for detection.** A spin-off is a multiplier transition on the parent mint, like a dividend, so the existing observation path detects it. Only the issuer's `caType` distinguishes it.
 

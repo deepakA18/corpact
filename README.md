@@ -9,7 +9,7 @@ like a windfall, and an issuer cash figure that cannot reconcile with the shares
 revenue.
 
 Corpact reads every multiplier change from chain history, matches it against the issuer's own corporate
-action, and books it as one of eight validated action types — or refuses to book it and says why. The
+action, and books it as one of eight validated action types - or refuses to book it and says why. The
 result is an append-only ledger with dividend income, a protected-principal floor, exact basis across
 spin-offs and identity changes, coverage on every position, and the evidence behind each number, served
 over one typed API.
@@ -204,14 +204,14 @@ report with `pnpm --filter @corpact/demo catches`, and the mainnet identity-chan
 
 **API access.** Every route except `/v1/health` and `/v1/openapi.json` needs a bearer key; only a
 SHA-256 of each key is stored. Keys hold a subset of `assets:read`, `ledger:read`, `wallets:sync` and
-`ops:read`, and read only the wallets their tenant registered — any other wallet answers
+`ops:read`, and read only the wallets their tenant registered - any other wallet answers
 `404 wallet_not_registered`, so one customer cannot learn which wallets another tracks. Rate limits are
 per key. Browsers never hold a key: the dashboard calls its own server route.
 
 **The issuer-data constraint.** The xStocks feed has no commercial licence and its terms prohibit
 automated retrieval. Every issuer read goes through `IssuerSource`; `ISSUER_SOURCE=fixtures` is the
 default and makes no network calls, `live` is the only switch, and no scheduled job ever reads the
-issuer — the worker loop polls chain state only. `tools/record-fixtures.mjs` and the scripts in
+issuer - the worker loop polls chain state only. `tools/record-fixtures.mjs` and the scripts in
 `tools/validate/` do call the live feed; do not run them until licensing is resolved.
 
 ## Future scope

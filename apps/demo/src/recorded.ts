@@ -10,7 +10,7 @@ import { createFixtureXStocksSource, type IssuerSource } from '@corpact/issuers'
 export interface RecordedTransition {
   symbol: string;
   transition: ObservedTransition;
-  /** The multiplier-history `reason` label — what a naive reader would trust. */
+  /** The multiplier-history `reason` label - what a naive reader would trust. */
   historyReason: string;
   classification: Classification;
   /** The issuer corporate action whose multipliers match, if any. */
@@ -146,7 +146,7 @@ export function honxSpinOff(rows: readonly RecordedTransition[]): SideBySide {
     multiplierBefore: before,
     multiplierAfter: after,
     historyReason: row.historyReason,
-    issuerAction: `${row.action?.type ?? 'none'} (${row.action?.eventId.slice(0, 8) ?? '—'}), issuer cash figure $${cash ?? '—'} per share`,
+    issuerAction: `${row.action?.type ?? 'none'} (${row.action?.eventId.slice(0, 8) ?? '-'}), issuer cash figure $${cash ?? '-'} per share`,
     naive: {
       rule: 'Any multiplier increase is a dividend',
       reading: `Books ${gain} more shares as dividend income${cash ? `, worth the issuer's $${Number(cash).toFixed(2)} per share held` : ''}`,
@@ -154,12 +154,12 @@ export function honxSpinOff(rows: readonly RecordedTransition[]): SideBySide {
     corpact:
       row.classification.kind === 'distribution'
         ? {
-            outcome: 'Spin-off — basis allocation, no income booked',
+            outcome: 'Spin-off - basis allocation, no income booked',
             reading: `Books the ${gain} unit change as principal bought with the distributed value (${percent(Rational.ONE.add(row.classification.distributedFraction), 2)} of the position); nothing is added to income or made available to convert`,
             reason: `Issuer SpinOff ${row.action?.eventId.slice(0, 8) ?? ''}; distributed share (M_new − M_old) ÷ M_new = ${row.classification.distributedFraction.toFixed(5)}, from the multipliers alone`,
           }
         : {
-            outcome: row.classification.kind === 'unclassified' ? 'Unclassified adjustment — no income booked' : row.classification.kind,
+            outcome: row.classification.kind === 'unclassified' ? 'Unclassified adjustment - no income booked' : row.classification.kind,
             reading: `Shows the ${gain} unit change as pending classification; nothing is added to income or made available to convert`,
             reason: row.classification.kind === 'unclassified' ? row.classification.reasons.join('; ') : '',
           },
@@ -194,7 +194,7 @@ export function kraqxRights(rows: readonly RecordedTransition[]): SideBySide {
       reading: `Books a 1:1 unit split, which cannot explain a ${gain(row)} change: either rejects it, or rescales units with no basis allocated`,
     },
     corpact: {
-      outcome: 'Rights distribution — basis allocation, no income booked',
+      outcome: 'Rights distribution - basis allocation, no income booked',
       reading: `Books ${percent(Rational.ONE.add(c.distributedFraction), 2)} of the position's value as principal from rights sold and reinvested; nothing is added to income or made available to convert`,
       reason: c.warnings[0]!,
     },
@@ -213,7 +213,7 @@ export function sccoxChurn(rows: readonly RecordedTransition[]): SideBySide {
       reading: `v6 is Cancelled, so the stock dividend reads as cancelled and the ${gain(row)} change goes unexplained, or is booked as income by size`,
     },
     corpact: {
-      outcome: 'Stock dividend — quantity and basis adjustment, no income booked',
+      outcome: 'Stock dividend - quantity and basis adjustment, no income booked',
       reading: `Units ×${c.factor.toFixed(6)} on the delivered record (v5), cost basis spread across them; v6 cancels only the v4 schedule, and the lifecycle keeps all six revisions`,
       reason: c.warnings.join('; '),
     },
@@ -234,7 +234,7 @@ export function linxWithholdingRefund(rows: readonly RecordedTransition[]): Side
       reading: `The Corrected v${refund.action?.version} replaces v${original.action?.version}: the ${original.transition.activatedAt.toISOString().slice(0, 10)} dividend loses its evidence, and $${r.netCashUsdPerShare?.toTerminatingDecimal()} per share books as a new dividend`,
     },
     corpact: {
-      outcome: 'Withholding refund — income, distinguishable from a new dividend',
+      outcome: 'Withholding refund - income, distinguishable from a new dividend',
       reading: `Keeps ${original.transition.activatedAt.toISOString().slice(0, 10)} as a cash dividend of $${o.netCashUsdPerShare?.toTerminatingDecimal()} net and books $${r.netCashUsdPerShare?.toTerminatingDecimal()} as a withholding_adjustment: ${o.netCashUsdPerShare?.toTerminatingDecimal()} + ${r.netCashUsdPerShare?.toTerminatingDecimal()} = ${original.action?.grossCashUsdPerShare} gross, withholding deducted once`,
       reason: `${r.warnings.join('; ')}. Issuer note: ${r.refundNote}`,
     },
@@ -253,7 +253,7 @@ export function aznxIdentityChange(rows: readonly RecordedTransition[]): SideByS
       reading: 'Books a 2:1 reverse split: the units are right, but the position silently becomes a different listing, with no lineage from the ADR it was',
     },
     corpact: {
-      outcome: 'Identity change — basis carried over, lineage recorded, no income booked',
+      outcome: 'Identity change - basis carried over, lineage recorded, no income booked',
       reading: `${c.fromUnderlying} → ${c.toUnderlying}, units ×${c.factor.toFixed(1)}; all cost basis moves to the new identity, and the worker writes the lineage link`,
       reason: c.warnings[0]!,
     },
@@ -275,18 +275,18 @@ export function strcxImplausibleCash(rows: readonly RecordedTransition[]): SideB
     multiplierBefore: before,
     multiplierAfter: after,
     historyReason: row.historyReason,
-    issuerAction: `${row.action?.type ?? 'none'} (${row.action?.eventId.slice(0, 8) ?? '—'}), net cash $${net ?? '—'} per share`,
+    issuerAction: `${row.action?.type ?? 'none'} (${row.action?.eventId.slice(0, 8) ?? '-'}), net cash $${net ?? '-'} per share`,
     naive: {
       rule: "Value a dividend at the issuer's net cash",
       reading: `Books $${net} of income per share held, though only ${sharesPerShare.toFixed(8)} shares were delivered per share`,
     },
     corpact: {
       outcome:
-        row.classification.kind === 'dividend' && row.classification.netCashUsdPerShare === null ? 'Dividend recognized — USD unknown' : row.classification.kind,
+        row.classification.kind === 'dividend' && row.classification.netCashUsdPerShare === null ? 'Dividend recognized - USD unknown' : row.classification.kind,
       reading: 'Keeps the delivered quantity as a verified dividend and counts it as unvalued; USD is null, never zero',
       reason: warning,
     },
-    impliedPriceUsd: match?.[1] ?? '—',
-    peerMedianUsd: match?.[2] ?? '—',
+    impliedPriceUsd: match?.[1] ?? '-',
+    peerMedianUsd: match?.[2] ?? '-',
   };
 }

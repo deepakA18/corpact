@@ -4,7 +4,7 @@ Implementation plan · v2 · 13 September 2026
 
 > **What changed from v1, and why.** v1 was scoped as a full product: an
 > 8-week build ending in an audited on-chain vault that harvests dividends
-> and runs recurring buys unattended. The engineering in v1 was sound — the
+> and runs recurring buys unattended. The engineering in v1 was sound - the
 > rebase mechanics, the protected-floor accounting, and the units discipline
 > were all correct. But it committed a whole company's worth of work before
 > confirming the two things the product actually depends on: (1) that the
@@ -26,11 +26,11 @@ than a day. **Do not write application code until both clear.** If either
 fails, the honest outcome is to stop, and that is a cheap thing to learn now
 rather than after an 8-week build.
 
-### 0.1 Demand check — do the dividend-paying tokens have holders?
+### 0.1 Demand check - do the dividend-paying tokens have holders?
 
 The premise of this product is that tokenized-stock holders have dividends
 worth seeing. But the most liquid, widely-held xStocks are growth names
-(NVDA, TSLA) that pay little or nothing — that is precisely why they were
+(NVDA, TSLA) that pay little or nothing - that is precisely why they were
 chosen for tokenization. The dividend-paying tickers (e.g. SPYx, KOx, JNJx,
 and other income names) may have few holders. If so, the tracker is elegant
 engineering around an event that rarely fires for anyone.
@@ -47,17 +47,17 @@ Concretely, before anything else:
       USD value of those events?**
 
 **Go/no-go:** if the answer is "a few hundred wallets, cents per event," the
-product is real but the market is negligible — stop, and say so. If it is
+product is real but the market is negligible - stop, and say so. If it is
 "thousands of wallets with material distributions," proceed. Either way you
 have spent an afternoon, not a quarter. Record the numbers in an ADR; they
 also become the honest slide in any pitch.
 
-### 0.2 Regulatory boundary check — where does "track" become "manage"?
+### 0.2 Regulatory boundary check - where does "track" become "manage"?
 
 Displaying a holder's own dividend information touches nothing and is almost
 certainly fine. Selling the dividend-equivalent portion of a tokenized
-*security* into USDC on the user's behalf — especially on a schedule, via a
-vault the app controls — moves toward operating an unlicensed brokerage or a
+*security* into USDC on the user's behalf - especially on a schedule, via a
+vault the app controls - moves toward operating an unlicensed brokerage or a
 discretionary managed account. The line between the two is the difference
 between a weekend project and a licensed financial business.
 
@@ -84,8 +84,8 @@ detects the rebase that delivers a dividend, records the income it
 represents, values it, measures yield, and clearly separates what is retained
 stock exposure from what could be converted to cash.
 
-The core product — the thing that is genuinely absent from every existing
-interface and confirmed absent by the issuer's own support docs — is the
+The core product - the thing that is genuinely absent from every existing
+interface and confirmed absent by the issuer's own support docs - is the
 **evidence-backed income ledger**. That is Phase 1 and Phase 2. It needs no
 custom program and no audit.
 
@@ -100,9 +100,9 @@ Ship in increments:
    verified dividend events, show income and the evidence behind it. This is
    the product. If you build only this, you have shipped the wedge.
 2. **Act (optional, pending 0.2):** quote and execute a *user-signed* sale of
-   the dividend-equivalent portion into USDC. No custody, no automation — the
+   the dividend-equivalent portion into USDC. No custody, no automation - the
    user signs each transaction in their own wallet.
-3. **Automate (deferred — see Appendix A):** program vault, bounded
+3. **Automate (deferred - see Appendix A):** program vault, bounded
    harvesting, scheduled buys. Only after validation, counsel, and audit.
 
 ### Product contract
@@ -115,7 +115,7 @@ Ship in increments:
 | Retained in stock | Dividend-equivalent exposure remains in the stock; it is not cash |
 | Stock adjustment | A split, reverse split, correction, or unresolved multiplier change; not automatically income |
 
-Default mode is **retain in stock** — the product's job is to *show* income,
+Default mode is **retain in stock** - the product's job is to *show* income,
 not to push anyone to sell it. Do not add yield farming, leverage, pooled
 vault shares, bank payouts, cross-chain tracking, tax filing, or automated
 purchases to the core product.
@@ -124,14 +124,14 @@ purchases to the core product.
 
 ## 2. Verified mechanics and integration decisions
 
-> This section is carried forward from v1 largely intact — it was correct.
+> This section is carried forward from v1 largely intact - it was correct.
 > The mechanic is the foundation and it verifies.
 
 ### Issuer behavior
 
 xStocks delivers the economic benefit of dividends by **reinvestment into the
 same underlying stock, net of withholding, reflected through multiplier
-changes** — not as cash. Splits and reverse splits also change that
+changes** - not as cash. Splits and reverse splits also change that
 multiplier. **Therefore an increase alone cannot establish dividend income**;
 it must be classified against issuer evidence.
 [xStocks dividend mechanics](https://docs.xstocks.fi/docs/dividends-and-stock-splits)
@@ -161,20 +161,20 @@ Native Solana deployments use Token-2022.
 | xStocks current multiplier | `/public/assets/{symbol}/multiplier?network={NETWORK}` | Reconcile mint state and pending activation |
 | xStocks multiplier history | `/public/assets/{symbol}/multiplier/history?network={NETWORK}` | Backfill and compare historical transitions |
 | xStocks price data | `/public/assets/{symbol}/price-data` | Supplement valuation after verifying units and timestamps |
-| Corporate actions | Public Corporate Actions operations in issuer OpenAPI | Classify transitions; **schema unverified — exercise in Phase 0** |
+| Corporate actions | Public Corporate Actions operations in issuer OpenAPI | Classify transitions; **schema unverified - exercise in Phase 0** |
 | Solana RPC + archival stream | Mint/account state, finalized transactions, ordered historical changes | Canonical balances and observed multiplier transitions |
 | Jupiter Swap V2 | `GET https://api.jup.ag/swap/v2/build` | Obtain raw swap instructions (Act phase only) |
 
 Resolve the network enum from the current schema rather than guessing.
 **The corporate-action response schema and live API availability have not
-been exercised for this plan** — confirming them is a Phase 0 task, and if the
+been exercised for this plan** - confirming them is a Phase 0 task, and if the
 corporate-action feed is unavailable or unreliable, classification quality
 drops and the tracker must degrade honestly to "unclassified adjustment"
 rather than guess.
 
 **Recurring-buy note (Act/Automate only):** Jupiter's legacy Recurring API is
 unmaintained; Trigger V2 is beta, documents a $10 minimum per round, and
-exposes no user-configurable DCA slippage — which conflicts with small
+exposes no user-configurable DCA slippage - which conflicts with small
 variable dividends. If automation is ever built, schedule against the app's
 own funded USDC and reuse the swap executor rather than depending on Trigger
 V2.
@@ -193,7 +193,7 @@ For Phase 1–2, the stack is deliberately boring and program-free:
 - **Fastify** API.
 - **Postgres** as the durable, immutable event ledger.
 - A **persistent worker** for indexing and reconciliation (not request-scoped
-  serverless — subscriptions and reconciliation must run continuously).
+  serverless - subscriptions and reconciliation must run continuously).
 - **Zod** at integration boundaries; **decimal/rational** arithmetic in the
   accounting package.
 - **No Rust/Anchor** in the core product. Anchor appears only in Appendix A.
@@ -262,7 +262,7 @@ API fields, live dividends, or integration success in demo data.**
 
 ## 5. Detection and historical reconstruction
 
-> Carried forward from v1 — this section was correct and is the technical
+> Carried forward from v1 - this section was correct and is the technical
 > heart of the tracker. Condensed here; the full runtime algorithm,
 > classification table, and wallet-history rules from v1 §5 apply unchanged.
 
@@ -276,7 +276,7 @@ Runtime essentials:
 1. Subscribe to each allowlisted mint and indexed token accounts; poll mint
    state every 30–60s as a reconciliation fallback.
 2. Decode pending transitions and **schedule activation checks independently
-   of account-write subscriptions** (this is the trap — a dividend activates
+   of account-write subscriptions** (this is the trap - a dividend activates
    with no transfer).
 3. Supersede replaced-before-activation updates; never book their income.
 4. Determine balance boundaries from finalized chain progression and ordered
@@ -286,7 +286,7 @@ Runtime essentials:
 6. Emit confirmed income only after the necessary history and classification
    are complete; quarantine ambiguous boundary holdings.
 
-Classification is by **evidence, never by size** — a small split resembles a
+Classification is by **evidence, never by size** - a small split resembles a
 dividend and a special dividend can be large:
 
 | Evidence | Result |
@@ -309,7 +309,7 @@ unsupported positions visibly rather than assigning them zero income.
 
 ## 6. Accounting
 
-> Carried forward from v1 **unchanged** — I verified this section
+> Carried forward from v1 **unchanged** - I verified this section
 > independently and it is correct, including the protected-floor logic and the
 > worked example. This is the part most implementations would get subtly
 > wrong; keep it exactly as specified.
@@ -384,7 +384,7 @@ coverage and valuation status on every metric.
 ### Dashboard
 
 Four primary values: **dividend income**, **available to convert**, **USDC
-received**, **tracking-start date** (shown prominently — coverage honesty is
+received**, **tracking-start date** (shown prominently - coverage honesty is
 the whole credibility of the product). Position rows show scaled quantity,
 value, recent dividend, available income, yield period, status. Keep raw
 multipliers out of the main flow; put chain evidence in expandable detail.
@@ -393,7 +393,7 @@ multipliers out of the main flow; put chain evidence in expandable detail.
 
 > "Your position gained 0.04 stock-equivalent units from a verified dividend
 > adjustment. Estimated value at the event: $8.12. This remains invested in
-> the stock." — with issuer action, date, valuation source, transaction link.
+> the stock." - with issuer action, date, valuation source, transaction link.
 
 A split reads "Stock split applied; no dividend income recorded." Missing
 evidence reads "Balance adjustment detected; classification pending." **Never
@@ -405,14 +405,14 @@ If Phase 0.2 clears read-plus-user-signed-conversion: the user selects a
 position, sees a fresh exact-input quote (units sold, minimum USDC, all fees,
 quote lifetime), and the app builds a transaction the user signs **in their
 own wallet**. The builder must decode and validate the transaction before
-signing — expected token programs, source/destination owners, allowed route
-programs, raw debit, minimum output — and reject any unexpected transfer,
+signing - expected token programs, source/destination owners, allowed route
+programs, raw debit, minimum output - and reject any unexpected transfer,
 approval, authority change, or account closure. Reconcile against finalized
 balance deltas, not an optimistic toast.
 
 This path has **no vault, no keeper, no custody, no automation**. It is a
 convenience wrapper over a swap the user authorizes each time. Do not label it
-"principal protected on-chain" — a normal wallet can move funds between quote
+"principal protected on-chain" - a normal wallet can move funds between quote
 and signature.
 
 ---
@@ -427,7 +427,7 @@ longer calendar.
 | **0. Validate** | Days 1–2 | Demand check (0.1), counsel read (0.2), feasibility spike (§4) | Real holder/dividend numbers; regulatory boundary drawn; mechanic proven on real bytes |
 | **1. Ledger + tracker** | Days 3–7 | Indexer, backfill, classification, accounting reducer, dashboard | Historical dividend + split replay, exact reconciliation, honest partial coverage |
 | **2. User-signed cash-out** | Days 8–10 | Quotes, transaction verification, signatures, receipts, export | End-to-end demo; controlled mainnet manual canary |
-| **— decision point —** | | Is demand real (0.1)? Is automation legally clear (0.2)? Is there user pull for it? | Explicit go/no-go on Appendix A |
+| **- decision point -** | | Is demand real (0.1)? Is automation legally clear (0.2)? Is there user pull for it? | Explicit go/no-go on Appendix A |
 
 **The first ~10 days ship the entire wedge.** The tracker is the insight; the
 user-signed conversion is a thin, unregulated-if-0.2-clears convenience. Stop
@@ -448,10 +448,10 @@ Keep synthetic demo events visibly separate from verified mainnet history.
 
 ---
 
-## Appendix A — Deferred: unattended automation (do not start without the decision point)
+## Appendix A - Deferred: unattended automation (do not start without the decision point)
 
 > This is the entire vault/keeper/oracle design from v1 §10–§11. It is
-> **correct engineering** and is preserved for when/if it is needed — but it
+> **correct engineering** and is preserved for when/if it is needed - but it
 > is a different, heavier product than the wedge. It introduces custody, a
 > trust assumption (the classification oracle), an audit requirement, and the
 > regulatory questions of discretionary management. **It begins only after
@@ -466,7 +466,7 @@ The deferred scope, in brief (full spec in v1 §10–§11, §13–§15 program t
   accounting, no transferable vault-share token.
 - **Classification oracle**: 2-of-3 independent signers approve
   evidence-backed action records. This is an explicit **trust assumption, not
-  a trustless dividend proof** — a compromised quorum could misclassify a
+  a trustless dividend proof** - a compromised quorum could misclassify a
   split and authorize excess sales within caps. Requires conservative
   owner-set caps, alerts, multisig config, and external review.
 - **Bounded harvest CPI**: atomic checks (active policy, non-replayed intent,
@@ -474,7 +474,7 @@ The deferred scope, in brief (full spec in v1 §10–§11, §13–§15 program t
   on-chain recomputation of `maximum_harvest_raw`, a restricted CPI adapter
   for the exact verified Jupiter route, and full post-swap reconciliation with
   rollback on any failure.
-- **Emergency exit that works with keeper and attestors offline** — a hard
+- **Emergency exit that works with keeper and attestors offline** - a hard
   requirement, not a feature.
 - **Execution reliability**: the full intent state machine, persisted signed
   transactions, rebroadcast-don't-rebuild on timeout, receipt uniqueness, and
@@ -485,12 +485,12 @@ The deferred scope, in brief (full spec in v1 §10–§11, §13–§15 program t
   live fund movement."
 
 If automation is pursued, its own Phase 0 is the securities-counsel
-determination on discretionary management — resolved **before** the 8-week
+determination on discretionary management - resolved **before** the 8-week
 build, not after.
 
 ---
 
-## Appendix B — Operations & data (core product)
+## Appendix B - Operations & data (core product)
 
 Carried from v1 §8, §14, condensed to what the tracker needs:
 

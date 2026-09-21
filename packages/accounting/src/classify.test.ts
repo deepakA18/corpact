@@ -102,7 +102,7 @@ describe('classifyTransition against recorded issuer data', () => {
 
   it('STRCx: uses the latest correction, never a cancelled or superseded version', () => {
     const { actions, at } = load('STRCx');
-    // Event c5721924 has v2 Initial, v3/v5/v7 Cancelled, v4/v6/v8 Corrected — only v8 is current.
+    // Event c5721924 has v2 Initial, v3/v5/v7 Cancelled, v4/v6/v8 Corrected - only v8 is current.
     expect(classifyTransition(at('2026-08-30T23:55:00.000Z'), actions)).toMatchObject({
       kind: 'dividend',
       eventId: 'c5721924-4b13-4c29-81db-cf075a49ba2d',

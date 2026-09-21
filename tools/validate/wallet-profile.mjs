@@ -1,5 +1,5 @@
 /**
- * §0.1 refinement — of the wallets with material dividend income, how many look
+ * §0.1 refinement - of the wallets with material dividend income, how many look
  * like exchanges, market makers or issuer wallets, and how many are plausibly
  * individuals?
  *
@@ -12,7 +12,7 @@
  * Initial/Corrected), not the multiplier-history `reason`, which mislabels spin-offs.
  *
  * Inputs:  out/xstocks-solana-history.json, out/ca-history.json
- * Output:  out/wallet-profiles.json (contains wallet addresses — do not commit)
+ * Output:  out/wallet-profiles.json (contains wallet addresses - do not commit)
  */
 import fs from 'node:fs';
 import { PublicKey } from '@solana/web3.js';
@@ -23,7 +23,7 @@ const SPL = 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA';
 const SINCE = Date.parse('2025-09-13T00:00:00Z');
 const PROFILE_MIN_USD = Number(process.env.PROFILE_MIN_USD ?? 10);
 
-// Bucket thresholds — judgment calls, not facts.
+// Bucket thresholds - judgment calls, not facts.
 const HOT_WALLET_SPAN_DAYS = 7; // a full 1,000-signature page spanning ≤ 7 days
 const BROAD_T22_ACCOUNTS = 40;
 const BROAD_DIVIDEND_ASSETS = 25;

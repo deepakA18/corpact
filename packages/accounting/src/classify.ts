@@ -15,7 +15,7 @@ const SPLIT_TYPES = new Set<string>(['ForwardSplit', 'ReverseSplit']);
 const CONFIRMED = new Set<string>(['Initial', 'Corrected']);
 
 /**
- * The issuer's own endpoints disagree in the last representable digit — e.g. HONx
+ * The issuer's own endpoints disagree in the last representable digit - e.g. HONx
  * 2026-05-15: multiplier history 1.020191445467247, corporate actions
  * "1.0201914454672472" (adjacent f64s). The mint's f64 is canonical; an issuer
  * value matches if it is within this relative tolerance of it.
@@ -144,7 +144,7 @@ const UNVALIDATED_TYPES = new Set<string>([
 ]);
 
 /**
- * Classify an activated multiplier change by issuer evidence — never by size or label.
+ * Classify an activated multiplier change by issuer evidence - never by size or label.
  * Anything not positively matched is `unclassified`: it books no income and
  * makes nothing available to convert.
  */

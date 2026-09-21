@@ -22,6 +22,6 @@ node wallet-profile.mjs             # §0.1 refinement: bucket material-income w
 ## What the demand scan measures, and what it does not
 
 - **Current holders stand in for event-time holders.** Without archival history, a wallet that bought yesterday is credited with a year of dividends, and one that sold is missed. Treat per-wallet income as an order-of-magnitude estimate.
-- **Program-owned (off-curve) owners are excluded** — pools, vaults, escrow. On-curve exchange or market-maker wallets are *not* excluded and likely dominate the top of the distribution.
+- **Program-owned (off-curve) owners are excluded** - pools, vaults, escrow. On-curve exchange or market-maker wallets are *not* excluded and likely dominate the top of the distribution.
 - **Valuation** is `B × ΔM × latest scaled price`: a current indicative price, not the event-time price.
 - `out/` is scratch output; the committed summary lives in [`docs/findings/evidence/`](../../docs/findings/evidence/).

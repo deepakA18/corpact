@@ -1,4 +1,4 @@
-# DRAFT — first contact with Backed Finance (xStocks)
+# DRAFT - first contact with Backed Finance (xStocks)
 
 > **Not sent. Not for sending as-is.**
 > - Get a second human read on tone before sending.
@@ -8,7 +8,7 @@
 
 ---
 
-**Subject:** Reconciling xStocks corporate actions with Solana multiplier changes — a few questions
+**Subject:** Reconciling xStocks corporate actions with Solana multiplier changes - a few questions
 
 Hi [name],
 
@@ -26,7 +26,7 @@ Most of it reconciles cleanly. 628 of the 641 dividend-labelled changes match a 
 
 We're happy to share the full reconciliation if it's useful to your team.
 
-[Optional — include here, or hold for a second message once there is a dialogue:]
+[Optional - include here, or hold for a second message once there is a dialogue:]
 We'd also like to build on the corporate-actions feed in a product for exchanges and protocols that integrate xStocks. Your site terms limit commercial and automated use, and we couldn't find terms specific to the API. Is there an API or data agreement we should be working under?
 
 Best,

@@ -33,7 +33,7 @@ export function exact(r: Rational): string {
   }
 }
 
-/** Round toward zero at `scale` places — never displays more convertible exposure than exists. */
+/** Round toward zero at `scale` places - never displays more convertible exposure than exists. */
 export function towardZero(r: Rational, scale: number): string {
   const scaled = r.mul(Rational.of(10n ** BigInt(scale)));
   const truncated = scaled.isNegative() ? scaled.ceil() : scaled.floor();
