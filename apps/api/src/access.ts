@@ -76,4 +76,4 @@ export async function listTenants(q: Queryable) {
     wallets: r.wallets as number,
     activeKeys: r.active_keys as number,
   }));
-}
+} 
