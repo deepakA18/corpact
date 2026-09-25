@@ -5,7 +5,7 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: 'Corpact demo: corporate-action accounting for tokenized stocks',
-  description: 'Reference dashboard for the Corpact engine: evidence-backed dividend accounting for xStocks on Solana.',
+  description: 'Reference client for the Corpact API: a demo view of evidence-backed dividend accounting for xStocks on Solana.',
 };
 
 const API_URL = (process.env.CORPACT_API_URL ?? 'http://127.0.0.1:4600').replace(/\/+$/, '');

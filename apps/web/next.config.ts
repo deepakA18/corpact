@@ -2,6 +2,8 @@ import type { NextConfig } from 'next';
 
 const config: NextConfig = {
   reactStrictMode: true,
+  // The dev badge sits in the bottom-left of every frame; the demo is filmed from `next dev`.
+  devIndicators: false,
   // Workspace package shipped as TypeScript source.
   transpilePackages: ['@corpact/client'],
   // Stop `next dev` from writing AGENTS.md / CLAUDE.md into the app directory.

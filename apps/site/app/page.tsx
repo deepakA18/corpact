@@ -84,36 +84,94 @@ export default function Home() {
       </header>
 
       <div className="hero-screen">
-        <HeroPixels />
-        <section className="hero">
+        <div className="hero-stage">
+          <HeroPixels />
+          <section className="hero">
           <h1>Corporate actions for tokenized stocks</h1>
           <p className="hero-sub">
             Every on-chain balance change, matched to the issuer’s record and booked as what it actually was.
           </p>
           <p className="hero-cta">
-            <Link href="/docs/try-it" className="btn btn-accent">
-              See a live response
-            </Link>
+            <a href="#demo" className="btn btn-accent">
+              See it working
+            </a>
             <Link href="/docs" className="btn">
               Read the docs
             </Link>
           </p>
-        </section>
-      </div>
+          </section>
+        </div>
 
-      {/* The screen ends at the bezel. Everything from here down is the enclosure. */}
-      <dl className="specstrip">
-        {SPECS.map((s) => (
-          <div key={s.label}>
-            <dd>{s.n}</dd>
-            <dt className="pix">{s.label}</dt>
-          </div>
-        ))}
-      </dl>
+        {/* Inside the screen, after the stage: the strip takes its height first and the stage gets
+            the rest, so the whole band always lands within the first viewport instead of being
+            sliced through the numerals by the fold. */}
+        <dl className="specstrip">
+          {SPECS.map((s) => (
+            <div key={s.label}>
+              <dd>{s.n}</dd>
+              <dt className="pix">{s.label}</dt>
+            </div>
+          ))}
+        </dl>
+      </div>
       <p className="hero-note">
-        Chain data is live Solana mainnet. Issuer data is a recording: <code>fixtures/xstocks/recorded-20260913</code>,
-        24 June 2025 to 13 September 2026.
+        Chain data is live Solana mainnet, polled continuously. The counts below come from a verified recording of the
+        issuer&rsquo;s reference feed (<code>fixtures/xstocks/recorded-20260913</code>, 24 June 2025 to 13
+        September 2026), which Corpact runs from until that feed&rsquo;s licence is signed.
       </p>
+
+      {/* Front and centre, directly under the fold: the demo view is the proof this is a product and
+          not a library. Every figure in the shot comes from the same public API the page documents. */}
+      <section className="showcase" id="demo" aria-labelledby="demo-h">
+        <div className="shell showcase-grid">
+          <div className="showcase-copy">
+            <p className="section-index pix">See it working</p>
+            <h2 id="demo-h">A wallet, read end to end.</h2>
+            <p>
+              This demo view is a reference client with no logic of its own. Every number in it comes from the
+              same public API. This is a real mainnet wallet: five positions, the dividend income Corpact will stand
+              behind, and the two rows it refuses to.
+            </p>
+            <ul className="showcase-points">
+              <li>
+                <strong>KOx, 15 Sep 2026.</strong> The issuer has published only a scheduled announcement, not a
+                confirmed record carrying the multipliers that were delivered. An announcement is never evidence, so
+                nothing is booked and the row reads <em>Classification pending</em>.
+              </li>
+              <li>
+                <strong>NVDAx, 2 Apr 2026.</strong> A real dividend the issuer cancelled and re-published to correct a
+                typo. The corrected version carries no net cash figure, so the units are booked and the USD is left{' '}
+                <em>Unknown</em>.
+              </li>
+            </ul>
+            <p className="showcase-run">Point it at the hosted API and run it. No database, no worker, no key of your own:</p>
+            <div className="well">
+              <pre>
+                <code>
+                  {`pnpm install \\\n`}
+                  {`CORPACT_API_URL=${DEMO_API_URL} \\\n`}
+                  {`CORPACT_API_KEY=${DEMO_API_KEY} \\\n`}
+                  {`pnpm --filter @corpact/web dev`}
+                </code>
+              </pre>
+            </div>
+          </div>
+
+          <div className="frame showcase-shot">
+            <p className="frame-bar pix">
+              <span className="frame-dots" aria-hidden="true" />
+              corpact demo view · mainnet wallet
+            </p>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/demo-view.png"
+              width={1600}
+              height={1310}
+              alt="The Corpact demo view showing five tokenized stock positions with quantity, protected floor and dividend income, above a list of balance adjustments. One row, KOx on 15 September 2026, is marked Classification pending with no USD value. Another, NVDAx on 2 April 2026, is a verified dividend whose USD value reads Unknown."
+            />
+          </div>
+        </div>
+      </section>
 
       <main>
         <section className="section shell" id="label" aria-labelledby="label-h">
@@ -121,9 +179,11 @@ export default function Home() {
           <h2 id="label-h">What actually happens</h2>
           <div className="section-copy">
             <p>
-              The feed calls 641 of the 654 recorded changes Dividend. Nine of those labels contradict the issuer’s own
-              record, and five changes have no issuer record at all. Corpact books a change only when it matches the
-              issuer’s action on exact multiplier and activation time.
+              This is HONx: what one share became after each on-chain multiplier change. Most steps are cash dividends,
+              a fraction of a percent. Two are not. On 30 October the feed labelled a step Dividend; the issuer’s record
+              is a spin-off. On 29 June a reverse split cut the units in half, and eight hours later a spin-off put them
+              almost back. Corpact books each step from that record, not the feed label, and keeps doing so as new
+              changes land.
             </p>
           </div>
           <MultiplierChart />
@@ -266,8 +326,11 @@ export default function Home() {
             <div>
               <dt className="pix">Data</dt>
               <dd>
-                The issuer feed stays off: the commercial licence is not settled and its terms prohibit automated
-                retrieval. Every figure here comes from the recording.
+                Chain data is live Solana mainnet: the worker polls mint state continuously and classifies each change
+                as it activates. The issuer&rsquo;s reference feed is a licensed third-party product, and Corpact runs
+                it from a verified recording of 654 changes over 446 days because the provider&rsquo;s terms prohibit
+                automated retrieval until that licence is signed. Switching to the live feed is one environment
+                variable, <code>ISSUER_SOURCE=live</code>, and no code change.
               </dd>
             </div>
             <div>
@@ -289,17 +352,23 @@ export default function Home() {
 
       </main>
 
-      <footer className="site-footer shell">
-        <Logo />
-        <nav className="pix" aria-label="Footer">
-          <Link href="/docs">Docs</Link>
-          <Link href="/docs/api-reference">API reference</Link>
-          <Link href="/docs/actions">Corporate actions</Link>
-          <Link href="/docs/concepts/classification">Classification</Link>
-        </nav>
-        <span className="stamp">
-          FIXTURES: XSTOCKS/RECORDED-20260913 · 654 CHANGES · © CORPACT
-        </span>
+      <footer className="site-footer">
+        <div className="shell site-footer-top">
+          <div className="site-footer-brand">
+            <Logo />
+            <p>Corporate actions for tokenized stocks, booked from the issuer&rsquo;s own record.</p>
+          </div>
+          <nav className="pix" aria-label="Footer">
+            <Link href="/docs">Docs</Link>
+            <Link href="/docs/api-reference">API reference</Link>
+            <Link href="/docs/actions">Corporate actions</Link>
+            <Link href="/docs/concepts/classification">Classification</Link>
+          </nav>
+        </div>
+        <div className="shell site-footer-base">
+          <span>FIXTURES: XSTOCKS/RECORDED-20260913 · 654 CHANGES</span>
+          <span>© Corpact</span>
+        </div>
       </footer>
     </div>
   );

@@ -35,7 +35,7 @@ Tokenized stocks pay dividends by **changing a multiplier on the mint**. Holders
 | **Worker** | Reads chain history and mint state, rebuilds the multiplier timeline, classifies changes and replays positions into Postgres |
 | **API** | Serves portfolio, income, corporate actions, journal, yield and exports to API keys scoped by tenant |
 | **`@corpact/client`** | Typed TypeScript client generated from the same schemas as the API |
-| **Dashboard** | A reference UI that calls the API through its own server |
+| **Demo view** | A reference client that calls the API through its own server |
 
 ## Next
 

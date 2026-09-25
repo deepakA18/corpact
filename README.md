@@ -17,9 +17,44 @@ over one typed API.
 Built on Token-2022 Scaled UI Amount, `@solana/kit`, Postgres, Fastify and Next.js. Issuer data is read
 through one adapter, defaulting to recorded fixtures.
 
-> **Status: private preview.** The engine runs on live Solana chain data with recorded issuer data.
-> Commercial use of the issuer feed is not yet licensed and the regulatory review is pending, so the
-> live feed stays switched off. See [phase0-validation.md](docs/findings/phase0-validation.md).
+> **Status: private preview.** Chain data is live Solana mainnet, polled continuously. The issuer's
+> reference feed is a licensed third-party product, and Corpact runs it from a verified recording of
+> 654 changes over 446 days because the provider's terms prohibit automated retrieval until that
+> licence is signed. Switching to the live feed is one environment variable, `ISSUER_SOURCE=live`,
+> and no code change. See [phase0-validation.md](docs/findings/phase0-validation.md).
+
+## See it working
+
+The fastest way to understand Corpact is to watch it read a real mainnet wallet. The demo view in
+`apps/web` is a reference client with no logic of its own - every number in it comes from the API.
+Point it at the hosted demo and run it. No Postgres, no worker, no key of your own:
+
+```bash
+pnpm install
+CORPACT_API_URL=https://corpactapi-production.up.railway.app \
+CORPACT_API_KEY=cpk_6mTym0MCpOrAqdAyKiW4Flrm0V8JGDuXIjcLCgy0Wzg \
+pnpm --filter @corpact/web dev
+```
+
+Then open <http://localhost:3000/wallet/6kn8Vj9YkvNLo8peW2fzebQdSLtX33A3TkRJwXqMCy1U>.
+
+Five positions, the dividend income Corpact will stand behind, and the two rows it refuses to:
+
+- **KOx, 15 Sep 2026** - the issuer has published only a scheduled announcement for this change, not a
+  confirmed record carrying the multipliers that were delivered. An announcement is never evidence, so
+  nothing is booked and the row reads *Classification pending*.
+- **NVDAx, 2 Apr 2026** - a real dividend the issuer cancelled and re-published to correct a typo. The
+  corrected version carries no net cash figure, and Corpact values dividends from issuer net cash, so
+  the units are booked and the USD is left *Unknown*.
+
+That key is read-only, scoped to its own tenant, and public on purpose. The same call without the UI:
+
+```bash
+curl -s "https://corpactapi-production.up.railway.app/v2/actions?owner=6kn8Vj9YkvNLo8peW2fzebQdSLtX33A3TkRJwXqMCy1U&limit=5" \
+  -H "x-api-key: cpk_6mTym0MCpOrAqdAyKiW4Flrm0V8JGDuXIjcLCgy0Wzg"
+```
+
+The host sleeps when idle, so the first request can take a few seconds.
 
 ## How it works
 
@@ -69,7 +104,7 @@ flowchart TD
     PG --> API{{API · v1 ledger · v2 corporate actions}}
     API --> SDK([Typed client · generated from one contract])
     API --> CSV([CSV export · accountant-ready journal])
-    API --> DASH([Reference dashboard])
+    API --> DASH([Demo view · reference client])
     API --> OPS([Monitoring · checks + Prometheus])
 
     classDef chain   fill:#e0f2fe,stroke:#0284c7,color:#0c4a6e;
@@ -135,7 +170,7 @@ apps/worker/          Registry verification, archival ingestion, timeline rebuil
                       position replay, journaling, and provider cross-checks.
 apps/api/             Read-only HTTP API: v1 ledger, v2 corporate actions, CSV export, monitoring.
 apps/site/            Homepage and developer docs, with a live API sandbox.
-apps/web/             Reference dashboard: a demo of the API, not the product.
+apps/web/             Demo view: a reference client for the API, not the product.
 apps/demo/            The end-to-end demo on a local validator, the recorded-case report, and the
                       mainnet lineage check.
 ```
@@ -198,7 +233,7 @@ const { positions } = await corpact.portfolio(wallet);  // floor, convertible am
 ```
 
 Other entry points: the docs and sandbox with `pnpm --filter @corpact/site dev`
-(http://localhost:3700), the dashboard with `pnpm dev --port 3600` in `apps/web`, the recorded-case
+(http://localhost:3700), the demo view with `pnpm dev --port 3600` in `apps/web`, the recorded-case
 report with `pnpm --filter @corpact/demo catches`, and the mainnet identity-change check with
 `pnpm --filter @corpact/demo lineage-check`.
 
@@ -206,7 +241,7 @@ report with `pnpm --filter @corpact/demo catches`, and the mainnet identity-chan
 SHA-256 of each key is stored. Keys hold a subset of `assets:read`, `ledger:read`, `wallets:sync` and
 `ops:read`, and read only the wallets their tenant registered - any other wallet answers
 `404 wallet_not_registered`, so one customer cannot learn which wallets another tracks. Rate limits are
-per key. Browsers never hold a key: the dashboard calls its own server route.
+per key. Browsers never hold a key: the demo view calls its own server route.
 
 **The issuer-data constraint.** The xStocks feed has no commercial licence and its terms prohibit
 automated retrieval. Every issuer read goes through `IssuerSource`; `ISSUER_SOURCE=fixtures` is the

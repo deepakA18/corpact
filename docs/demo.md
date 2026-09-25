@@ -1,5 +1,7 @@
 # Corpact demo
 
+For a timed talk track with screen cues, use the [presenter demo script](demo-script.md).
+
 One command runs the whole demo on a local Surfpool network. It walks through the plan's demo script, shows six real recorded cases beside the naive reading, and runs the full trap regression suite. The worker, classifier, ledger and API run unmodified, and every number shown is read back through the real API.
 
 From a fresh clone, one command checks prerequisites, installs, starts Postgres and runs the demo:
@@ -87,7 +89,7 @@ Late data and corrections are also pinned below the chain layer, on recorded KOx
 - **Database.** The demo uses its own database, `corpact_demo`, and permanently labels it synthetic in `dataset_label`. That table is append-only, so a demo database cannot be relabelled real.
 - **API.** Every data response (portfolio, income, journal, yield) and `/v1/health` carries `dataset: { kind: "synthetic", description }`, and every response sets `x-corpact-dataset: synthetic`. The real ledger reports `mainnet`.
 - **Exports.** Every CSV row starts with a `dataset` column, and synthetic files are named `corpact-SYNTHETIC-…`.
-- **Dashboard.** Pointed at a synthetic database, every page shows a **SYNTHETIC DEMO DATA** banner.
+- **Demo view.** Pointed at a synthetic database, every page shows a **SYNTHETIC DEMO DATA** banner.
 - **Run output.** Asset names say SYNTHETIC; `walkthrough.md` labels Parts 1 and 3 synthetic and Part 2 recorded; `report.json` starts with `"dataset": "synthetic"`.
 
 ## Surfpool compatibility
@@ -136,6 +138,6 @@ Output names counts and statuses, never the wallet. A busy wallet can take many 
 1. Start an API on it: `DATABASE_URL=…/corpact_demo PORT=4700 pnpm start` in `apps/api`.
 2. Create a tenant and key.
 3. Register the holder addresses from `report.json`.
-4. Point a dashboard's `CORPACT_API_URL` at that API.
+4. Point the demo view's `CORPACT_API_URL` at that API.
 
 Every page then shows the synthetic banner.

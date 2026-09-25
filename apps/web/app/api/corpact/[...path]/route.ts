@@ -2,7 +2,7 @@ import type { NextRequest } from 'next/server';
 
 /**
  * Same-origin proxy to the Corpact API. The API key lives only in this server's
- * environment; the browser never sees it. Only the routes the dashboard needs pass.
+ * environment; the browser never sees it. Only the routes the demo view needs pass.
  */
 const API_URL = (process.env.CORPACT_API_URL ?? 'http://127.0.0.1:4600').replace(/\/+$/, '');
 const ALLOWED = /^v1\/(assets|portfolio|income|income\/\d+|yield|export|wallets|wallets\/sync|wallets\/[1-9A-HJ-NP-Za-km-z]{32,44}\/status)$/;
@@ -17,7 +17,7 @@ async function forward(request: NextRequest, context: Context, method: 'GET' | '
 
   const apiKey = process.env.CORPACT_API_KEY;
   if (!apiKey) {
-    return Response.json({ error: 'The dashboard server has no CORPACT_API_KEY configured' }, { status: 500 });
+    return Response.json({ error: 'The demo server has no CORPACT_API_KEY configured' }, { status: 500 });
   }
 
   let upstream: Response;

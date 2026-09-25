@@ -64,4 +64,4 @@ This is the exact issuer record the match used, with its source and the hash of 
 `history` lists every journal row for this entry, oldest first: the initial recognition, and any reversal and replacement caused by a correction. See [Corrections & the journal](/docs/concepts/corrections).
 
 > [!TIP] Put it in front of users
-> The reference dashboard opens this detail in a drawer from each income row, with the headline, the multipliers, a link to the transaction, and the correction history.
+> The demo view opens this detail in a drawer from each income row, with the headline, the multipliers, a link to the transaction, and the correction history.

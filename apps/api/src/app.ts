@@ -68,7 +68,7 @@ export interface AppOptions {
   rateLimitPerMinute: number;
   /** Failed key presentations tolerated per client IP per minute before refusing further attempts. */
   authFailuresPerMinute: number;
-  /** Only needed when a browser calls the API directly; the demo dashboard goes through its own server. */
+  /** Only needed when a browser calls the API directly; the demo view goes through its own server. */
   corsOrigin?: string | undefined;
   /** Injectable for tests; defaults to reading the ledger database. */
   collectMonitoring?: (db: Db) => Promise<MonitoringSnapshot>;

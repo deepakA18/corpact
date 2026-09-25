@@ -45,7 +45,7 @@ A window whose coverage starts late, or a position that is not `complete`, retur
 `incomeUsd`, `dividendQuantity` and `averageQuantity` still describe what was observed in the covered part.
 
 > [!TIP] Rendering
-> Show the trailing-year yield when it is claimed. Otherwise show the tracked-period yield, labelled with its start date. Otherwise show the `excluded.message`. That is what the reference dashboard does.
+> Show the trailing-year yield when it is claimed. Otherwise show the tracked-period yield, labelled with its start date. Otherwise show the `excluded.message`. That is what the demo view does.
 
 ## Trailing net distribution per share
 

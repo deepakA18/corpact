@@ -31,4 +31,4 @@ const csv = await corpact.exportCsv(wallet, 'income');
 Exports are capped at 50,000 rows and answer `422` beyond that. Page through `/v1/journal` or `/v1/income` instead.
 
 > [!TIP] Browser downloads
-> From a browser, link to your own server route that adds the key (the reference dashboard proxies `/v1/export`). `corpact.exportUrl(wallet, dataset)` builds the path.
+> From a browser, link to your own server route that adds the key (the demo view proxies `/v1/export`). `corpact.exportUrl(wallet, dataset)` builds the path.

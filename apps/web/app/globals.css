@@ -1,33 +1,44 @@
 :root {
-  --bg: #f7f7f5;
+  --bg: #f6f6f4;
   --surface: #ffffff;
-  --text: #1c1c1a;
-  --muted: #6b6b66;
+  --surface-2: #fafaf9;
+  --text: #16161a;
+  --muted: #73736d;
+  --faint: #a2a29b;
   --line: #e4e4df;
-  --accent: #2f5d8a;
+  --line-soft: #efefea;
+  --ink: #1c1c1a;
+  --on-ink: #ffffff;
+  --link: #2f5d8a;
   --verified: #2e6b4f;
-  --verified-bg: #e8f2ec;
+  --verified-bg: #e6f1ea;
   --caution: #8a5a12;
   --caution-bg: #fbf1df;
-  --neutral-bg: #efefeb;
+  --neutral-bg: #f0f0ec;
   --danger: #9b2c2c;
-  --radius: 10px;
+  --radius: 12px;
+  --radius-sm: 8px;
   color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #141413;
-    --surface: #1d1d1b;
+    --bg: #0f0f0e;
+    --surface: #18181a;
+    --surface-2: #1e1e20;
     --text: #ececea;
-    --muted: #a0a09a;
-    --line: #2f2f2c;
-    --accent: #8fb6de;
+    --muted: #9c9c96;
+    --faint: #6e6e68;
+    --line: #2c2c2a;
+    --line-soft: #242422;
+    --ink: #ececea;
+    --on-ink: #16161a;
+    --link: #8fb6de;
     --verified: #8cc7a8;
-    --verified-bg: #1d2e25;
+    --verified-bg: #1c2b23;
     --caution: #e2b56b;
-    --caution-bg: #33291a;
-    --neutral-bg: #262624;
+    --caution-bg: #302617;
+    --neutral-bg: #232325;
     --danger: #e59a9a;
     color-scheme: dark;
   }
@@ -38,66 +49,109 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font: 15px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  font: 15px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
-.shell { max-width: 1080px; margin: 0 auto; padding: 32px 20px 64px; }
+.shell { max-width: 1100px; margin: 0 auto; padding: 40px 24px 96px; }
 .synthetic-banner { position: sticky; top: 0; z-index: 20; padding: 10px 20px; text-align: center; background: #8a1c1c; color: #fff; letter-spacing: 0.01em; }
-h1 { font-size: 24px; margin: 0 0 4px; letter-spacing: -0.01em; }
-h2 { font-size: 16px; margin: 32px 0 12px; }
+
+h1 { font-size: 28px; margin: 0; letter-spacing: -0.02em; font-weight: 600; }
+h2 { font-size: 13px; margin: 0 0 12px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); }
 .muted { color: var(--muted); }
+.faint { color: var(--faint); }
 .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; overflow-wrap: anywhere; }
 .num { font-variant-numeric: tabular-nums; }
-a { color: var(--accent); }
+a { color: var(--link); text-decoration-color: color-mix(in srgb, currentColor 35%, transparent); text-underline-offset: 2px; }
+:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; border-radius: 4px; }
 
+/* ── Header ─────────────────────────────────────────────────────────── */
+header .row.spread { margin-top: 10px; align-items: baseline; }
+/* The wallet's identity, data source and covered window: one line, not a banner and a card. */
+.meta { display: flex; flex-wrap: wrap; gap: 0 10px; margin-top: 8px; color: var(--muted); font-size: 13px; }
+.meta > * + *::before { content: '·'; margin-right: 10px; color: var(--faint); }
+.notes { margin-top: 8px; font-size: 13px; }
+
+/* ── Controls ───────────────────────────────────────────────────────── */
 button, .button {
-  font: inherit; border: 1px solid var(--line); background: var(--surface); color: var(--text);
-  padding: 8px 14px; border-radius: 8px; cursor: pointer;
+  font: inherit; font-size: 14px; border: 1px solid var(--line); background: var(--surface); color: var(--text);
+  padding: 7px 14px; border-radius: var(--radius-sm); cursor: pointer; text-decoration: none; white-space: nowrap;
+  transition: border-color 0.12s ease, background 0.12s ease;
 }
-button:hover:not(:disabled) { border-color: var(--accent); }
-button:disabled { opacity: 0.55; cursor: default; }
-button.primary { background: var(--accent); border-color: var(--accent); color: var(--surface); }
+button:hover:not(:disabled), .button:hover { border-color: var(--faint); background: var(--surface-2); }
+button:disabled { opacity: 0.5; cursor: default; }
+button.primary { background: var(--ink); border-color: var(--ink); color: var(--on-ink); }
+button.primary:hover:not(:disabled) { background: var(--ink); opacity: 0.88; }
 input {
-  font: inherit; padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px;
+  font: inherit; padding: 9px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm);
   background: var(--surface); color: var(--text); width: 100%;
 }
 
-.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; }
-.stack { display: grid; gap: 16px; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; }
+.stack { display: grid; gap: 24px; }
+/* Grid items default to min-width:auto, so a wide table would stretch the page instead of
+   scrolling inside its own wrapper. This keeps horizontal scroll where it belongs. */
+.stack > * { min-width: 0; }
+/* Nested stacks (a panel's body, the drawer) sit tighter than the page's top-level rhythm. */
+.panel.stack, .stack .stack { gap: 14px; }
 .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
 .spread { justify-content: space-between; }
+.row-inline { display: flex; align-items: center; gap: 8px; }
 
-.banner { border-radius: var(--radius); padding: 14px 16px; border: 1px solid var(--line); background: var(--surface); }
+/* ── Banners ────────────────────────────────────────────────────────── */
+.banner { border-radius: var(--radius); padding: 16px 18px; border: 1px solid var(--line); background: var(--surface); }
 .banner.partial { background: var(--caution-bg); border-color: transparent; }
-.banner strong { display: block; }
+.banner strong { display: block; margin-bottom: 2px; }
 /* The banner grows an orb while a sync is in flight: the mark sits beside the text, not above it. */
 .banner-live { display: flex; align-items: center; gap: 14px; }
 .banner-live canvas { flex: none; }
-.row-inline { display: flex; align-items: center; gap: 8px; }
 
-.values { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-@media (max-width: 800px) { .values { grid-template-columns: repeat(2, 1fr); } }
-.value { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; }
-.value .label { color: var(--muted); font-size: 13px; }
-.value .amount { font-size: 22px; font-weight: 600; margin: 4px 0; }
-.value .note { color: var(--muted); font-size: 12px; }
+/* ── Headline numbers ───────────────────────────────────────────────── */
+.values { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+@media (max-width: 760px) { .values { grid-template-columns: 1fr; } }
+.value { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 20px 20px; }
+.value .label { color: var(--muted); font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; }
+.value .amount { font-size: 34px; line-height: 1.1; font-weight: 600; letter-spacing: -0.025em; margin: 10px 0 8px; }
+.value .note { color: var(--muted); font-size: 12.5px; line-height: 1.45; }
 
-.table-wrap { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
-th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
-th { color: var(--muted); font-weight: 500; font-size: 13px; }
-tr:last-child td { border-bottom: 0; }
+/* ── Tables ─────────────────────────────────────────────────────────── */
+.hint { margin: -4px 0 12px; font-size: 13px; color: var(--muted); }
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+table { width: 100%; border-collapse: collapse; }
+/* Every cell holds a short value and the wrapper scrolls, so wrapping only ever hurts here. */
+th, td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--line-soft); vertical-align: top; white-space: nowrap; }
+th {
+  background: var(--surface-2); color: var(--muted); font-weight: 600; font-size: 11px;
+  letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; border-bottom-color: var(--line);
+}
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+tbody tr:last-child td { border-bottom: 0; }
 tr.clickable { cursor: pointer; }
-tr.clickable:hover td { background: var(--neutral-bg); }
+tr.clickable:hover td { background: var(--surface-2); }
+/* Secondary lines inside a cell: the mint, a coverage caveat, a yield window. */
+.sub { color: var(--muted); font-size: 12px; margin-top: 3px; font-weight: 400; white-space: nowrap; }
+/* A truncated mint is already short: never let it break across lines in a cell. */
+td .mono { overflow-wrap: normal; }
+td .sub { font-variant-numeric: normal; }
 
-.badge { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 12px; background: var(--neutral-bg); color: var(--muted); white-space: nowrap; }
+.badge {
+  display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 12px;
+  background: var(--neutral-bg); color: var(--muted); white-space: nowrap;
+}
 .badge.verified { background: var(--verified-bg); color: var(--verified); }
 .badge.caution { background: var(--caution-bg); color: var(--caution); }
 
-.drawer-backdrop { position: fixed; inset: 0; background: rgb(0 0 0 / 0.35); display: flex; justify-content: flex-end; }
-.drawer { width: min(560px, 100%); height: 100%; overflow-y: auto; background: var(--surface); padding: 24px; border-left: 1px solid var(--line); }
-dl.evidence { display: grid; grid-template-columns: 150px 1fr; gap: 6px 12px; margin: 0; }
+/* ── Evidence drawer ────────────────────────────────────────────────── */
+.drawer-backdrop { position: fixed; inset: 0; background: rgb(0 0 0 / 0.4); display: flex; justify-content: flex-end; }
+.drawer {
+  width: min(580px, 100%); height: 100%; overflow-y: auto; background: var(--surface);
+  padding: 28px; border-left: 1px solid var(--line);
+}
+.drawer.stack { gap: 14px; }
+.drawer h2 { margin: 10px 0 0; }
+dl.evidence { display: grid; grid-template-columns: 150px 1fr; gap: 8px 14px; margin: 0; font-size: 14px; }
 dl.evidence dt { color: var(--muted); font-size: 13px; }
 dl.evidence dd { margin: 0; }
 details summary { cursor: pointer; color: var(--muted); }
-.error { color: var(--danger); }
-ul.gaps { margin: 8px 0 0; padding-left: 20px; }
+.error { color: var(--danger); margin: 0; }
+ul.gaps { margin: 8px 0 0; padding-left: 20px; color: var(--muted); font-size: 13px; }
+ul.gaps li { margin-bottom: 4px; }

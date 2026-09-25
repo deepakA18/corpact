@@ -26,7 +26,10 @@ export function Sidebar() {
           <span>Home</span>
         </Link>
         {NAV.map((group) => {
-          const isCollapsed = collapsed[group.title] ?? false;
+          // A folded group unfolds itself when it holds the current page, so the sidebar always shows
+          // where you are; an explicit click on the header wins over that from then on.
+          const holdsCurrent = group.items.some((item) => docHref(item.slug) === pathname);
+          const isCollapsed = collapsed[group.title] ?? (group.defaultCollapsed === true && !holdsCurrent);
           return (
             <div className="sidebar-group" key={group.title}>
               <button

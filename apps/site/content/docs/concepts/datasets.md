@@ -19,7 +19,7 @@ A database is synthetic only if it carries a label, written once by the demo. Th
 - **Responses.** Portfolio, income, journal, yield and health include `dataset: { kind, description }`.
 - **Headers.** Every response carries `x-corpact-dataset: mainnet | synthetic`.
 - **CSV exports.** Every row starts with a `dataset` column, and synthetic files are named `corpact-SYNTHETIC-…`.
-- **Dashboard.** A synthetic database shows a **SYNTHETIC DEMO DATA** banner on every page.
+- **Demo view.** A synthetic database shows a **SYNTHETIC DEMO DATA** banner on every page.
 
 ```json
 {

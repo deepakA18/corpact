@@ -12,7 +12,7 @@ import { useState } from 'react';
  *   node -e "…multiplier-history.json… bySymbol.HONx sorted by activationDateTime"
  *   → 1 → 1.0016554 → 1.0126918 → 1.0166756 → 1.0201914 → 1.0240947 → 0.5120474 → 0.9990655 → 1.0011577
  *
- * This is recorded MAINNET chain history, not sample data. It is inlined rather than fetched
+ * This is recorded chain history, not sample data. It is inlined rather than fetched
  * because no API route serves a multiplier series: /v2/actions carries an action's quantity and
  * factor, never the mint's multiplier timeline. Do not edit a number here without re-running that
  * query.
@@ -105,7 +105,7 @@ export function MultiplierChart() {
 
   return (
     <figure className="chart">
-      <figcaption className="chart-cap pix">HONx · balance multiplier · 8 activations · mainnet</figcaption>
+      <figcaption className="chart-cap pix">HONx · what one share became · 8 changes</figcaption>
 
       <div className="chart-plot" onPointerMove={track} onPointerLeave={() => setActive(null)}>
         <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="HONx balance multiplier by activation" preserveAspectRatio="xMidYMid meet">

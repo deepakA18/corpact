@@ -13,8 +13,10 @@ const ACTIVE: ReadonlyArray<SyncStatus['status']> = ['queued', 'running'];
 /** A job queued this long without being claimed almost always means no worker is running. */
 const WORKER_STALL_MS = 20_000;
 
-const isUnregistered = (err: unknown) =>
-  err instanceof CorpactApiError && err.status === 404 && (err.body as { code?: string } | null)?.code === 'wallet_not_registered';
+const codeOf = (err: unknown) => (err instanceof CorpactApiError ? (err.body as { code?: string } | null)?.code : undefined);
+const isUnregistered = (err: unknown) => err instanceof CorpactApiError && err.status === 404 && codeOf(err) === 'wallet_not_registered';
+/** A read-only key cannot sync. That is a property of the key, not a failure worth a red banner. */
+const isReadOnlyKey = (err: unknown) => err instanceof CorpactApiError && err.status === 403 && codeOf(err) === 'missing_scope';
 
 const KIND_LABEL: Record<IncomeEntry['kind'], { text: string; tone: string }> = {
   dividend: { text: 'Verified dividend', tone: 'verified' },
@@ -22,15 +24,18 @@ const KIND_LABEL: Record<IncomeEntry['kind'], { text: string; tone: string }> = 
   unclassified_adjustment: { text: 'Classification pending', tone: 'caution' },
 };
 
-export function Dashboard({ owner }: { owner: string }) {
+export function WalletLedger({ owner }: { owner: string }) {
   const [portfolio, setPortfolio] = useState<Portfolio | null>(null);
   const [entries, setEntries] = useState<IncomeEntry[]>([]);
   const [sync, setSync] = useState<SyncStatus | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
   const [requesting, setRequesting] = useState(false);
+  const [readOnly, setReadOnly] = useState(false);
   const [notRegistered, setNotRegistered] = useState(false);
-  const [yields, setYields] = useState<YieldResponse | null>(null);
+  // undefined until the request settles; null once it has settled without an answer. The two must stay
+  // distinct: a row that has not loaded is not a row whose yield the engine declined to claim.
+  const [yields, setYields] = useState<YieldResponse | null | undefined>(undefined);
 
   const load = useCallback(async () => {
     try {
@@ -80,7 +85,8 @@ export function Dashboard({ owner }: { owner: string }) {
       const { sync: next } = await api.status(owner);
       setSync(next);
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      if (isReadOnlyKey(err)) setReadOnly(true);
+      else setError(err instanceof Error ? err.message : String(err));
     } finally {
       setRequesting(false);
     }
@@ -91,21 +97,22 @@ export function Dashboard({ owner }: { owner: string }) {
 
   return (
     <div className="stack">
-      <div className="row spread">
-        <div>
-          <Link href="/" className="muted">
-            ← Back
-          </Link>
+      <header>
+        <Link href="/" className="muted">
+          ← Back
+        </Link>
+        <div className="row spread">
           <h1>Wallet ledger</h1>
-          <div className="muted">Corpact demo</div>
-          <div className="mono muted" title={owner}>
-            {owner}
-          </div>
+          {readOnly ? (
+            <span className="muted">Read-only key</span>
+          ) : (
+            <button onClick={() => void requestSync()} disabled={syncing || requesting}>
+              {syncing ? 'Syncing…' : hasData ? 'Refresh history' : 'Sync on-chain history'}
+            </button>
+          )}
         </div>
-        <button className="primary" onClick={() => void requestSync()} disabled={syncing || requesting}>
-          {syncing ? 'Syncing…' : hasData ? 'Refresh history' : 'Sync on-chain history'}
-        </button>
-      </div>
+        <Meta owner={owner} portfolio={portfolio} />
+      </header>
 
       {error && <p className="error">Could not load the ledger: {error}</p>}
       <SyncBanner sync={sync} />
@@ -114,22 +121,20 @@ export function Dashboard({ owner }: { owner: string }) {
         <div className="banner">
           <strong>No xStock positions found</strong>
           <span className="muted">
-            Checked {sync.transactionsFetched} transaction(s) of this wallet&apos;s history as of {formatDateTime(sync.asOfTime)}: it has never held a
-            supported xStock directly. Holdings inside lending protocols, pools or exchanges are not tracked.
+            Checked {sync.transactionsFetched} transaction(s) of this wallet&apos;s history: it has never held a supported xStock directly.
           </span>
         </div>
       )}
       {notRegistered && !syncing && (
         <div className="banner">
           <strong>Not synced yet</strong>
-          <span className="muted">Sync this address to register it with the ledger and reconstruct its xStock holdings from chain history.</span>
+          <span className="muted">Sync this address to reconstruct its xStock holdings from chain history.</span>
         </div>
       )}
 
       {portfolio && hasData && (
         <>
-          <CoverageBanner portfolio={portfolio} />
-          <PrimaryValues portfolio={portfolio} />
+          <Headline portfolio={portfolio} />
           <Positions portfolio={portfolio} yields={yields} />
           <Events owner={owner} entries={entries} onSelect={setSelected} />
         </>
@@ -137,6 +142,34 @@ export function Dashboard({ owner }: { owner: string }) {
 
       {selected && <EventDrawer owner={owner} id={selected} onClose={() => setSelected(null)} />}
     </div>
+  );
+}
+
+/** Address, data source and the window the ledger covers, on one line instead of a banner and a card. */
+function Meta({ owner, portfolio }: { owner: string; portfolio: Portfolio | null }) {
+  const gaps = portfolio
+    ? [...new Set(portfolio.positions.flatMap((p) => p.coverage.gaps.map((g) => `${p.symbol}: ${g}`)))]
+    : [];
+  return (
+    <>
+      <div className="meta">
+        <span className="mono" title={owner}>
+          {shortAddress(owner)}
+        </span>
+        {portfolio && <span>{portfolio.dataset.kind === 'mainnet' ? 'Solana mainnet' : portfolio.dataset.kind}</span>}
+        {portfolio?.coverage.trackingStart && <span>Tracked since {formatDate(portfolio.coverage.trackingStart)}</span>}
+      </div>
+      {gaps.length > 0 && (
+        <details className="notes">
+          <summary>{gaps.length} coverage note(s)</summary>
+          <ul className="gaps">
+            {gaps.map((g) => (
+              <li key={g}>{g}</li>
+            ))}
+          </ul>
+        </details>
+      )}
+    </>
   );
 }
 
@@ -187,65 +220,55 @@ function SyncBanner({ sync }: { sync: SyncStatus | null }) {
   return null;
 }
 
-function CoverageBanner({ portfolio }: { portfolio: Portfolio }) {
-  const { coverage } = portfolio;
-  const gaps = [...new Set(portfolio.positions.flatMap((p) => p.coverage.gaps.map((g) => `${p.symbol}: ${g}`)))];
-  return (
-    <div className={`banner ${coverage.complete ? '' : 'partial'}`}>
-      <strong>Tracking since {formatDate(coverage.trackingStart)}</strong>
-      <span className="muted">
-        {coverage.complete
-          ? 'Every position is reconstructed from its first on-chain movement and reconciles exactly with current balances.'
-          : `${coverage.partialPositions} partial and ${coverage.unsupportedPositions} unsupported position(s). Income outside the covered periods is not attributed; it is not counted as zero.`}{' '}
-        As of slot {portfolio.asOfSlot ?? 'unknown'} ({formatDateTime(portfolio.asOfTime)}).
-      </span>
-      {gaps.length > 0 && (
-        <details>
-          <summary>{gaps.length} coverage note(s)</summary>
-          <ul className="gaps">
-            {gaps.map((g) => (
-              <li key={g}>{g}</li>
-            ))}
-          </ul>
-        </details>
-      )}
-    </div>
-  );
-}
-
-function PrimaryValues({ portfolio }: { portfolio: Portfolio }) {
-  const { totals } = portfolio;
+/**
+ * The three numbers the engine exists to produce: what was recognized as income, how many balance
+ * changes it accounted for, and how many it refused to guess at. Counts come from the position
+ * rollups rather than the entry list, so they do not depend on the page size of /v1/income.
+ */
+function Headline({ portfolio }: { portfolio: Portfolio }) {
+  const { totals, positions } = portfolio;
+  const dividends = positions.reduce((n, p) => n + p.dividendEvents, 0);
+  const unknown = totals.unvaluedDividendEvents + totals.unclassifiedAdjustments;
+  const adjustments = dividends + totals.unclassifiedAdjustments;
+  const active = positions.filter((p) => p.dividendEvents + p.unclassifiedAdjustments > 0).length;
+  const unknownParts = [
+    totals.unclassifiedAdjustments && `${totals.unclassifiedAdjustments} not yet classified`,
+    totals.unvaluedDividendEvents && `${totals.unvaluedDividendEvents} the issuer never priced`,
+  ].filter(Boolean);
   return (
     <div className="values">
       <div className="value">
         <div className="label">Dividend income</div>
         <div className="amount num">{formatUsd(totals.dividendIncomeUsd)}</div>
         <div className="note">
-          From issuer-reported net cash.
-          {totals.unvaluedDividendEvents > 0 && ` Plus ${totals.unvaluedDividendEvents} dividend(s) with no USD value.`}
+          {dividends - totals.unvaluedDividendEvents} dividend(s), priced from issuer-published net cash
         </div>
       </div>
       <div className="value">
-        <div className="label">Available to convert</div>
-        <div className="amount num">{totals.availableToConvert.positionsWithAvailable} position(s)</div>
-        <div className="note">Shown per position in stock units. {totals.availableToConvert.reason}.</div>
+        <div className="label">Balance adjustments</div>
+        <div className="amount num">{adjustments}</div>
+        <div className="note">
+          Multiplier changes accounted for, across {active} of {positions.length} position(s)
+        </div>
       </div>
       <div className="value">
-        <div className="label">USDC received</div>
-        <div className="amount num">{formatUsd(totals.usdcReceived.usd)}</div>
-        <div className="note">{totals.usdcReceived.reason}.</div>
-      </div>
-      <div className="value">
-        <div className="label">Tracking start</div>
-        <div className="amount">{formatDate(portfolio.coverage.trackingStart)}</div>
-        <div className="note">{portfolio.coverage.complete ? 'Complete coverage' : 'Partial coverage: see notes above'}</div>
+        <div className="label">Held as unknown</div>
+        <div className="amount num">{unknown}</div>
+        <div className="note">{unknown === 0 ? 'Every change has issuer evidence' : `${unknownParts.join(', ')}. Never guessed.`}</div>
       </div>
     </div>
   );
 }
 
 /** The trailing year when it is claimable, else the tracked period (labelled with its span), else the reason neither is. */
-function YieldCell({ position }: { position: PositionYield | undefined }) {
+function YieldCell({ position, state }: { position: PositionYield | undefined; state: 'loading' | 'unavailable' | 'ready' }) {
+  if (state !== 'ready') {
+    return (
+      <span className="muted" title={state === 'loading' ? 'Loading yield metrics' : 'Yield metrics could not be loaded'}>
+        -
+      </span>
+    );
+  }
   const find = (name: PositionYield['windows'][number]['window']) => position?.windows.find((w) => w.window === name);
   const year = find('trailing_365d');
   const tracked = find('tracked');
@@ -254,9 +277,7 @@ function YieldCell({ position }: { position: PositionYield | undefined }) {
     return (
       <>
         {formatPercent(tracked.shareYield)}
-        <div className="muted" style={{ fontSize: 12 }}>
-          {tracked.days} days since {formatDate(tracked.start)}
-        </div>
+        <div className="sub">over {tracked.days} days</div>
       </>
     );
   }
@@ -268,23 +289,23 @@ function YieldCell({ position }: { position: PositionYield | undefined }) {
   );
 }
 
-function Positions({ portfolio, yields }: { portfolio: Portfolio; yields: YieldResponse | null }) {
+function Positions({ portfolio, yields }: { portfolio: Portfolio; yields: YieldResponse | null | undefined }) {
   const yieldByMint = new Map(yields?.positions.map((p) => [p.mint, p]));
+  const yieldState = yields === undefined ? 'loading' : yields === null ? 'unavailable' : 'ready';
   return (
     <section>
       <h2>Positions</h2>
-      {yields && <p className="muted">Share yield: {yields.definitions.shareYield}</p>}
       <div className="table-wrap">
         <table>
           <thead>
             <tr>
               <th>Stock</th>
-              <th>Quantity</th>
-              <th>Protected</th>
-              <th>Available to convert</th>
-              <th>Dividend income</th>
-              <th>Share yield</th>
-              <th>Status</th>
+              <th className="num">Quantity</th>
+              <th className="num" title="The quantity no conversion may drop below, so a pending corporate action cannot be sold out from under you.">
+                Protected floor
+              </th>
+              <th className="num">Dividend income</th>
+              <th className="num" title={yields?.definitions.shareYield}>Share yield</th>
             </tr>
           </thead>
           <tbody>
@@ -292,36 +313,20 @@ function Positions({ portfolio, yields }: { portfolio: Portfolio; yields: YieldR
               <tr key={p.mint}>
                 <td>
                   <strong>{p.symbol}</strong>
-                  <div className="mono muted" title={p.mint}>
+                  <div className="mono sub" title={p.mint}>
                     {shortAddress(p.mint)}
                   </div>
+                  {p.status !== 'complete' && <div className="sub">Partial history</div>}
+                  {!p.reconciled && p.status !== 'unsupported' && <div className="sub">Not reconciled</div>}
                 </td>
                 <td className="num">{formatQuantity(p.quantity)}</td>
                 <td className="num">{p.protectedQuantity === null ? 'n/a' : formatQuantity(p.protectedQuantity)}</td>
                 <td className="num">
-                  {p.availableQuantity === null ? (
-                    <span className="muted">Unavailable</span>
-                  ) : (
-                    formatQuantity(p.availableQuantity)
-                  )}
-                  <div className="muted" style={{ fontSize: 12 }}>
-                    {p.conversionDisabledReasons[0]}
-                  </div>
-                </td>
-                <td className="num">
                   {formatUsd(p.dividendIncomeUsd)}
-                  {p.unvaluedDividendEvents > 0 && <div className="muted">+{p.unvaluedDividendEvents} unvalued</div>}
+                  {p.unvaluedDividendEvents > 0 && <div className="sub">+{p.unvaluedDividendEvents} unpriced</div>}
                 </td>
                 <td className="num">
-                  <YieldCell position={yieldByMint.get(p.mint)} />
-                </td>
-                <td>
-                  <span className={`badge ${p.status === 'complete' ? 'verified' : 'caution'}`}>{p.status}</span>
-                  {!p.reconciled && p.status !== 'unsupported' && (
-                    <div className="muted" style={{ fontSize: 12 }}>
-                      Not reconciled
-                    </div>
-                  )}
+                  <YieldCell position={yieldByMint.get(p.mint)} state={yieldState} />
                 </td>
               </tr>
             ))}
@@ -349,39 +354,44 @@ function Events({ owner, entries, onSelect }: { owner: string; entries: IncomeEn
       {entries.length === 0 ? (
         <p className="muted">No multiplier changes affected these positions during the covered period.</p>
       ) : (
-        <div className="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Stock</th>
-                <th>Classification</th>
-                <th>Units</th>
-                <th>USD</th>
-              </tr>
-            </thead>
-            <tbody>
-              {entries.map((e) => (
-                <tr key={e.id} className="clickable" onClick={() => onSelect(e.id)}>
-                  <td>{formatDate(e.effectiveAt)}</td>
-                  <td>{e.symbol}</td>
-                  <td>
-                    <span className={`badge ${KIND_LABEL[e.kind].tone}`}>{KIND_LABEL[e.kind].text}</span>
-                    {e.revision > 1 && (
-                      <span className="badge caution" title={`Corrected ${formatDateTime(e.correctedAt)}`} style={{ marginLeft: 6 }}>
-                        corrected
-                      </span>
-                    )}
-                  </td>
-                  <td className="num">
-                    {e.kind === 'split' ? `×${formatQuantity(e.splitFactor ?? '')}` : formatQuantity(e.quantityDisplay)}
-                  </td>
-                  <td className="num">{e.kind !== 'dividend' ? 'n/a' : e.usd === null ? <span className="muted">Unknown</span> : formatUsd(e.usd)}</td>
+        <>
+          <p className="hint">Select a row for the issuer evidence behind it.</p>
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Stock</th>
+                  <th>Classification</th>
+                  <th className="num">Change</th>
+                  <th className="num">USD</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {entries.map((e) => (
+                  <tr key={e.id} className="clickable" onClick={() => onSelect(e.id)}>
+                    <td>{formatDate(e.effectiveAt)}</td>
+                    <td>{e.symbol}</td>
+                    <td>
+                      <span className={`badge ${KIND_LABEL[e.kind].tone}`}>{KIND_LABEL[e.kind].text}</span>
+                      {e.revision > 1 && (
+                        <span className="badge caution" title={`Corrected ${formatDateTime(e.correctedAt)}`} style={{ marginLeft: 6 }}>
+                          corrected
+                        </span>
+                      )}
+                    </td>
+                    <td className="num">
+                      {e.kind === 'split' ? `×${formatQuantity(e.splitFactor ?? '')}` : formatQuantity(e.quantityDisplay)}
+                    </td>
+                    <td className="num">
+                      {e.kind !== 'dividend' ? 'n/a' : e.usd === null ? <span className="muted">Unknown</span> : formatUsd(e.usd)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
     </section>
   );

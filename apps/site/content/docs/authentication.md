@@ -33,7 +33,7 @@ const { assets } = await corpact.assets();
 Keys look like `cpk_` followed by 43 URL-safe characters: 256 bits of entropy. Corpact stores only a SHA-256 of each key, so a lost key cannot be recovered, only revoked and replaced.
 
 > [!WARNING] Server-side only
-> Never ship an API key to a browser. The reference dashboard calls its own server route, which attaches the key and forwards only the routes it needs.
+> Never ship an API key to a browser. The demo view calls its own server route, which attaches the key and forwards only the routes it needs.
 
 ## Managing keys
 

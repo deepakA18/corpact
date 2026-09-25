@@ -11,6 +11,11 @@ export interface NavGroup {
   title: string;
   icon: 'home' | 'start' | 'concepts' | 'guides' | 'ops' | 'reference';
   items: NavItem[];
+  /**
+   * Start folded. For a generated reference family that would otherwise dominate the sidebar:
+   * the group still opens on its own when the page you are reading lives inside it.
+   */
+  defaultCollapsed?: boolean;
 }
 
 export const NAV: NavGroup[] = [
@@ -38,9 +43,12 @@ export const NAV: NavGroup[] = [
     ],
   },
   {
+    // One row per action type, generated from ACTION_KIND_SPECS: nine of the sidebar's rows for a
+    // family most readers open once. Folded by default so the hand-written pages stay legible.
     title: 'Corporate actions',
     icon: 'concepts',
     items: ACTION_NAV,
+    defaultCollapsed: true,
   },
   {
     title: 'Guides',
