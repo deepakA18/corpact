@@ -31,8 +31,8 @@ Point it at the hosted demo and run it. No Postgres, no worker, no key of your o
 
 ```bash
 pnpm install
-CORPACT_API_URL=https://corpactapi-production.up.railway.app \
-CORPACT_API_KEY=cpk_6mTym0MCpOrAqdAyKiW4Flrm0V8JGDuXIjcLCgy0Wzg \
+CORPACT_API_URL=https://api-production-c0ce.up.railway.app \
+CORPACT_API_KEY=cpk_Vte-IwZREtqx8NBgRdOu9e8nJfTWot3nsRQ_Y5ioRRM \
 pnpm --filter @corpact/web dev
 ```
 
@@ -50,8 +50,8 @@ Five positions, the dividend income Corpact will stand behind, and the two rows 
 That key is read-only, scoped to its own tenant, and public on purpose. The same call without the UI:
 
 ```bash
-curl -s "https://corpactapi-production.up.railway.app/v2/actions?owner=6kn8Vj9YkvNLo8peW2fzebQdSLtX33A3TkRJwXqMCy1U&limit=5" \
-  -H "x-api-key: cpk_6mTym0MCpOrAqdAyKiW4Flrm0V8JGDuXIjcLCgy0Wzg"
+curl -s "https://api-production-c0ce.up.railway.app/v2/actions?owner=6kn8Vj9YkvNLo8peW2fzebQdSLtX33A3TkRJwXqMCy1U&limit=5" \
+  -H "x-api-key: cpk_Vte-IwZREtqx8NBgRdOu9e8nJfTWot3nsRQ_Y5ioRRM"
 ```
 
 The host sleeps when idle, so the first request can take a few seconds.
